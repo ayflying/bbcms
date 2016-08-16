@@ -1,0 +1,35 @@
+{include file="./header" title="功能模块" /}
+<div class="container-fluid">
+<div class="btn-group">
+	<a href="{:url('Mod/mod_add')}" class="btn btn-default icon-plus">添加</a>
+</div>
+<br /><br />
+    <table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>用户ID</th>
+            <th>模型名称</th>
+            <th>数据表名</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+    {foreach name="list" item="val"}
+        <tr>
+            <td>{$val.id}</td>
+            <td>{$val.name}</td>
+            <td>{$val.table}</td>
+            <td>
+            <div class="am-btn-group">
+            	<a href="{:url('Mod/mod_edit?id='.$val['id'])}" class="btn btn-default" role="button">编辑</a>
+            	<a href="{:url('Mod/mod_del?id='.$val['id'])}" class="btn btn-default" role="button">删除</a>
+            </div>
+            </td>
+        </tr>
+    {/foreach}
+        <tr>
+     </tr>
+    </tbody>
+</table>
+</div>
+{include file="./footer" /}

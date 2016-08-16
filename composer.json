@@ -1,0 +1,18 @@
+{
+    "name": "luoe/bbcms",
+    "type": "bbcms",
+    "description": "bbcms内容管理系统",
+    "keywords": ["bbcms","thinkphp5"],
+    "homepage": "http://cms.luoe.cn",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "ayflying",
+            "email": "ay@7cuu.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "topthink/think-image": "^1.0"
+    }
+}

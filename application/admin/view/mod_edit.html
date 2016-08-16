@@ -1,0 +1,142 @@
+{include file="./header" title="编辑模型" /}
+<div class="container-fluid">
+<form class="form-horizontal" action="" method="post" enctype="multipart/form-data">
+  <div class="panel panel-default">
+  <div class="panel-body">
+    <div class="col-sm-6">
+    	模型名称：{$list.name}
+    </div>
+    <div class="col-sm-6">
+    	数据表名：{$list.table}
+    </div>
+  </div>
+  </div>
+  
+  <div class="panel panel-default">
+  <p class="panel-heading">模型字段</p>
+  <div class="panel-body">
+  {foreach name='list.data' item='val'}
+  
+  <div class="form-group field" id="box">
+  
+  	<div class="col-sm-3">
+    	<label for="name[]" class="sr-only">栏目名</label>
+		<input name="name[]" type="text" class="form-control" id="name" placeholder="输入名称" value="{$val.0}">
+    </div>
+    <div class="col-sm-3">
+		<label for="field[]" class="sr-only">字段名</label>
+		<input name="field[]" type="text" class="form-control" id="name" placeholder="输入字段名字" value="{$key}">
+    </div>
+    
+    <div class="col-sm-4">
+		<label for="type[]" class="sr-only">类型</label>
+        <select name="type[]" class="form-control" id="type[]">
+          <option value="text" {$val['1']=='text'?'selected ':''}>文本</option>
+          <option value="textarea" {$val['1']=='textarea'?'selected ':''}>多行文本</option>
+          <option value="select" {$val['1']=='select'?'selected ':''}>选项</option>
+          <option value="checkbox" {$val['1']=='checkbox'?'selected ':''}>多选</option>
+          <option value="radio" {$val['1']=='radio'?'selected ':''}>单选</option>
+        </select>
+  	</div>
+    <div class="col-sm-2">
+           	  <a class="btn btn-default" href="{:url('mod_del?',['id'=>input('id'),'field'=>$key])}" role="button">删除字段</a>
+	</div>
+    <div class="col-sm-12" style="margin-top:10px;">
+    <label for="value[]" class="sr-only">数据</label>
+    <textarea name="value[]" rows="3" class="form-control" placeholder="输入数据，每个内容用半角','分割，如：买房,卖房,东城区,城关镇">{$val.2}</textarea>
+    </div>
+   
+  </div>
+  {/foreach}
+  </div>
+  </div>
+
+  
+  
+<br/>
+  <div class="btn-group" role="group" aria-label="...">
+    <input type="submit" class="btn btn-default" value="提交" />
+    <notempty name="list.table">
+    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#ziduanadd">添加字段</button>
+    </notempty>
+  </div>
+</form>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="ziduanadd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">添加字段</h4>
+      </div>
+      <div class="modal-body">
+        <div class="panel-body">
+        
+			<form action="{:url('?action=add&id='.input('id'))}" method="post" enctype="application/x-www-form-urlencoded" id="ziduan">
+            
+        	<div class="form-group" id="box">
+			<div class="col-sm-4">
+    			<label for="name" class="sr-only">栏目名</label>
+				<input name="name" type="text" class="form-control" id="name" placeholder="输入名称">
+    		</div>
+    		<div class="col-sm-4">
+				<label for="field" class="sr-only">字段名</label>
+				<input name="field" type="text" class="form-control" id="field" placeholder="输入字段名字">
+    		</div>
+    		
+    		<div class="col-sm-4">
+				<label for="type" class="sr-only">类型</label>
+				<select name="type" class="form-control" id="type">
+				<option value="text">文本</option>
+				<option value="textarea">多行文本</option>
+				<option value="select">选项</option>
+				<option value="checkbox">多选</option>
+                <option value="radio">单选</option>
+				</select>
+			</div>
+            
+			<div class="col-sm-12" style="margin-top:10px;">
+				<label for="value" class="sr-only">数据</label>
+				<textarea name="value" rows="3" class="form-control" placeholder="输入数据，每个内容用半角','分割，如：买房,卖房,东城区,城关镇" id="value"></textarea>
+			</div>
+   
+		</div>
+		</form>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" onclick="post('#ziduan')" class="btn btn-primary">提交表单</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function(e) {
+	//获取拼音字段
+	$("#ziduanadd #name").change(function(e) {
+        value = $("#ziduanadd #name").val();
+		$.post("{:url('pinyin')}",{
+			str:value,	
+		},function(data,status){
+			if($("#ziduanadd #field").val() == ''){
+				$("#ziduanadd #field").val(data);
+			}
+
+  		});
+    });
+	
+	
+});
+
+function post(id){
+		//$("+id+").submit();
+		$("#ziduan").submit();
+	}
+	
+	function aa(){
+		alert("12123");	
+	}
+</script>
+{include file="./footer" /}

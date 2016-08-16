@@ -1,0 +1,83 @@
+{include file="./header"  title="用户修改" keywords="用户修改" /}
+<div class="container-fluid">
+<form action="" method="post" enctype="multipart/form-data">
+    <table class="table table-hover">
+  <thead>
+  <tr>
+    <td>名称</td>
+    <td>编辑</td>
+    <td>说明</td>
+  </tr>
+  </thead>
+  <tr class="form-group">
+    <td><label for="uid">UID</label></td>
+    <td>{$sql.uid}</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr class="form-group">
+    <td><label for="email">邮箱</label></td>
+    <td><input name="email" type="text"  class="form-control" id="email" value="{$sql.email}" /></td>
+    <td>用户的邮箱</td>
+  </tr>
+  <tr class="form-group">
+    <td><label for="money">金额</label></td>
+    <td><input name="money" type="text" class="form-control" id="money" value="{$sql.money}" disabled /></td>
+    <td>用户的当前金币</td>
+  </tr>
+  <tr class="form-group">
+    <td><label for="uname">用户名</label></td>
+    <td><input name="uname" type="text" class="form-control" id="uname" value="{$sql.uname}" /></td>
+    <td>用户的用户名</td>
+  </tr>
+  
+  <tr class="form-group">
+    <td><label for="mobile">手机号</label></td>
+    <td><input name="mobile" type="text" class="form-control" id="mobile" value="{$sql.mobile}" /></td>
+    <td>用户的手机号</td>
+  </tr>
+  
+  <tr class="form-group">
+    <td><label for="idcard">身份证号</label></td>
+    <td><input name="idcard" type="text" class="form-control" id="idcard" value="{$sql.idcard}" /></td>
+    <td>用户的身份证号码</td>
+  </tr>
+  
+  <tr class="form-group">
+    <td><label for="pword">密码</label></td>
+    <td><input name="pword" type="password" class="form-control" id="pword" placeholder="不修改请勿填写"/></td>
+    <td>用户的密码</td>
+  </tr>
+  <tr class="form-group">
+    <td><label for="gid">用户组</label></td>
+    <td>
+        <select name="gid" class="form-control" id="gid">
+        	<option value="0" >未分组</option>
+        {foreach name="group" item="val"}
+        	<option value="{$val.gid}" {$sql['gid']==$val['gid']?'selected="selected"':''}>{$val.name}</option>
+        {/foreach}
+        </select>
+    </td>
+    <td>用户的权限</td>
+  </tr>
+  <tr class="form-group">
+    <td><label for="status">状态</label></td>
+    <td>
+        <input type="radio" name="status" value="1" {$sql['status']==1?'checked="checked"':''}>开启
+        <input type="radio" name="status" value="0" {$sql['status']==0?'checked="checked"':''}>关闭
+    </td>
+    <td>&nbsp;</td>
+  </tr>
+  
+  
+  <tr class="form-group">
+    <td>
+    <input type="submit" class="btn btn-default" id="button" value="提交" />
+    <button type="button" onClick="javascript:history.back(-1);" class="btn btn-default">返回</button>
+    </td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+    </form>
+</div>
+{include file="./footer" /}

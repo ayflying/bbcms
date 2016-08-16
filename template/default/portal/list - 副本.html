@@ -1,0 +1,38 @@
+<include file="default/Common/header" title="{$type.name}_" keywords="" description="" />
+<!-- /header -->
+<div class="articlelist w960 center clear mt1">
+ <div class="pleft">
+  <div class="place"> <strong>当前位置:</strong> {$type.name}<span class="post" style="float:right; margin-right:10px;">
+  		<a href="{:U('rss?tid='.$type['typeid'])}" target="_blank">订阅</a>
+        <a href="{:U('post/add?tid='.$type['typeid'])}">发布</a>
+  	</span></div>
+  <!-- /place -->
+  <div class="listbox">
+   <ul class="e2">
+
+    <luoe:list row='10'>
+    <li><a href='{$ltag.url}' class='preview'><img src='{$ltag.litpic|default="./Public/cloud/images/noimg.jpg"}'/></a>
+     [<b>{$type.name}</b>] <a href="{$ltag.url}" class="title">{$ltag.title}</a> <span class="info"> <small>日期：</small>：{$ltag.create_time|date='Y-m-d',###}<small>点击：</small>{$ltag.click} <small>好评：</small>{$ltag.likes} <small>发布者：</small>{$val.uname} </span>
+     <p class="intro"> {$ltag.description}... </p>
+    </li>
+    </luoe:list>
+   </ul>
+  </div>
+  <!-- /listbox -->
+  <div class="dede_pages">
+   <ul class="pagelist">
+    <!--
+    {dede:pagelist listitem="info,index,end,pre,next,pageno,option" listsize="5"/}
+    -->
+    {$page}
+   </ul>
+  </div>
+  <!-- /pages -->
+ </div>
+ <!-- /pleft -->
+ 	<include file="./default/Portal/pright" />
+ <!-- /pright -->
+</div>
+<include file="default/Common/footer" />
+</body>
+</html>

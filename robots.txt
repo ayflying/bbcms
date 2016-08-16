@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /vendor/
+Disallow: /update/
+Disallow: /admin/
+Disallow: /thinkphp/

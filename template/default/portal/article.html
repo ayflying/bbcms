@@ -1,0 +1,10 @@
+{include file="common/header" title="$bb.title" keywords="$bb.title" description="$bb.description" /}
+<!-- /header -->
+{bb:article aid="$aid" item="bb"}{/bb:article}
+<br />
+标题： {$bb.title}
+<br />
+内容：{$bb.addonarticle.content|htmlspecialchars_decode}
+
+{include file="common/footer" /}
+
