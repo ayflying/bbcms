@@ -79,4 +79,37 @@ class Member extends Common{
 		
 	}
 	
+	/*用户组操作*/
+	public function group(){
+		$list = Db::name('member_group') -> select();
+		$this -> assign('list',$list);
+		return $this -> fetch('./member_group_list');
+	}
+	
+	function group_add(){
+		if(request()->isPost()){
+			Db::name('member_group') -> insert(input('post.'));
+			return $this -> success('添加成功','group');
+		}else{
+			return $this -> fetch('./member_group_edit');
+		}
+	}
+	
+	function group_edit($gid){
+		
+		if(request()->isPost()){
+			Db::name('member_group') -> where('gid',$gid) -> update(input('post.'));
+			return $this -> success('修改成功');
+		}else{
+			$group = Db::name('member_group') -> find($gid);
+			$this -> assign('sql',$group);
+			return $this -> fetch('./member_group_edit');
+		}
+	}
+	
+	function group_delete($gid){
+		Db::name('member_group') -> where('gid',$gid) -> delete();
+		return $this -> success('删除成功','group');
+	}
+	
 }

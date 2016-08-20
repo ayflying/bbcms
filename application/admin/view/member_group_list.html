@@ -1,0 +1,23 @@
+{include file="./header"  title="用户组列表" /}
+<div class="container-fluid">
+<div class="btn-group">
+<a href="{:url('group_add')}" class="btn btn-default icon-plus">添加</a>
+</div><br /><br />
+<table width="100%"  class="table table-striped table-hover">
+  <tr>
+    <td>ID</td>
+    <td>用户组名</td>
+    <td>操作</td>
+  </tr>
+  {foreach name="list" item="val"}
+  <tr>
+    <td>{$val.gid}</td>
+    <td>{$val.name}</td>
+    <td><a class="btn btn-default" href="{:url('Member/group_edit?gid='.$val['gid'])}" role="button">编辑</a></td>
+  </tr>
+  
+  {/foreach}
+  
+</table>
+</div>
+{include file="./footer" /}
