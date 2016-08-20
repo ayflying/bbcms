@@ -1,6 +1,7 @@
 <?php
 namespace app\admin\controller;
 use think\Controller;
+use think\Db;
 
 class Login extends Controller{
     
@@ -17,23 +18,8 @@ class Login extends Controller{
 	}
 	
 	function authorization($uid){
-		//S(array('expire'=>86400,'prefix'=>'user'));
-		/*
-		if(S($uid)){
-			$user = S($uid);
-			$guid = $user[$guid] ? $user[$guid] : md5($uid.time()); //加密算法
-			
-		}else{
-			$guid =  md5($uid.time()); //加密算法
-		}
-		*/
 		
 		$user = db('MemberUser');
-		/*
-		//$user -> uid = $uid;
-		$user -> update_time = time();
-		$user -> update_ip = request()->ip();
-		*/
 		$user -> where(['uid' => $uid]) ->  update(['update_time' => time(),'update_ip'=>request()->ip()]);
 		$sql = $user -> find($uid);
 		
@@ -41,7 +27,7 @@ class Login extends Controller{
 			return $this -> error("该账户被停用！");
 		}
 		$uid = cookie_encode('uid',$uid);
-		cookie('uname',$sql['uname'],2592000);
+		cookie('username',$sql['username'],2592000);
 		//cookie('gid','1',3600);
 		
 		return $uid;
@@ -50,12 +36,6 @@ class Login extends Controller{
 	
 	function login(){
 		
-		
-		//S(array('prefix' => 'user'));
-		//$user = S(cookie('uid'));
-		//多说登陆初始化
-		//$system = F('system/settings');
-		//$this -> assign('system',$system);
 		if(cookie('guid')){
 			//return $this -> success("已登陆，正在跳转！",url('/admin'));
 			header("Location:".url('/admin')); 
@@ -65,12 +45,11 @@ class Login extends Controller{
 		
 		if(request()->isPost()){
 			$post = input('post.');
-			if(empty($post['email']) || empty($post['pword'])){
+			if(empty($post['username']) || empty($post['password'])){
 				$this -> error("用户名或者密码为空");
 			}else{
-				$db = db("MemberUser");
-				$where['uid|email|uname'] = input('post.email');
-				$where['pword'] = md5(input('post.pword'));
+				$where['email|username|mobile'] = $post['username'];
+				$where['password'] = md5($post['password']);
 				/*
 				$code = input('post.code');
 				if(check_verify($code) == null){
@@ -78,7 +57,7 @@ class Login extends Controller{
 				}
 				*/
 				//抛出错误，开始登录
-				if($sql = $db -> where($where) -> find()){
+				if($sql = Db::name('MemberUser') -> where($where) -> find()){
 					//调用验证方法
 					$uid = $this -> authorization($sql['uid']);
 					

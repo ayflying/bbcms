@@ -20,7 +20,7 @@ define('EXTEND_PATH', APP_PATH.'common/library');
 //全局静态变量
 include 'config.php';
 // 加载框架引导文件
-require __DIR__ . '/Thinkphp/start.php';
+require __DIR__ . '/thinkphp/start.php';
 
 
 $build = [

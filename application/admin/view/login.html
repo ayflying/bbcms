@@ -7,10 +7,10 @@
     <title>后台登录 - 络易后台管理系统</title>
     
 <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
-<script src="http://libs.baidu.com/jquery/1.10.2/jquery.min.js"></script>
+<script src="http://apps.bdimg.com/libs/jquery/1.11.3/jquery.min.js"></script>
 <!-- 最新的 Bootstrap 核心文件 -->
-<script src="http://libs.baidu.com/bootstrap/3.0.3/js/bootstrap.js"></script>
-<link href="http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.css" rel="stylesheet">
+<script src="http://apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<link href="http://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
 body {
@@ -61,10 +61,10 @@ body {
 
       <form method="post" enctype="application/x-www-form-urlencoded" class="form-signin" id="form1">
         <h2 class="form-signin-heading">后台登录系统</h2>
-        <label for="inputEmail" class="sr-only">登录邮箱</label>
-        <input name="email" type="email" autofocus required class="form-control" id="inputEmail" placeholder="登录邮箱">
-        <label for="inputPassword" class="sr-only">密码</label>
-        <input name="pword" type="password" id="inputPassword" class="form-control" placeholder="密码" required>
+        <label for="username" class="sr-only">登录邮箱</label>
+        <input name="username" type="text" autofocus required class="form-control" id="username" placeholder="邮箱\用户名\手机号">
+        <label for="password" class="sr-only">密码</label>
+        <input name="password" type="password" id="password" class="form-control" placeholder="密码" required>
         <!--
         <div class="form-group">
 		<label for="code" class="sr-only">验证码</label>
@@ -76,12 +76,8 @@ body {
       </form>
 		<div class="ds-login form-signin"></div>
     </div> <!-- /container -->
-
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
-    <script>
+<script>
 $(document).ready(function(e) {
-	
 	
 	$(".verify").find("img").attr("src","{:url('Login/Verify')}?"+new Date().getTime());
 	
