@@ -3,7 +3,6 @@ namespace app\admin\controller;
 use think\Config;
 use think\Db;
 use app\member\model\MemberUser as  User;
-//use app\member\Validate\MemberUser;
 
 class Member extends Common{
 	
@@ -16,15 +15,30 @@ class Member extends Common{
 		$page = $list->render();
 		$this->assign('page', $page);
 		$this -> assign('list',$list);
-		//dump($list);
 		return $this -> fetch("./member_user_list");
 	}
 	
 	public function user_add(){
 		if(request()->isPost()){
-			//$db = D('Member/MemberUser');
+			$post = input('post.');
 			$user = new User();
-			if($uid = $user->validate('Member/UserCreate')->save(input('post.'))){
+			
+			$validate = [
+				/*
+				'email|邮箱' => ['require','email','unique'=>'member_user,email,'.$uid,],
+				'pword|密码'	=>['length'=>'6,25'],
+				*/
+				'email|邮箱' => ['require','email','unique'=>'member_user'],
+				'password|密码' => ['length'=>'6,25'],
+			];
+			$result = $this -> validate($post,$validate);
+			if($result !== true){
+				$this -> error($result);
+			}
+			//验证结束
+			
+			
+			if($uid = $user->save($post)){
 				Db::name('member_user_profile') -> insert(['uid'=> $uid]);
 			return $this->success($uid.'新增成功');
 				
@@ -47,7 +61,7 @@ class Member extends Common{
 			//验证开始
 			$validate = [
 				'email|邮箱' => ['require','email','unique'=>'member_user,email,'.$uid,],
-				'pword|密码'	=>['length'=>'6,25'],
+				'password|密码'	=>['length'=>'6,25'],
 			];
 			/*
 			$msg = [

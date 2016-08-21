@@ -6,14 +6,14 @@ class MemberUser extends Model{
 	
 	protected $name = 'member_user';
 	
-	protected $auto = ['email','pword'];
+	protected $auto = ['email','password'];
 	protected $insert = ['status'=>1,'create_ip']; 
 	protected $update = ['update_ip'];
 	
 	protected function setEmailAttr($value){
 		return strtolower($value);
 	}
-	protected function setPwordAttr($value){
+	protected function setPasswordAttr($value){
 		return md5($value);
 	}
 	protected function setCreateIpAttr($value){
