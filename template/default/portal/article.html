@@ -1,6 +1,7 @@
 {include file="common/header" title="$bb.title" keywords="$bb.title" description="$bb.description" /}
 <!-- /header -->
-{bb:article aid="$aid" item="bb"}{/bb:article}
+{php}$aid = input('aid');{/php}
+
 <br />
 标题： {$bb.title}
 <br />

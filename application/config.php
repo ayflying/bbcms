@@ -26,8 +26,6 @@ return [
 	'root_namespace' => [
 		'addons' => 'addons',
 		'lib' => '../application/common/library',
-		//'my'  => '../application/extend/my/',
-		//'org' => '../application/extend/org/',
 		
 	],
 	/* 网址配置 */
@@ -38,12 +36,9 @@ return [
 	/* 模板配置 */
 	//////////////////////////
 	'template'               => [
-		// 模板路径
-		'view_path' => VIEW_PATH,
-		//'view_path' => './template/default/',
-		
-		// 预先加载的标签库
-		'taglib_pre_load'    =>    'app\\common\\taglib\\Bb',
+		'tpl_cache'          => false, // 开启模板编译缓存
+		'view_path' => VIEW_PATH,	// 模板路径
+		'taglib_pre_load'    =>    'app\\common\\taglib\\Bb',	// 预先加载的标签库
 	],
 	 // 视图输出字符串内容替换
 	'view_replace_str'=>[

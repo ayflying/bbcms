@@ -19,7 +19,7 @@ class Mod extends Common{
 			$table = 'portal_mod';
 			$validate = [
 				'name|模型名称' => ['require','unique'=>$table],
-				'table|数据表名'	=>['require','alphaNum','unique'=>$table],
+				//'table|数据表名'	=>['require','alphaNum','unique'=>$table],
 			];
 			$result = $this -> validate($post,$validate);
 			if($result !== true){
@@ -27,8 +27,8 @@ class Mod extends Common{
 			}
 			//验证结束
 			
-			Db::name($table) -> insert($post);
-			$sql = 'create table '.config('database')['prefix'].'portal_mod_'.$post['table'].' (aid int(11) not null auto_increment primary key)';
+			$table_id = Db::name($table) -> insertGetId($post);
+			$sql = 'create table '.config('database')['prefix'].'portal_mod_'.$table_id.' (aid int(11) not null auto_increment primary key)';
 			Db::execute($sql);
 			return $this -> success('创建成功');
 			

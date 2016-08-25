@@ -113,12 +113,12 @@ class Bb extends TagLib{
 		$where = array(
 			"status" => ["GT",0],
 		); 
-		if(!empty('.$tid.')){
-			$where["tid"] = '.$tid.';
-		}
-		//dump($where);
 		
 		';
+		
+		if(!empty($tid)){
+			$Str = '	$where["tid"] = '.$tid.'; ';
+		}
 		
 		/*
 		$Str .= ' $tag_sql = think\Db::view("portal_article","aid,tid,title,uid")
@@ -149,10 +149,10 @@ class Bb extends TagLib{
 			';
 		}
 		$Str .= ' foreach($tag_sql as $key => $'.$item.'):
-			
-			$mod_table = "portal_mod_".$'.$item.'["mod"];
-			$'.$item.'["mod"] = db($mod_table) -> find($'.$item.'["aid"]);
-			
+			if($'.$item.'["mod"] > 0){
+				$mod_table = "portal_mod_".$'.$item.'["mod"];
+				$'.$item.'["mod"] = db($mod_table) -> find($'.$item.'["aid"]);
+			}
 			$'.$item.'["url"] = url("/aid/".$'.$item.'["aid"]);
 			$'.$item.'["turl"] = url("/tid/".$'.$item.'["tid"]);
 			//dump($'.$item.');
