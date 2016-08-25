@@ -79,6 +79,17 @@ class App
         is_null($request) && $request = Request::instance();
 
         $config = self::initCommon();
+        if (defined('BIND_MODULE')) {
+            // 模块/控制器绑定
+            BIND_MODULE && Route::bind(BIND_MODULE);
+        } elseif ($config['auto_bind_module']) {
+            // 入口自动绑定
+            $name = pathinfo($request->baseFile(), PATHINFO_FILENAME);
+            if ($name && 'index' != $name && is_dir(APP_PATH . $name)) {
+                Route::bind($name);
+            }
+        }
+
         $request->filter($config['default_filter']);
         try {
 
@@ -102,8 +113,13 @@ class App
             // 记录当前调度信息
             $request->dispatch($dispatch);
 
-            // 记录路由信息
-            self::$debug && Log::record('[ ROUTE ] ' . var_export($dispatch, true), 'info');
+            // 记录路由和请求信息
+            if (self::$debug) {
+                Log::record('[ ROUTE ] ' . var_export($dispatch, true), 'info');
+                Log::record('[ HEADER ] ' . var_export($request->header(), true), 'info');
+                Log::record('[ PARAM ] ' . var_export($request->param(), true), 'info');
+            }
+
             // 监听app_begin
             Hook::listen('app_begin', $dispatch);
 
@@ -155,11 +171,6 @@ class App
 
         // 监听app_end
         Hook::listen('app_end', $response);
-
-        // Trace调试注入
-        if (Config::get('app_trace')) {
-            Debug::inject($response);
-        }
 
         return $response;
     }
@@ -322,7 +333,7 @@ class App
         try {
             $instance = Loader::controller($controller, $config['url_controller_layer'], $config['controller_suffix'], $config['empty_controller']);
             if (is_null($instance)) {
-                throw new HttpException(404, 'controller not exists:' . $controller);
+                throw new HttpException(404, 'controller not exists:' . Loader::parseName($controller, 1));
             }
             // 获取当前操作名
             $action = $actionName . $config['action_suffix'];
@@ -374,7 +385,7 @@ class App
                 }
             }
 
-            // 应用命名空间
+            // 注册应用命名空间
             self::$namespace = $config['app_namespace'];
             Loader::addNamespace($config['app_namespace'], APP_PATH);
             if (!empty($config['root_namespace'])) {
@@ -424,17 +435,17 @@ class App
             // 加载模块配置
             $config = Config::load(CONF_PATH . $module . 'config' . CONF_EXT);
 
-            // 加载应用状态配置
-            if ($config['app_status']) {
-                $config = Config::load(CONF_PATH . $module . $config['app_status'] . CONF_EXT);
-            }
-
             // 读取扩展配置文件
             if ($config['extra_config_list']) {
                 foreach ($config['extra_config_list'] as $name => $file) {
                     $filename = CONF_PATH . $module . $file . CONF_EXT;
                     Config::load($filename, is_string($name) ? $name : pathinfo($filename, PATHINFO_FILENAME));
                 }
+            }
+
+            // 加载应用状态配置
+            if ($config['app_status']) {
+                $config = Config::load(CONF_PATH . $module . $config['app_status'] . CONF_EXT);
             }
 
             // 加载别名文件

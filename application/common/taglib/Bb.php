@@ -109,9 +109,16 @@ class Bb extends TagLib{
 		$order = !empty($tag['order']) ? $tag['order'] : 'create_time desc';	//当前
 		$item = !empty($tag['item'])?$tag['item']:'ltag';
 		
-		$Str = '<?php ';
-		$Str .= ' $where = array(); ';
-		$Str .= ' $where["status"] = array("GT",0); ';
+		$Str = '<?php
+		$where = array(
+			"status" => ["GT",0],
+		); 
+		if(!empty('.$tid.')){
+			$where["tid"] = '.$tid.';
+		}
+		//dump($where);
+		
+		';
 		
 		/*
 		$Str .= ' $tag_sql = think\Db::view("portal_article","aid,tid,title,uid")
@@ -126,13 +133,30 @@ class Bb extends TagLib{
 		if(isset($aid)){
 			$Str .= ' $tag_sql = $db -> all("'.$aid.'",$relation); ';
 		}else{
-			$Str .= ' $tag_sql = $db -> all(function($query){
-				$query->where("status", 1)->limit('.$row.')->order("'.$order.'");
-			},$relation); ';
+			
+			$Str .= '
+			
+			try{
+			$tag_sql = $db -> all(function($query) use ($where){
+				$query->where($where)  ->limit('.$row.')->order("'.$order.'");
+			},$relation);
+			}catch(Exception  $e){
+				dump($e -> getData());
+				exit();
+			}
+			
+			
+			';
 		}
 		$Str .= ' foreach($tag_sql as $key => $'.$item.'):
+			
+			$mod_table = "portal_mod_".$'.$item.'["mod"];
+			$'.$item.'["mod"] = db($mod_table) -> find($'.$item.'["aid"]);
+			
 			$'.$item.'["url"] = url("/aid/".$'.$item.'["aid"]);
 			$'.$item.'["turl"] = url("/tid/".$'.$item.'["tid"]);
+			//dump($'.$item.');
+			
 			?>';
 		
 		$Str .= $content;

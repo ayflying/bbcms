@@ -12,8 +12,10 @@ class Index extends Common{
     public function index($name,$tag='run',$params=NULL)
     {
         
+		/*
 		$c = config('root_namespace');
 		dump($c);
+		*/
 		
 		//$class   =  "Addons\\{$name}\\{$name}Addon";
 		$class = 'addons\\'.$name.'\\'.$name;
