@@ -13,23 +13,29 @@ BBCMS是基于Thinkphp5开发的一款内容管理系统。
 *   PHP5.4以上版本
 
 #	文件目录
-> Addons           公共目录
-> Config           配置目录
->> common.php        网站全局配置
-*	├─ Luoe             应用目录
-*	│  ├─ Admin             管理模块    
-*	│  ├─ Common            公共模块    
-*	│  ├─ Member            用户模块    
-│  ├─ Portal            内容模块
-│  ├─ Runtime           缓存与日志模块
->	Public
->	Template         模板目录
->> default           默认模板
-> ThinkPHP         框架目录
-> Uploads          上传附件目录
-> .htaccess        伪静态规则
-> index.php        入口文件
-> robots.txt       搜索引擎定义
+> Addons						插件目录
+> application					应用目录
+>> addon						插件模块  
+>> admin						管理模块
+>>> controller				后台功能目录
+>>> view						后台模板目录
+>> common					公共模块    
+>> member					用户模块    
+>> portal						内容模块
+>> config.php					网站全局配置
+>> common.php				全局函数配置
+>> database.php			数据库配置
+>> helper.php				助手函数配置
+>> route.php					路由配置
+> public							公共资源目录
+> runtime						缓存与日志模块
+> template						模板目录
+>> default						默认模板
+> thinkphp						框架目录
+> uploads						上传附件目录
+> .htaccess					伪静态规则
+> index.php					入口文件
+> robots.txt					搜索引擎定义
 
 # 版权所有
 湖北络易科技有限公司版权所有
