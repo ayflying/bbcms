@@ -12,6 +12,7 @@
 namespace think;
 
 use think\Config;
+use think\Env;
 use think\Exception;
 use think\exception\HttpException;
 use think\exception\HttpResponseException;
@@ -241,6 +242,7 @@ class App
     {
         $args = [];
         // 判断数组类型 数字数组时按顺序绑定参数
+        reset($vars);
         $type = key($vars) === 0 ? 1 : 0;
         if ($reflect->getNumberOfParameters() > 0) {
             $params = $reflect->getParameters();
@@ -371,7 +373,7 @@ class App
             self::$suffix = $config['class_suffix'];
 
             // 应用调试模式
-            self::$debug = Config::get('app_debug');
+            self::$debug = Env::get('app_debug', Config::get('app_debug'));
             if (!self::$debug) {
                 ini_set('display_errors', 'Off');
             } elseif (!IS_CLI) {
@@ -446,11 +448,6 @@ class App
             // 加载应用状态配置
             if ($config['app_status']) {
                 $config = Config::load(CONF_PATH . $module . $config['app_status'] . CONF_EXT);
-            }
-
-            // 加载别名文件
-            if (is_file(CONF_PATH . $module . 'alias' . EXT)) {
-                Loader::addClassMap(include CONF_PATH . $module . 'alias' . EXT);
             }
 
             // 加载行为扩展文件

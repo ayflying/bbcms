@@ -908,9 +908,11 @@ class Query
                 $where = $field;
             } elseif ($field) {
                 // 字符串查询
-                $where[] = ['exp', $field];
-            } else {
-                $where = '';
+                if (is_numeric($field)) {
+                    $where[] = ['exp', $field];
+                } else {
+                    $where[$field] = ['null', ''];
+                }
             }
         } elseif (is_array($op)) {
             $where[$field] = $param;
@@ -1227,7 +1229,7 @@ class Query
     /**
      * 设置查询数据不存在是否抛出异常
      * @access public
-     * @param bool $fail 是否严格检查字段
+     * @param bool $fail 数据不存在是否抛出异常
      * @return $this
      */
     public function failException($fail = true)
@@ -1855,7 +1857,8 @@ class Query
         $resultSet = false;
         if (empty($options['fetch_sql']) && !empty($options['cache'])) {
             // 判断查询缓存
-            $cache     = $options['cache'];
+            $cache = $options['cache'];
+            unset($options['cache']);
             $key       = is_string($cache['key']) ? $cache['key'] : md5(serialize($options));
             $resultSet = Cache::get($key);
         }
@@ -1883,7 +1886,7 @@ class Query
         }
 
         // 返回结果处理
-        if ($resultSet) {
+        if (count($resultSet) > 0) {
             // 数据列表读取后的处理
             if (!empty($this->model)) {
                 // 生成模型对象
@@ -1898,7 +1901,7 @@ class Query
                     }
                     $resultSet[$key] = $result;
                 }
-                if (!empty($options['with'])) {
+                if (!empty($options['with']) && $result instanceof Model) {
                     // 预载入
                     $resultSet = $result->eagerlyResultSet($resultSet, $options['with'], is_object($resultSet) ? get_class($resultSet) : '');
                 }
@@ -1977,6 +1980,9 @@ class Query
                 $model = $this->model;
                 $data  = new $model($data);
                 $data->isUpdate(true, isset($options['where']['AND']) ? $options['where']['AND'] : null);
+                if ($this->allowField) {
+                    $data->allowField($this->allowField);
+                }
                 // 关联查询
                 if (!empty($options['relation'])) {
                     $data->relationQuery($options['relation']);
