@@ -1,16 +1,190 @@
-{include file="common/header" title="首页 - " keywords="" /}
+{include file="common/header" title="首页_" keywords="" description="" /}
+<!-- /header -->
+<div class="w960 center clear mt1 index">
+ <div class="pleft">
+  <div class="bignews">
+   <!--头条-->
+   <div class="onenews">
+   
+   {bb:article row='1'}
+    <h2><a href="{$bb.url}">{$bb.title}</a></h2>
+    <p>{$bb.description|mb_substr=0,60,'utf-8'}...<a href="{$bb.url}">[查看全文]</a></p>
+    {/bb:article}
+    </div>
+   <!-- /onenews -->
+   <div class="d1">
+   {bb:article row='4' order='click desc'}
+    <div class='d1arc'><a href="{$bb.url}">{$bb.title}</a></div>
+    {/bb:article}
+    </div>
+   <!--/头条-->
+   <div class='newarticle'>最新文章</div>
+   <ul class="c2 ico1">
+    <!--最新文档-->
+    {bb:article row='20'}
+    	<li><a href="{$bb.url}">{$bb.title}</a></li>
+    {/bb:article}
+    <!--//最新文档-->
+   </ul>
+  </div>
+<div class="flashnews">
+   <script language='javascript'>
+linkarr = new Array();
+picarr = new Array();
+textarr = new Array();
+var swf_width=296;
+var swf_height=250;
+//文字颜色|文字位置|文字背景颜色|文字背景透明度|按键文字颜色|按键默认颜色|按键当前颜色|自动播放时间|图片过渡效果|是否显示按钮|打开方式
+var configtg='0xffffff|2||0|0xffffff|0x6bc30d|0x000033|3|2|1|_blank';
+var files = "";
+var links = "";
+var texts = "";
+//这里设置调用标记
+{bb:article row='5' type='image'}
+linkarr[{$key}] = "{$bb.url}";
+picarr[{$key}]  = "{$bb.litpic}";
+textarr[{$key}] = "{$bb.description|mb_substr=0,6,'utf-8'}";
+{/bb:article}
 
-111
+for(i=0;i<picarr.length;i++){
+if(files=="") files = picarr[i];
+else files += "|"+picarr[i];
+}
+for(i=0;i<linkarr.length;i++){
+if(links=="") links = linkarr[i];
+else links += "|"+linkarr[i];
+}
+for(i=0;i<textarr.length;i++){
+if(texts=="") texts = textarr[i];
+else texts += "|"+textarr[i];
+}
+document.write('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" width="'+ swf_width +'" height="'+ swf_height +'">');
+document.write('<param name="movie" value="__Tpl__/Portal/images/bcastr3.swf"><param name="quality" value="high">');
+document.write('<param name="menu" value="false"><param name=wmode value="opaque">');
+document.write('<param name="FlashVars" value="bcastr_file='+files+'&bcastr_config='+configtg+'">');
+document.write('<embed src="__Tpl__/images/bcastr3.swf" wmode="opaque" FlashVars="bcastr_file='+files+'&bcastr_config='+configtg+'&menu="false" quality="high" width="'+ swf_width +'" height="'+ swf_height +'" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />'); document.write('</object>');
+</script>
 
-{bb:menu row='999'}
-<li>{$ltag.name}</li>
-{/bb:menu}
+
+</div>
+  <div class="latestnews">
+   <dl class="tbox light">
+    <dt class="light"><strong>本月热门文章</strong></dt>
+    <dd class="light">
+     <ul class="d2 ico2">
+      {bb:article row='6' order='click desc'}
+      	<li class='dotline'><a href="{$bb.url}">{$bb.title|default=''}</a></li>
+      {/bb:article}
+     </ul>
+    </dd>
+   </dl>
+  </div>
+  <!--
+  <div class="picnews">{dede:myad name='970x90'/}</div>
+	-->
+<div class="listbox">
+	{bb:menu topid='0'}
+    {bb:menu topid='$bb.tid'}
+	<dl class="tbox">
+		<dt><strong><a href="{:url('/tid/'.$bb['tid'])}">{$bb.name}</a></strong><span class="more"><a href="{:url('/tid/'.$bb['tid'])}">更多...</a></span></dt>
+		
+        <dd>
+			<ul class="d1 ico3">
+			{bb:article row='8' tid='$bb.tid'}
+				<li><span>{$bb.create_time|date='m-d',###}</span><a href="$bb.url}">{$bb.title}</a></li>
+			{/bb:article}
+            
+			</ul>
+		</dd>
+	</dl>
+    {/bb:menu}
+	{/bb:menu}
+</div>
 
 
-<hr />
-{bb:article aid="77"}<li><a href="{$ltag.url}">{$ltag.title}</a><li>{/bb:article}
+  <!-- /listbox -->
+ </div>
+ <!-- /pleft -->
+ <div class="pright">
 
+<!--
+  <div class="hot mt1">
+   <dl class="tbox light">
+    <dt class='light'><strong>名言语句</strong></dt>
+    <dd class='light'>
+     <ul class="c1 ico2">
+      {dede:arclist tid=2 titlelen='60' row='16'}
+      <li><a href="[field:arcurl /]">[field:title /]</a></li>
+      {/dede:arclist}
+     </ul>
+    </dd>
+   </dl>
+  </div>
 
+  <div class="hot mt1">
+   <dl class="tbox light">
+    <dt class='light'><strong>生活随笔</strong></dt>
+    <dd class='light'>
+     <ul class="c1 ico2">
+      {dede:arclist tid=1 titlelen='60' row='11'}
+      <li><a href="[field:arcurl /]">[field:title /]</a></li>
+      {/dede:arclist}
+     </ul>
+    </dd>
+   </dl>
+  </div>
+-->
+  <div class="commend mt1">
+   <dl class="tbox light">
+    <dt class='light'><strong>推荐文章</strong></dt>
+    <dd class='light'>
+     <ul class="c1 ico2">
+		{bb:article row='19' order='likes desc'}
+			<li><a href="{$bb.url}">{$bb.title}</a></li>
+		{/bb:article}
+    
+     </ul>
+    </dd>
+   </dl>
+  </div>
+  <!-- /commend -->
 
+  <div class="hot mt1">
+   <dl class="tbox light">
+    <dt class='light'><strong>热门文章</strong></dt>
+    <dd class='light'>
+     <ul class="c1 ico2">
+		{bb:article row='12' order='click desc'}
+			<li><a href="{$bb.url}">{$bb.title}</a></li>
+		{/bb:article}
+     </ul>
+    </dd>
+   </dl>
+  </div>
 
-{include file="common/footer" /}
+  <div style="margin:10 auto"></div>
+ </div>
+ <!-- /pleft -->
+ <div class="flink w960 center clear">
+ <dl class="tbox">
+  <dt> <strong>友情链接</strong>
+	<span class="linklabel">
+		链接要求
+	</span>
+	<span class="more"> <a href="#plus/flink.php">所有链接</a> | <a href="#plus/flink_add.php">申请加入</a> </span> </dt>
+  {bb:flink row='99'}
+  <dd id="{$bb.id|default=''}">
+    <ul class="f5">
+        <li><a href="{$bb.url|default=''}"><img src="{$bb.logo|default=''}" /><br />{$bb.name|default=''}</a></li>
+    </ul>
+  </dd>
+  {/bb:flink}
+ </dl>
+</div>
+<!-- /flink -->
+</div>
+
+  <include file="Common/footer" />
+
+</body>
+</html>

@@ -83,9 +83,15 @@ class Portal extends Common{
 		if(request()->isPost()){
 			
 		}else{
-			
-			$list = Db::name('PortalArticle') -> where('status',1) -> where('tid',$tid) -> order($order) -> paginate(PAGE_NUM);
-			// 获取分页显示
+			$where = [
+                'status' => 1,
+            ];
+            if(!empty($tid)){
+                $where['tid'] = $tid;
+            }
+            
+			$list = Db::name('PortalArticle') -> where($where)-> order($order) -> paginate(PAGE_NUM);
+            // 获取分页显示
 			$page = $list->render();
 			//dump($list);
 			$this -> assign("list",$list);

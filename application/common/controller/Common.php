@@ -18,7 +18,10 @@ class Common extends Controller{
 			cache('settings',$settings);
 		}
 		$this -> settings = cache('settings');
-		$this -> assign('G_',$this -> settings);
+        $_G = [
+            'system' => $this -> settings,
+        ];
+		$this -> assign('_G',$_G);
 		//dump($this -> settings);
 		
 		
