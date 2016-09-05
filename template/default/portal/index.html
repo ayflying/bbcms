@@ -8,7 +8,7 @@
    
    {bb:article row='1'}
     <h2><a href="{$bb.url}">{$bb.title}</a></h2>
-    <p>{$bb.description|mb_substr=0,60,'utf-8'}...<a href="{$bb.url}">[查看全文]</a></p>
+    <p>{$bb.description|mb_substr=0,25,'utf-8'}...<a href="{$bb.url}">[查看全文]</a></p>
     {/bb:article}
     </div>
    <!-- /onenews -->
@@ -21,7 +21,7 @@
    <div class='newarticle'>最新文章</div>
    <ul class="c2 ico1">
     <!--最新文档-->
-    {bb:article row='20'}
+    {bb:article row='16'}
     	<li><a href="{$bb.url}">{$bb.title}</a></li>
     {/bb:article}
     <!--//最新文档-->
@@ -175,7 +175,7 @@ document.write('<embed src="__Tpl__/images/bcastr3.swf" wmode="opaque" FlashVars
   {bb:flink row='99'}
   <dd id="{$bb.id|default=''}">
     <ul class="f5">
-        <li><a href="{$bb.url|default=''}"><img src="{$bb.logo|default=''}" /><br />{$bb.name|default=''}</a></li>
+        <li><a href="{$bb.url}"><img src="{$bb.logo|default=''}" /><br />{$bb.name|default=''}</a></li>
     </ul>
   </dd>
   {/bb:flink}
@@ -184,7 +184,4 @@ document.write('<embed src="__Tpl__/images/bcastr3.swf" wmode="opaque" FlashVars
 <!-- /flink -->
 </div>
 
-  <include file="Common/footer" />
-
-</body>
-</html>
+{include file="common/footer" /}

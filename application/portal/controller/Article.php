@@ -36,6 +36,7 @@ class Article extends Common{
 		$this -> assign('title',$sql['title'].' - ');
 		$this -> assign('bb',$sql);
 		
+        dump($sql->toArray());
 		
 		return $this-> fetch('portal/article');
 	}

@@ -1,27 +1,28 @@
-<include file="default/Common/header" title="{$luoe.title}_" keywords="" description="{$luoe.description}_" />
+{include file="common/header" title="{$bb.title}_" keywords="" description="{$bb.description}_" /}
 <!-- /header -->
+
 <div class="articleview w960 center clear mt1">
 <div class="pleft">
- <div class="place"> <strong>当前位置:</strong> {$luoe.menu.name}
+ <div class="place"> <strong>当前位置:</strong> {$bb.menu.name}
  <span class="post" style="float:right; margin-right:10px;">
- <a href="{:U('post/edit?aid='.$luoe['aid'])}">编辑</a> 
- <a href="{:U('post/del?aid='.$luoe['aid'])}">删除</a> 
+ <a href="{:url('post/edit?aid='.$bb['aid'])}">编辑</a> 
+ <a href="{:url('post/del?aid='.$bb['aid'])}">删除</a> 
  </span>
  </div>
  <!-- /place -->
  <div class="viewbox">
   <div class="title">
-   <h2>{$luoe.title}</h2>
+   <h2>{$bb.title}</h2>
   </div>
   <!-- /title -->
   <div class="info">
-  <small>时间:</small>{$luoe.create_time|date="Y-m-d",###}
-  <small>作者:</small>{$luoe.uname}
-  <small>点击:</small>{$luoe.click}次
+  <small>时间:</small>{$bb.create_time|date="Y-m-d",###}
+  <small>作者:</small>{$bb.uname}
+  <small>点击:</small>{$bb.click}次
   </div>
   <!-- /info -->
   <!--
-  {$luoe.description}
+  {$bb.description}
   -->
   <div class="content">
    <table id='abc'>
@@ -38,7 +39,7 @@
 {dede:myad name='300x300'/}</div>
 -->
 		
-      {$luoe.content}
+      {$bb.addonarticle.content|htmlspecialchars_decode}
    </td>
     </tr>
    
@@ -48,20 +49,20 @@
   <!-- /pages -->
     <!-- //顶踩 -->
   <div class="newdigg" id="newdigg">
-   <div class="diggbox digg_good" onmousemove="this.style.backgroundPosition='left bottom';" onmouseout="this.style.backgroundPosition='left top';" onclick="javascript:postDigg('like',{$luoe.aid})">
+   <div class="diggbox digg_good" onmousemove="this.style.backgroundPosition='left bottom';" onmouseout="this.style.backgroundPosition='left top';" onclick="javascript:postDigg('like',{$bb.aid})">
     <div class="digg_act">顶一下</div>
-    <div class="digg_num">({$luoe.likes})</div>
+    <div class="digg_num">({$bb.likes})</div>
     <div class="digg_percent">
      <div class="digg_percent_bar"><span style="width:{dede:field.goodper/}%"></span></div>
-     <div class="digg_percent_num">{$luoe[likes]/($luoe[ulikes]+$luoe[likes])*100|round}%</div>
+     <div class="digg_percent_num">{$bb[likes]/($bb[ulikes]+$bb[likes])*100|round}%</div>
     </div>
    </div>
-   <div class="diggbox digg_bad" onmousemove="this.style.backgroundPosition='right bottom';" onmouseout="this.style.backgroundPosition='right top';" onclick="javascript:postDigg('ulike',{$luoe.aid})">
+   <div class="diggbox digg_bad" onmousemove="this.style.backgroundPosition='right bottom';" onmouseout="this.style.backgroundPosition='right top';" onclick="javascript:postDigg('ulike',{$bb.aid})">
     <div class="digg_act">踩一下</div>
-    <div class="digg_num">({$luoe.ulikes})</div>
+    <div class="digg_num">({$bb.ulikes})</div>
     <div class="digg_percent">
      <div class="digg_percent_bar"><span style="width:{dede:field.badper/}%"></span></div>
-     <div class="digg_percent_num">{$luoe[ulikes]/($luoe[ulikes]+$luoe[likes])*100|round}%</div>
+     <div class="digg_percent_num">{$bb[ulikes]/($bb[ulikes]+$bb[likes])*100|round}%</div>
     </div>
    </div>
   </div>
@@ -145,9 +146,9 @@ function postBadGood(ftype,fid)
 //喜欢
 function postDigg(ftype,aid){
 	if(ftype == "like"){
-		var url= "{:U('Article/like?aid='.$luoe[aid])}";
+		var url= "{:U('Article/like?aid='.$bb[aid])}";
 	}else{
-		var url= "{:U('Article/ulike?aid='.$luoe[aid])}";
+		var url= "{:U('Article/ulike?aid='.$bb[aid])}";
 	}
 	$.get(url,function(data,status){
 		//alert("Data: " + data + "\nStatus: " + status);
@@ -163,6 +164,4 @@ function postDigg(ftype,aid){
 </script>
 
 
-<include file="default/Common/footer" />
-</body>
-</html>
+{include file="common/footer" /}
