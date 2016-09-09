@@ -18,6 +18,8 @@ use think\Config;
 use think\Cookie;
 use think\Db;
 use think\Debug;
+use think\exception\HttpException;
+use think\exception\HttpResponseException;
 use think\Lang;
 use think\Loader;
 use think\Log;
@@ -510,9 +512,9 @@ if (!function_exists('abort')) {
     function abort($code, $message = null, $header = [])
     {
         if ($code instanceof Response) {
-            throw new \think\exception\HttpResponseException($code);
+            throw new HttpResponseException($code);
         } else {
-            throw new \think\exception\HttpException($code, $message, null, $header);
+            throw new HttpException($code, $message, null, $header);
         }
     }
 }
@@ -525,7 +527,7 @@ if (!function_exists('halt')) {
     function halt($var)
     {
         dump($var);
-        throw new \think\exception\HttpResponseException(new Response);
+        throw new HttpResponseException(new Response);
     }
 }
 
@@ -534,6 +536,7 @@ if (!function_exists('token')) {
      * 生成表单令牌
      * @param string $name 令牌名称
      * @param mixed  $type 令牌生成方法
+     * @return string
      */
     function token($name = '__token__', $type = 'md5')
     {
