@@ -47,9 +47,9 @@ class Mod extends Common{
 			if(input('action') == 'add'){	//添加字段
 				
 				$data[$post['field']] = [$post['name'],$post['type'],$post['value']];
-				$data = json_encode($data);
+				$data = json_encode2($data);
 				$db -> where('id',$id) -> update(['data'=>$data]);
-				$sql = 'ALTER TABLE '.$prefix.'portal_mod_'.$list['table'].' ADD '.$post['field'].' varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci';
+				$sql = 'ALTER TABLE '.$prefix.'portal_mod_'.$id.' ADD '.$post['field'].' varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci';
 				Db::execute($sql);
 				return $this -> success("添加成功");
 			
@@ -60,12 +60,12 @@ class Mod extends Common{
 				foreach($post['field'] as $key => $val){
 					$post2[$val] = [$post['name'][$key],$post['type'][$key],$post['value'][$key]];
 					if($val != $data_keys[$key]){	//判断字段名是否有修改，同步修改模型表
-						$sql = 'alter table '.$prefix.'portal_mod_'.$list['table'].' change '.$data_keys[$key].' '.$val.' varchar(255)';
+						$sql = 'alter table '.$prefix.'portal_mod_'.$id.' change '.$data_keys[$key].' '.$val.' varchar(255)';
 						echo $sql;
 						Db::execute($sql);
 					}
 				}
-				$db -> where('id',$id) -> update(['data'=>json_encode($post2)]);
+				$db -> where('id',$id) -> update(['data'=>json_encode2($post2)]);
 				return $this -> success("修改成功");
 			}
 		
@@ -87,11 +87,11 @@ class Mod extends Common{
 			//$field = input('field');
 			$data = json_decode($table['data'],true);
 			unset($data[$field]);
-			$data = json_encode($data);
+			$data = json_encode2($data);
 			$db -> where('id',$id) -> update(['data'=>$data]);
-			$sql = 'ALTER TABLE '.$prefix.'portal_mod_'.$table['table'].' DROP COLUMN '.$field;
+			$sql = 'ALTER TABLE '.$prefix.'portal_mod_'.$id.' DROP COLUMN '.$field;
 		}else{
-			$sql = "DROP TABLE ".$prefix."portal_mod_".$table['table'];
+			$sql = "DROP TABLE ".$prefix."portal_mod_".$id;
 			$db -> delete($id);
 		}
 		

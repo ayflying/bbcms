@@ -100,12 +100,6 @@ class Bb extends TagLib{
             $Str .= ' $where["tid"] = '.$tid.'; ';
         }
         
-        /*
-        $Str .= ' $tag_sql = think\Db::view("portal_article","aid,tid,title,uid")
-        -> view("portal_addonarticle","content","portal_addonarticle.aid = portal_article.aid")
-        -> view("portal_menu",["name"=>"tname","mod"],"portal_article.tid = portal_menu.tid")
-        -> where($where) -> limit('.$row.') -> order("'.$order.'")-> select('.$aid.'); ';
-        */
         $Str .= ' $db = model("portal/PortalArticle");
         $relation = ["addonarticle","attachment"];
         ';
@@ -114,14 +108,9 @@ class Bb extends TagLib{
             $Str .= ' $tag_sql = $db -> all("'.$aid.'",$relation); ';
         }else{
             
-            $Str .= '
-            $tag_sql = $db -> all(function($query) use ($where){
+            $Str .= '$tag_sql = $db -> all(function($query) use ($where){
                 $query->where($where)  ->limit('.$row.')->order("'.$order.'");
-            },$relation);
-            
-            
-          
-            ';
+            },$relation);';
           
         }
         //循环获取模型
@@ -146,7 +135,33 @@ class Bb extends TagLib{
         return ;
     }
     
-    
+    /**
+	数据库查询
+	* @param array $tag 标签属性
+	* @param string $content  标签内容
+	* @return string|void
+	*/
+    public function tagSql($tag,$content){
+        $table =   !empty($tag['table'])?$tag['table']:null;
+		$where =   !empty($tag['where'])?$tag['where']:null;
+		$row =   !empty($tag['row'])?$tag['row']:null;
+		$order =   !empty($tag['order'])?$tag['order']:null;
+		$item =   !empty($tag['item'])?$tag['item']:'bb';
+		//$cache = !empty($tag['cache'])?$tag['cache']:'true';
+		
+		
+		
+		$Str = '<?php ';
+		$Str .= '$tag_sql = db("'.$table.'") -> where("'.$where.'") -> limit("'.$row.'") -> order("'.$order.'") -> select(); ';
+		$Str .=   ' foreach($tag_sql as $'.$item.'): ';
+		$Str .= '?>';
+		$Str .= $content;
+		$Str .=   '<?php endforeach; ?>';
+		if(!empty($Str)) {
+            return $Str;
+        }
+        return ;
+    }
     /**
 	广告
 	* @param array $tag 标签属性
