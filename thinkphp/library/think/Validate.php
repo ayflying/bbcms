@@ -11,7 +11,6 @@
 
 namespace think;
 
-use think\File;
 use think\Request;
 use think\Session;
 
@@ -563,10 +562,10 @@ class Validate
                 $result = is_array($value);
                 break;
             case 'file':
-                $result = $value instanceof File;
+                $result = $value instanceof \think\File;
                 break;
             case 'image':
-                $result = $value instanceof File && in_array($this->getImageType($value->getRealPath()), [1, 2, 3, 6]);
+                $result = $value instanceof \think\File && in_array($this->getImageType($value->getRealPath()), [1, 2, 3, 6]);
                 break;
             case 'token':
                 $result = $this->token($value, '__token__', $data);
@@ -630,7 +629,7 @@ class Validate
      */
     protected function fileExt($file, $rule)
     {
-        if (!($file instanceof File)) {
+        if (!($file instanceof \think\File)) {
             return false;
         }
         if (is_string($rule)) {
@@ -657,7 +656,7 @@ class Validate
      */
     protected function fileMime($file, $rule)
     {
-        if (!($file instanceof File)) {
+        if (!($file instanceof \think\File)) {
             return false;
         }
         if (is_string($rule)) {
@@ -684,7 +683,7 @@ class Validate
      */
     protected function fileSize($file, $rule)
     {
-        if (!($file instanceof File)) {
+        if (!($file instanceof \think\File)) {
             return false;
         }
         if (is_array($file)) {
@@ -708,7 +707,7 @@ class Validate
      */
     protected function image($file, $rule)
     {
-        if (!($file instanceof File)) {
+        if (!($file instanceof \think\File)) {
             return false;
         }
         $rule                        = explode(',', $rule);
@@ -947,7 +946,7 @@ class Validate
     {
         if (is_array($value)) {
             $length = count($value);
-        } elseif ($value instanceof File) {
+        } elseif ($value instanceof \think\File) {
             $length = $value->getSize();
         } else {
             $length = mb_strlen((string) $value);
@@ -974,7 +973,7 @@ class Validate
     {
         if (is_array($value)) {
             $length = count($value);
-        } elseif ($value instanceof File) {
+        } elseif ($value instanceof \think\File) {
             $length = $value->getSize();
         } else {
             $length = mb_strlen((string) $value);
@@ -993,7 +992,7 @@ class Validate
     {
         if (is_array($value)) {
             $length = count($value);
-        } elseif ($value instanceof File) {
+        } elseif ($value instanceof \think\File) {
             $length = $value->getSize();
         } else {
             $length = mb_strlen((string) $value);

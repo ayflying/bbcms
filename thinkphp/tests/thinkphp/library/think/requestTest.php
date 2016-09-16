@@ -175,12 +175,4 @@ class requestTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($request->isMobile());
     }
 
-    public function testBind()
-    {
-        $request       = new Request();
-        $request->user = 'User1';
-        $request->bind(['user' => 'User2']);
-        $this->assertEquals('User2', $request->user);
-    }
-
 }

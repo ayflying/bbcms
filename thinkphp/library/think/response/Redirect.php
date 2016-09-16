@@ -43,6 +43,7 @@ class Redirect extends Response
     }
 
     /**
+<<<<<<< HEAD
      * 重定向传值（通过Session）
      * @access protected
      * @param string|array  $name 变量名或者数组
@@ -62,6 +63,8 @@ class Redirect extends Response
     }
 
     /**
+=======
+>>>>>>> parent of 4852064... 升级tp框架
      * 获取跳转地址
      * @return string
      */
