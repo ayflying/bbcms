@@ -135,15 +135,15 @@ class App
                     break;
                 case 'controller':
                     // 执行控制器操作
-                    $data = Loader::action($dispatch['controller'], $dispatch['params']);
+                    $data = Loader::action($dispatch['controller']);
                     break;
                 case 'method':
                     // 执行回调方法
-                    $data = self::invokeMethod($dispatch['method'], $dispatch['params']);
+                    $data = self::invokeMethod($dispatch['method']);
                     break;
                 case 'function':
                     // 执行闭包
-                    $data = self::invokeFunction($dispatch['function'], $dispatch['params']);
+                    $data = self::invokeFunction($dispatch['function']);
                     break;
                 case 'response':
                     $data = $dispatch['response'];
@@ -181,12 +181,11 @@ class App
      * @access public
      * @param array|string  $dispatch 调度信息
      * @param string        $type 调度类型
-     * @param array         $params 参数
      * @return void
      */
-    public static function dispatch($dispatch, $type = 'module', $params = [])
+    public static function dispatch($dispatch, $type = 'module')
     {
-        self::$dispatch = ['type' => $type, $type => $dispatch, 'params' => $params];
+        self::$dispatch = ['type' => $type, $type => $dispatch];
     }
 
     /**
@@ -214,10 +213,6 @@ class App
      */
     public static function invokeMethod($method, $vars = [])
     {
-        if (empty($vars)) {
-            // 自动获取请求变量
-            $vars = Request::instance()->param();
-        }
         if (is_array($method)) {
             $class   = is_object($method[0]) ? $method[0] : new $method[0];
             $reflect = new \ReflectionMethod($class, $method[1]);
@@ -238,9 +233,8 @@ class App
      * @param array             $vars    变量
      * @return array
      */
-    private static function bindParams($reflect, $vars)
+    private static function bindParams($reflect, $vars = [])
     {
-<<<<<<< HEAD
         if (empty($vars)) {
             // 自动获取请求变量
             if (Config::get('url_param_type')) {
@@ -249,8 +243,6 @@ class App
                 $vars = Request::instance()->param();
             }
         }
-=======
->>>>>>> parent of 4852064... 升级tp框架
         $args = [];
         // 判断数组类型 数字数组时按顺序绑定参数
         reset($vars);
@@ -262,7 +254,12 @@ class App
                 $class = $param->getClass();
                 if ($class) {
                     $className = $class->getName();
-                    $args[]    = method_exists($className, 'instance') ? $className::instance() : new $className();
+                    if (isset($vars[$name]) && $vars[$name] instanceof $className) {
+                        $args[] = $vars[$name];
+                        unset($vars[$name]);
+                    } else {
+                        $args[] = method_exists($className, 'instance') ? $className::instance() : new $className();
+                    }
                 } elseif (1 == $type && !empty($vars)) {
                     $args[] = array_shift($vars);
                 } elseif (0 == $type && isset($vars[$name])) {

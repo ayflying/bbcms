@@ -339,7 +339,10 @@ class Relation
     {
         $foreignKey = $this->foreignKey;
         // 预载入关联查询 支持嵌套预载入
-        $list = $model->where($where)->where($closure)->with($subRelation)->select();
+        if ($closure) {
+            call_user_func_array($closure, [ & $model]);
+        }
+        $list = $model->where($where)->with($subRelation)->select();
 
         // 组装模型数据
         $data = [];
@@ -602,7 +605,7 @@ class Relation
             // 保存关联表数据
             $model = new $this->model;
             $id    = $model->save($data);
-        } elseif (is_numeric($data)) {
+        } elseif (is_numeric($data) || is_string($data)) {
             // 根据关联表主键直接写入中间表
             $id = $data;
         } elseif ($data instanceof Model) {
@@ -634,7 +637,7 @@ class Relation
     {
         if (is_array($data)) {
             $id = $data;
-        } elseif (is_numeric($data)) {
+        } elseif (is_numeric($data) || is_string($data)) {
             // 根据关联表主键直接写入中间表
             $id = $data;
         } elseif ($data instanceof Model) {
