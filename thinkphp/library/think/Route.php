@@ -830,7 +830,7 @@ class Route
             if (true === $rule) {
                 $rule = self::getRouteExpress($url);
             }
-            if (!empty($rule['route'])) {
+            if (!empty($rule['route']) && self::checkOption($rule['option'], $url, $request)) {
                 return self::parseRule($url, $rule['route'], $url, $rule['option']);
             }
         }
@@ -985,10 +985,6 @@ class Route
                 case 'namespace':
                     // 绑定到命名空间
                     return self::bindToNamespace($url, $bind, $depr);
-                case 'module':
-                    // 如果有模块/控制器绑定 针对路由到 模块/控制器 有效
-                    $url = (empty(self::$domainBind) ? $bind . '/' : '') . ltrim($url, '/');
-                    break;
             }
         }
         return false;
@@ -1240,17 +1236,20 @@ class Route
                 foreach ($matches[1] as $name) {
                     if (strpos($name, '?')) {
                         $name      = substr($name, 0, -1);
-                        $replace[] = '(' . (isset($pattern[$name]) ? $pattern[$name] : '\w+') . '?)';
+                        $replace[] = '(' . (isset($pattern[$name]) ? $pattern[$name] : '\w+') . ')?';
                     } else {
                         $replace[] = '(' . (isset($pattern[$name]) ? $pattern[$name] : '\w+') . ')';
                     }
                     $value[] = $name;
                 }
                 $val = str_replace($matches[0], $replace, $val);
-                if (preg_match('/^' . $val . '$/', $m1[$key], $match)) {
+                if (preg_match('/^' . $val . '$/', isset($m1[$key]) ? $m1[$key] : '', $match)) {
                     array_shift($match);
-                    $match = array_slice($match, 0, count($value));
-                    $var   = array_merge($var, array_combine($value, $match));
+                    foreach ($value as $k => $name) {
+                        if (isset($match[$k])) {
+                            $var[$name] = $match[$k];
+                        }
+                    }
                     continue;
                 } else {
                     return false;
@@ -1296,6 +1295,7 @@ class Route
      */
     private static function parseRule($rule, $route, $pathinfo, $option = [], $matches = [], $merge = false)
     {
+        $request = Request::instance();
         // 解析路由规则
         if ($rule) {
             $rule = explode('/', $rule);
@@ -1368,13 +1368,13 @@ class Route
                     $bind[$key] = $result;
                 }
             }
-            Request::instance()->bind($bind);
+            $request->bind($bind);
         }
 
         // 解析额外参数
         self::parseUrlParams(empty($paths) ? '' : implode('/', $paths), $matches);
         // 记录匹配的路由信息
-        Request::instance()->routeInfo(['rule' => $rule, 'route' => $route, 'option' => $option, 'var' => $matches]);
+        $request->routeInfo(['rule' => $rule, 'route' => $route, 'option' => $option, 'var' => $matches]);
 
         // 检测路由after行为
         if (!empty($option['after_behavior'])) {
@@ -1402,8 +1402,9 @@ class Route
         } elseif (0 === strpos($route, '/') || 0 === strpos($route, 'http')) {
             // 路由到重定向地址
             $result = ['type' => 'redirect', 'url' => $route, 'status' => isset($option['status']) ? $option['status'] : 301];
-        } elseif (0 === strpos($route, '\\')) {
+        } elseif (false !== strpos($route, '\\')) {
             // 路由到方法
+            $route  = str_replace('/', '@', $route);
             $method = strpos($route, '@') ? explode('@', $route) : $route;
             $result = ['type' => 'method', 'method' => $method];
         } elseif (0 === strpos($route, '@')) {
@@ -1412,6 +1413,17 @@ class Route
         } else {
             // 路由到模块/控制器/操作
             $result = self::parseModule($route);
+        }
+        // 开启请求缓存
+        if ($request->isGet() && !empty($option['cache'])) {
+            $cache = $option['cache'];
+            if (is_array($cache)) {
+                list($key, $expire) = $cache;
+            } else {
+                $key    = $pathinfo;
+                $expire = $cache;
+            }
+            $request->cache($key, $expire);
         }
         return $result;
     }

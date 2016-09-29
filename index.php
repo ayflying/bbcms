@@ -30,7 +30,7 @@ $build = [
 		'controller' => ['Common'],
 	],
 	'admin' => [
-		'controller' => ['Common','Index','Login','System','Member','Portal','Mod','Addon'],
+		'controller' => ['Common','Index','Login','System','Member','Portal','Mod','Addon','Api'],
 		'view'       => ['header','footer'],
 	],
 	'portal'   => [
