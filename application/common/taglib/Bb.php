@@ -43,7 +43,7 @@ class Bb extends TagLib{
      * @return string|void
      */
     public function tagMenu($tag,$content) {
-        $pid = !empty($tag['pid'])?$tag['pid']:null;
+        //$pid = !empty($tag['pid'])?$tag['pid']:null;
         $row = !empty($tag['row'])?$tag['row']:999;
         $item = !empty($tag['item'])?$tag['item']:'bb';
         
@@ -51,15 +51,13 @@ class Bb extends TagLib{
         
         $Str = '<?php
             $where = [];
-            //$where[]
         ';
         
-        if(!empty($tag['pid'])){
+        if(isset($tag['pid'])){
             $Str .= ' $where["pid"] = '.$tag['pid'].'; ';
         }
         
         $Str .= '
-            dump($where);
             $tag_sql = \think\Db::name("PortalMenu") -> where($where) -> order("weight desc") -> limit("'.$row.'") -> select();
             foreach($tag_sql as $key => $'.$item.'):
             //input("tid") and $'.$item.'["action"] = "click";
@@ -95,18 +93,17 @@ class Bb extends TagLib{
         
         
         $Str = '<?php 
-        $where = array(
-            "status" => ["GT",0],
-        ); 
-        
+            $where = [
+                "status" => ["GT",0],
+            ];
         ';
         
         if(!empty($tid)){
-            $Str .= ' $where["tid"] = '.$tid.'; ';
+            $Str .= ' $where["portal_article.tid"] = '.$tid.'; ';
         }
         
         $Str .= ' $db = model("portal/PortalArticle");
-        $relation = ["addonarticle","attachment"];
+        $relation = ["addonarticle","attachment","menu"];
         ';
         
         if(!empty($aid)){

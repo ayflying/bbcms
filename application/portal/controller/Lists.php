@@ -14,7 +14,7 @@ class Lists extends Common{
 		
 		if($tid > 0){
 			//获取下级目录文章
-			$type = Db::name('portal_menu') -> where('topid',$tid) -> column('tid');
+			$type = Db::name('portal_menu') -> where('pid',$tid) -> column('tid');
 			$type[] = (int)$tid;
 			$where['tid'] = ['in',$type];
 		}

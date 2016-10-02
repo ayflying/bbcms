@@ -2,7 +2,8 @@
 namespace app\portal\model;
 use think\Model;
 
-class PortalArticle extends Model{
+class PortalArticle extends Model
+{
 	
 	protected $name = 'portal_article';
 	protected $insert = ['status'=>1];
@@ -16,6 +17,15 @@ class PortalArticle extends Model{
 	public function attachment(){
 		return $this->hasMany('PortalAttachment','aid');
 	}
+    
+    
+    public function menu(){
+		//return $this->hasOne('PortalMenu','tid','tid');
+        return $this->belongsTo('PortalMenu','tid');
+	}
+    
+    
+    
 	
 	
 	

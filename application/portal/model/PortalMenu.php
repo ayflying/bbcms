@@ -1,15 +1,13 @@
 <?php
-namespace app\admin\model;
-
+namespace app\portal\model;
 use think\Model;
 
-class PortalMenu extends Model{
-	/*
-	$user = model('PortalMenu');
-	$user->name= 'thinkphp';
-	$user->save();
-		*/
-		
+class PortalMenu extends Model
+{
+    protected $name = 'portal_menu';
+    //protected $insert = ['status'=>1];
+    protected $autoWriteTimestamp = false;
+    
 	
 }
 
