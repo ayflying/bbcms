@@ -8,7 +8,7 @@
 </div>
 </caption>
 	{foreach name="sql" item="val"}
-	{if condition="($val.topid eq 0)"}
+	{if condition="($val.pid eq 0)"}
 	<tbody>
         <tr class="accordion-title">
             <td>{$val.name}(id:{$val.tid})</td>
@@ -23,7 +23,7 @@
           </td>
         </tr>
         {foreach name="sql" item="val2"}
-		{if condition="($val2.topid eq $val['tid'])"}
+		{if condition="($val2.pid eq $val['tid'])"}
         <tr>
             <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{$val2.name}(id:{$val2.tid})</td>
             <td>&nbsp;</td>

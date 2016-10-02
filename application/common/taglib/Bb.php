@@ -14,7 +14,7 @@ class Bb extends TagLib{
         'close'     => ['attr' => 'time,format', 'close' => 0], //闭合标签，默认为不闭合
         'open'      => ['attr' => 'name,type', 'close' => 1],
         'ceshi'      => ['attr' => 'name'],
-        'menu'  => ['attr'=>'topid,row,item','level'=>3],
+        'menu'  => ['attr'=>'pid,row,item','level'=>3],
         'list'  => ['attr'=>'tid,row,order'],
         'article'   => ['attr'=>'aid,tid,row,typeid,order,type'],
         //'url'     => ['attr' => 'aid,tid', 'close' => 0],
@@ -43,28 +43,33 @@ class Bb extends TagLib{
      * @return string|void
      */
     public function tagMenu($tag,$content) {
-        $topid = !empty($tag['topid'])?$tag['topid']:0;
+        $pid = !empty($tag['pid'])?$tag['pid']:null;
         $row = !empty($tag['row'])?$tag['row']:999;
         $item = !empty($tag['item'])?$tag['item']:'bb';
         
-        $topid = $this -> autoBuildVar($topid); //格式化数组变量
+        $pid = $this -> autoBuildVar($pid); //格式化数组变量
         
-        $parseStr = '<?php
+        $Str = '<?php
             $where = [];
+            //$where[]
         ';
         
-        $parseStr .= '
-            $tag_sql = \think\Db::name("PortalMenu") -> where("topid",'.$topid.') -> order("weight desc") -> limit("'.$row.'") -> select();
+        if(!empty($tag['pid'])){
+            $Str .= ' $where["pid"] = '.$tag['pid'].'; ';
+        }
+        
+        $Str .= '
+            dump($where);
+            $tag_sql = \think\Db::name("PortalMenu") -> where($where) -> order("weight desc") -> limit("'.$row.'") -> select();
             foreach($tag_sql as $key => $'.$item.'):
             //input("tid") and $'.$item.'["action"] = "click";
             $'.$item.'["url"] = url("/tid/".$'.$item.'["tid"]);
         ?>';
-        $parseStr  .=   $content;
-        //$parseStr .= $this->tpl->parse($content);
-        $parseStr  .=   '<?php endforeach; ?>';
+        $Str  .=   $content;
+        $Str  .=   '<?php endforeach; ?>';
         
-        if(!empty($parseStr)) {
-            return $parseStr;
+        if(!empty($Str)) {
+            return $Str;
         }
         return ;
     }

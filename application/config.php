@@ -37,7 +37,7 @@ return [
 	//////////////////////////
 	'template'               => [
 		'tpl_cache'          => false, // 开启模板编译缓存
-		'view_path' => VIEW_PATH,	// 模板路径
+		'view_path' => VIEW_PATH.DS,	// 模板路径
 		'taglib_pre_load'    =>    'app\\common\\taglib\\Bb',	// 预先加载的标签库
 	],
 	 // 视图输出字符串内容替换

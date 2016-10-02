@@ -8,7 +8,7 @@ class Portal extends Common{
 	public function menu(){
 		$db = Db::name('PortalMenu');
 		$sql = $db -> order('tid') ->  order('weight desc') -> select();
-		//$sql = $db -> where("topid = 0") -> select();
+		//$sql = $db -> where("pid = 0") -> select();
 		$this -> assign('sql',$sql);
 		return $this -> fetch('./portal_menu');
 	}
@@ -26,7 +26,7 @@ class Portal extends Common{
 			$type = Db::name('PortalMod') -> select();
 			$this -> assign('type',$type);
 			
-			$menu = Db::name('PortalMenu') -> where(["topid" => 0]) -> select();
+			$menu = Db::name('PortalMenu') -> where(["pid" => 0]) -> select();
 			$this -> assign('menu',$menu);
 			
 			$this -> assign('sql');
@@ -42,7 +42,7 @@ class Portal extends Common{
 		$this -> assign('type',$type);
 		
 		$menu_db = Db::name('PortalMenu');
-		$menu = $menu_db -> where(["topid" => 0]) -> select();
+		$menu = $menu_db -> where(["pid" => 0]) -> select();
 		$this -> assign('menu',$menu);
 		
 		$sql = $menu_db -> find($tid);
@@ -64,8 +64,8 @@ class Portal extends Common{
 			//默认值
 			
 			$menu_db -> where('tid',$tid) -> update($save);
-			if($post['topid'] > 0){
-				$menu_db -> where('topid',$tid) -> setField('topid',$post['topid']);	//修改下级栏目
+			if($post['pid'] > 0){
+				$menu_db -> where('pid',$tid) -> setField('pid',$post['pid']);	//修改下级栏目
 			}
 			
 			return $this -> success('编辑成功');

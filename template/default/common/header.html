@@ -1,69 +1,78 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>[title]{$_G.system.webname}</title>
-<meta name="keywords" content="[keywords]{$_G.system.keywords}" />
-<meta name="description" content="[description]{$_G.system.description}" />
-<link href="__Tpl__/style/luoecms.css" rel="stylesheet" media="screen" type="text/css" />
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>[title]{$_G.system.webname}</title>
+    <meta name="keywords" content="[keywords]{$_G.system.keywords}" />
+    <meta name="description" content="[description]{$_G.system.description}" />
 
-<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
-<script src="http://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
-<script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-<style type="text/css">
-.header h1 a {
-	/*
-	display:block;
-	width:430px;
-	height:100px;
-	background:url({$_G.system.logo|default=" __ROOT__/Template/default/images/logo.png"}) no-repeat left center;
-	text-indent:-9999px;
-	*/
-}
-
-</style>
-</head>
-<body>
-
-<div class="header_top">  
-    <div class="w960 center">  
-     <span id="time" class="time">{$_G.system.webname}</span>
-     <!--<div class="toplinks"><a href="{dede:global.cfg_cmsurl/}/plus/heightsearch.php" target="_blank">高级搜索</a>|<a href="{dede:global.cfg_cmsurl/}/tags.php">Tag标签</a>|<a href="{dede:global.cfg_dataurl/}/rssmap.html" class="rss">Rss订阅</a>|<a href="{dede:global.cfg_cmsurl/}/sitemap.xml" target="_blank">Sitemap</a></div>
-     -->
-    </div>
-</div>
-<div class="header">
-<h1><a href="/" title="{$_G.system.webname}"><img src="{$_G.system.logo|default=" __Tpl__/images/logo.png"}" /></a></h1>
-    <div class="search">
-	  <form name="formsearch" action="{:url('Portal/Search/index')}">
-           <input type="hidden" name="kwtype" value="0">
-           <input name="q" type="text" class="search-keyword" id="search-keyword" value="在这里搜索..." onfocus="if(this.value=='在这里搜索...'){this.value='';}" onblur="if(this.value==''){this.value='在这里搜索...';}">
-          <button type="submit" class="search-submit">搜一下</button>
-      </form>
-       <div class="tags">
-          <h4>随机标签:</h4>
-          <ul>
-          <!--
-          {dede:tag row='4' getall='1' sort='rand'}
-            <li><a href='[field:link/]'>[field:tag /]</a></li>
-          {/dede:tag}
-          -->
-          </ul>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="__Tpl__/css/bootstrap.min.css">
+    <link rel="stylesheet" href="__Tpl__/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="__Tpl__/css/bb.css">
+    <script type="text/javascript" src="__Tpl__/js/jquery-1.11.1.min.js"></script>
+  	<script type="text/javascript" src="__Tpl__/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="__Tpl__/js/jquery.SuperSlide.2.1.1.js"></script>
+  </head>
+  <body>
+  	<header>
+    	<div class="top">
+        <div class="container">
+        	<div class="col-md-4 hidden-sm hidden-xs">湖北络易科技有限公司</div>
+            <div class="pull-right"><a href="">登录</a> | <a href="">注册</a></div>
         </div>
-	</div>
-</div>
-<div class="nav_bg">
-  <ul class="nav">
-      	<li><a href='/' {:!input('get.tid')&&!input('get.aid')?'class="hvoer"':''}>首页</a></li>
-		{bb:menu topid="0"}
-			<li><a {$bb['typeid']==input('tid')?'class="hvoer"':''} href="{$bb.url}">{$bb.name}</a>
-            <ul>
-				{bb:menu topid="$bb.tid"}
-                	<li><a href="{$bb.url}">{$bb.name}</a></li>
-				{/bb:menu}
+        </div>
+        
+        <div class="container-fluid hidden-xs">
+        	<div class="logo" style="margin:10px 0;">
+            	<a href="{:url('/')}"><img src="__Tpl__/images/logo.png" alt="湖北络易科技有限公司" height="60" /></a>
+            </div>
+        </div>
+        <!--导航开始-->
+        <nav class="navbar navbar-inverse" role="navigation">
+          <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="{:url('/')}">首页</a>
+            </div>
+        
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+              <ul class="nav navbar-nav">
+                <!--<li class="active"><a href="#">列表1</a></li>-->
+              	{bb:menu pid='0'}
                 
-            </ul>
-      </li>
-	{/bb:menu}
-  </ul>
-</div>
+                <li><a href="{$bb.url}">{$bb.name}</a></li>
+                {/bb:menu}
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">列表3 <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="#">栏目1</a></li>
+                    <li><a href="#">栏目2</a></li>
+                    <li><a href="#">栏目3</a></li>
+                  </ul>
+                </li>
+              </ul>
+              
+              <ul class="nav navbar-nav navbar-right">
+              	<form class="navbar-form navbar-left" role="search">
+                  <div class="form-group">
+                    <input type="text" class="form-control" placeholder="请输入关键词">
+                  </div>
+                  <button type="submit" class="btn btn-default"><i class="glyphicon glyphicon-search"></i>搜索</button>
+                </form>
+                
+              </ul>
+            </div><!-- /.navbar-collapse -->
+          </div><!-- /.container-fluid -->
+        </nav>
+        <!--导航结束-->
+    </header>

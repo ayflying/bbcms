@@ -1,0 +1,33 @@
+@charset "utf-8";
+/* CSS Document */
+*{}
+a:link {
+	color: #333;
+}
+a:visited {
+	color: #666;
+}
+
+a:hover {
+}
+
+header .top {
+    line-height: 25px;
+    border-bottom: 1px solid #CDCDCD;
+    color: #676767;
+    overflow: hidden;
+    background: #F2F2F2;		
+}
+
+.index_content .jdt{overflow:hidden; position:relative; }
+.index_content .jdt .hd{ height:15px; overflow:hidden; position:absolute; right:25px; bottom:5px; z-index:1; }
+.index_content .jdt .hd{ overflow:hidden; zoom:1; float:left;  }
+.index_content .jdt .hd li{ float:left; margin-right:2px;  width:15px; height:15px; line-height:14px; text-align:center; background:#fff; cursor:pointer; }
+.index_content .jdt .hd li.on{ background:#f00; color:#fff; }
+.index_content .jdt .bd{ position:relative; height:100%; z-index:0;   }
+.index_content .jdt .bd li{ zoom:1; vertical-align:middle; }
+.index_content .jdt .bd img{ width:100%; display:block;  }
+
+
+
+
