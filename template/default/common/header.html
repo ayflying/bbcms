@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>[title]{$_G.system.webname}</title>
-    <meta name="keywords" content="[keywords]{$_G.system.keywords}" />
-    <meta name="description" content="[description]{$_G.system.description}" />
+    <title>[title]{$G_system.webname}</title>
+    <meta name="keywords" content="[keywords]{$G_system.keywords}" />
+    <meta name="description" content="[description]{$G_system.description}" />
 
     <!-- Bootstrap -->
     <link rel="stylesheet" href="__Tpl__/css/bootstrap.min.css">
@@ -48,9 +48,9 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
               <ul class="nav navbar-nav">
                 <!--<li class="active"><a href="#">列表1</a></li>-->
-              	{bb:menu pid='0'}
+              	{bb:menu pid='0' item="main_menu"}
                 
-                <li><a href="{$bb.url}">{$bb.name}</a></li>
+                <li><a href="{$main_menu.url}">{$main_menu.name}</a></li>
                 {/bb:menu}
                 <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown">列表3 <span class="caret"></span></a>

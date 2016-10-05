@@ -1,11 +1,11 @@
 <?php
 namespace app\common\controller;
 use think\Controller;
+use think\View;
 
 class Common extends Controller{
 	public $uid;
 	public $settings;
-	public $luoe;
 	
 	public function _initialize(){
 		$this -> uid = cookie_decode('uid');
@@ -21,7 +21,8 @@ class Common extends Controller{
         $_G = [
             'system' => $this -> settings,
         ];
-		$this -> assign('_G',$_G);
+        
+		$this -> assign("G_system",$this -> settings);
 		//dump($this -> settings);
 		
 		
@@ -37,21 +38,16 @@ class Common extends Controller{
 		//echo $template;
 		
 		$template = config('template');
-		$template['view_suffix'] = 'abc';
+		//$template['view_suffix'] = 'abc';
 		$dir = $template['view_path'].$this -> settings['theme'].'/'.$file.'.html';
-		if(file_exists($dir)){
-			$template['view_path'] .= $this -> settings['theme'].'/';
-		}else{
-			$template['view_path'] .= 'default/';
+        
+		if(!file_exists($dir)){
+			 $template['view_path'] = ROOT_PATH .'template'.DS.'default'.DS;
+             //$this -> engine(['view_path' => './template/default/']);
+             
 		}
-		\think\Config::set('template',$template);
 		
-		//$view = new \think\View(config('template'));
-		
-		//return $this -> fetch($file,[],[],$template);
-		//return $view -> fetch($file);
-		return view($file);
-		//return view($file,[],[],$template);
+        return $this -> fetch($file,[],[],$template);
 	}
 
 }

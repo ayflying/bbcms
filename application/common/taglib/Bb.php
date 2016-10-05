@@ -94,7 +94,7 @@ class Bb extends TagLib{
         
         $Str = '<?php 
             $where = [
-                "status" => ["GT",0],
+                "portal_article.status" => ["GT",0],
             ];
         ';
         
@@ -103,18 +103,18 @@ class Bb extends TagLib{
         }
         
         $Str .= ' $db = model("portal/PortalArticle");
-        $relation = ["addonarticle","attachment","menu"];
+            $relation = ["attachment","menu"];
         ';
         
         if(!empty($aid)){
             $Str .= ' $tag_sql = $db -> all("'.$aid.'",$relation); ';
         }else{
-            
             $Str .= '$tag_sql = $db -> all(function($query) use ($where){
-                $query->where($where)  ->limit('.$row.')->order("'.$order.'");
+                $query -> where($where)  -> limit('.$row.') -> order("'.$order.'");
+
             },$relation);';
-          
         }
+        
         //循环获取模型
         $Str .= ' foreach($tag_sql as $key => $'.$item.'):
             if($'.$item.'["mod"] > 0){

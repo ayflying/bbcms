@@ -28,6 +28,8 @@ header .top {
 .index_content .jdt .bd li{ zoom:1; vertical-align:middle; }
 .index_content .jdt .bd img{ width:100%; display:block;  }
 
-
+.article .content img{
+	max-width:100%;
+}
 
 
