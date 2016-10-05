@@ -2,89 +2,90 @@
     
 
 
-    <div class="index_content container-fluid">
-      <div class="t1 row">
-    	<div class="jdt col-md-4" style="height:300px;">
-          <ul class="hd list-unstyled">
-				<li>1</li><li>2</li><li>3</li>
-		  </ul>
-		  <ul class="bd list-unstyled">
-       		<li><a href="http://www.SuperSlide2.com" target="_blank">
-                <img src="../images/temp.jpg" class="img-responsive">
-            </a></li>
-            <li><a href="http://www.SuperSlide2.com" target="_blank">
-                <img src="../images/temp.jpg" class="img-responsive">
-            </a></li>
-            <li><a href="http://www.SuperSlide2.com" target="_blank">
-                <img src="../images/temp.jpg" class="img-responsive">
-            </a></li>
-		  </ul>
-        </div>
-        
-        <div class="col-md-5 panel panel-default">
-        	<div class="panel-body">
-            	{bb:article row='1' order='click desc'}
-            	<h3 class="text-center" style="margin:0px;"><a href="{$bb.url}">{$bb.title}</a></h3>
-                <p>{$bb.description}...[<a href="{$bb.url}">详情</a>]</p>
-				{/bb:article}
-				<ul class="list-unstyled">
-                	{bb:article row='2,4' order='click desc'}
-                    
-                	<li><a href="{$bb.turl}">[{$bb.menu.name}]</a> <a href="{$bb.url}">{$bb.title|mb_substr=0,24}</a><time class="pull-right hidden-xs">{$bb.create_time|date='Y-m-d H:i:s',###}</time></li>
-                    {/bb:article}
-                    
-                    
-                </ul>
-                <div class="page-header" style="margin:5px;">最近更新</div>
-                <div class="row">
-                  <ul class="list-unstyled">
-                  	{bb:article row='8'}
-                	<li class="col-md-6"><a href="{$bb.url}">{$bb.title}</a></li>
-                  	{/bb:article}
-                  </ul>
-                </div>
+<div class="index container-fluid">
+  <div class="t1 row">
+    <div class="jdt col-md-4" style="height:300px;">
+      <ul class="hd list-unstyled">
+            <li>1</li><li>2</li><li>3</li>
+      </ul>
+      <ul class="bd list-unstyled">
+        <li><a href="http://www.SuperSlide2.com" target="_blank">
+            <img src="../images/temp.jpg" class="img-responsive">
+        </a></li>
+        <li><a href="http://www.SuperSlide2.com" target="_blank">
+            <img src="../images/temp.jpg" class="img-responsive">
+        </a></li>
+        <li><a href="http://www.SuperSlide2.com" target="_blank">
+            <img src="../images/temp.jpg" class="img-responsive">
+        </a></li>
+      </ul>
+    </div>
+    
+    <div class="col-md-5 panel panel-default">
+        <div class="panel-body">
+            {bb:article row='1' order='click desc'}
+            <h3 class="text-center" style="margin:0px;"><a href="{$bb.url}">{$bb.title}</a></h3>
+            <p>{$bb.description}...[<a href="{$bb.url}">详情</a>]</p>
+            {/bb:article}
+            <ul class="list-unstyled">
+                {bb:article row='2,4' order='click desc'}
+                
+                <li><a href="{$bb.turl}">[{$bb.menu.name}]</a> <a href="{$bb.url}">{$bb.title|mb_substr=0,24}</a><time class="pull-right hidden-xs">{$bb.create_time|date='Y-m-d H:i:s',###}</time></li>
+                {/bb:article}
+                
+                
+            </ul>
+            <div class="page-header" style="margin:5px;">最近更新</div>
+            <div class="row">
+              <ul class="list-unstyled">
+                {bb:article row='8'}
+                <li class="col-md-6"><a href="{$bb.url}">{$bb.title}</a></li>
+                {/bb:article}
+              </ul>
             </div>
         </div>
-        <div class="col-md-3">
-        
-        </div>
-      </div>
-      <div class="t2 row">
-      	{bb:menu row='99'}
-      	<div class="col-md-4">
-      	<dl class="panel panel-default">
-          <dt class="panel-heading"><a href="{$bb.url}">{$bb.name}</a><span class="pull-right"><i class="glyphicon glyphicon-chevron-right"></i><a href="{$bb.url}">更多</a></span></dt>
-          <dd class="panel-body list-unstyled">
-          	
-            {bb:article tid='bb.tid' row='8'}
-            
-            <li><time>{$bb.create_time|date="m-d",###}</time> <a href="{$bb.url}">{$bb.title}</a></li>
-            {/bb:article}
-            
-          </dd>
-        </dl>
-        </div>
-        {/bb:menu}
-        
-        
-      </div>
-      
-      <div class="panel panel-default">
-        <div class="panel-heading">友情链接</div>
-          <ul class="panel-body list-unstyled">
-		  	<li><a href="" target="_blank">络易科技</a></li>
-          </ul>
-	  </div>
-      
     </div>
-    <!--内容结束-->
+    <div class="col-md-3">
+    
+    </div>
+  </div>
+  <div class="t2 row">
+    {bb:menu row='99'}
+    <div class="box col-md-4">
+    <dl class="panel panel-default">
+      <dt class="panel-heading"><a href="{$bb.url}">{$bb.name}</a><span class="pull-right"><i class="glyphicon glyphicon-chevron-right"></i><a href="{$bb.url}">更多</a></span></dt>
+      <dd class="panel-body list-unstyled">
+        
+        {bb:article tid='bb.tid' row='8'}
+        
+        <li><time>{$bb.create_time|date="m-d",###}</time> <a href="{$bb.url}">{$bb.title}</a></li>
+        {/bb:article}
+        
+      </dd>
+    </dl>
+    </div>
+    {/bb:menu}
+    
+    
+  </div>
+  
+  <div class="panel panel-default">
+    <div class="panel-heading">友情链接</div>
+      <ul class="panel-body list-unstyled">
+        <li><a href="" target="_blank">络易科技</a></li>
+      </ul>
+  </div>
+  
+</div>
+<!--内容结束-->
+
 <script>
-/*
+
 $(function(){
-	jQuery(".jdt").slide({mainCell:".bd ul",autoPlay:true});	
+	jQuery(".jdt").slide({mainCell:".bd",autoPlay:true});
 });
-*/
-jQuery(".jdt").slide({mainCell:".bd",autoPlay:true});
+
+
 
 
 </script>
