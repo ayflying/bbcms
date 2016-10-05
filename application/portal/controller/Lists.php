@@ -7,8 +7,9 @@ use app\common\controller\Common;
 class Lists extends Common{
 	public function index($tid,$search=null,$order='update_time desc'){
 		$sql = Db::name('portal_menu') -> find($tid);
-		$this -> assign('title',$sql['name'].' - ');
-		$this -> assign('bb',$sql);
+		//$this -> assign('title',$sql['name'].' - ');
+		//$this -> assign('bb',$sql);
+        $this -> _G['menu'] = $sql;
 		$where['status']= 1;
 		
 		
@@ -32,8 +33,13 @@ class Lists extends Common{
 			->where($where) -> order($order) -> paginate(5);
 		}
 		$page = $list->render();
-		$this -> assign('page',$page);
-		$this -> assign('list',$list);
+		//$this -> assign('page',$page);
+		//$this -> assign('list',$list);
+        
+        $this -> _G['page'] = $page;
+        $this -> _G['list'] = $list;
+        $this -> assign('_G',$this -> _G);
+        
 		
 		/*
 		$page = Db::name('portal_article') -> field('aid')-> where($where) -> order($order) -> paginate(25);

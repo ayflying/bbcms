@@ -1,4 +1,4 @@
-{include file="common/header" title="$bb.name" keywords="" description="" /}
+{include file="common/header" title="$_G.menu.name" keywords="" description="" /}
 <!-- /header -->
 <div class="list container-fluid">
   <div class="left col-md-3">
@@ -18,7 +18,7 @@
       <li class="active">Data</li>
     </ol>
     <ul class="panel-body list-unstyled">
-      {foreach name="list" item="val"}
+      {foreach name="_G.list" item="val"}
       <a class="col-md-2" href="{:url('/aid/'.$val['aid'])}" style="height:120px;"><img src="{$val.litpic}" class="img-thumbnail" /></a>
       <dl class="col-md-10">
       	<dt><a href="{:url('/aid/'.$val['aid'])}">{$val.title}</a><time class="pull-right">{$val.create_time|date='Y-m-d H:i:s',###}</time></dt>
@@ -26,7 +26,7 @@
       </dl>
       <hr class="col-md-12"/>
       {/foreach}
-      <div class="page col-md-12">{$page}</div>
+      <div class="page col-md-12">{$_G.page}</div>
     </ul>
   </div>
   </div>

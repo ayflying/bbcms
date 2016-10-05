@@ -1,13 +1,12 @@
-{include file="common/header" title="$bb.title" keywords="" description="$bb.description" /}
+{include file="common/header" title="$_G.article.title" keywords="" description="$bb.description" /}
 <!-- /header -->
 
 <div class="article container-fluid">
-
   <div class="left col-md-3"></div>
   <div class="right col-md-9">
   	<article>
-    	<h2 class="text-center">{$bb.title}</h2>
-        <section class="content">{$bb.addonarticle.content|htmlspecialchars_decode}</section>
+    	<h2 class="text-center">{$_G.article.title}</h2>
+        <section class="content">{$_G.article.addonarticle.content|htmlspecialchars_decode}</section>
     </article>
   </div>
 

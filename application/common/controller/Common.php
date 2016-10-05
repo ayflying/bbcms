@@ -1,11 +1,12 @@
 <?php
 namespace app\common\controller;
 use think\Controller;
-use think\View;
+use think\Cache;
 
 class Common extends Controller{
 	public $uid;
-	public $settings;
+	//public $settings;
+    public $_G;
 	
 	public function _initialize(){
 		$this -> uid = cookie_decode('uid');
@@ -15,14 +16,14 @@ class Common extends Controller{
 			foreach($list as $val){
 				$settings[$val['name']] = $val['value'];
 			}
-			cache('settings',$settings);
+			Cache::set('settings',$settings);
 		}
-		$this -> settings = cache('settings');
-        $_G = [
-            'system' => $this -> settings,
+		//$settings = Cache::get('settings');
+        $this -> _G = [
+            'system' => Cache::get('settings'),
         ];
         
-		$this -> assign("G_system",$this -> settings);
+		$this -> assign("_G",$this -> _G);
 		//dump($this -> settings);
 		
 		
@@ -34,20 +35,16 @@ class Common extends Controller{
 		//return $this;
 	}
 	
-	public function fetch2($file=null){
-		//echo $template;
-		
-		$template = config('template');
-		//$template['view_suffix'] = 'abc';
-		$dir = $template['view_path'].$this -> settings['theme'].'/'.$file.'.html';
-        
+	public function fetch2($file = null, $vars = [],$replace = [], $config = []){
+		$config = array_merge(config('template'),$config);
+		//$config['view_suffix'] = 'abc';
+		$dir = $config['view_path'].DS.$file.'.html';
 		if(!file_exists($dir)){
-			 $template['view_path'] = ROOT_PATH .'template'.DS.'default'.DS;
+			 $config['view_path'] = ROOT_PATH .'template'.DS.'default'.DS;
              //$this -> engine(['view_path' => './template/default/']);
-             
 		}
 		
-        return $this -> fetch($file,[],[],$template);
+        return $this -> fetch($file,$vars,$replace,$config);
 	}
 
 }

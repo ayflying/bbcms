@@ -1,9 +1,9 @@
 <?php
 namespace app\portal\controller;
 use think\Db;
-
-use app\common\controller\Common;
 use app\portal\model\PortalArticle;
+use app\common\controller\Common;
+
 
 class Article extends Common{
 	
@@ -30,14 +30,12 @@ class Article extends Common{
 			$this -> assign('mod',$mod);
 		}
 		
+        $this -> _G['article'] = $sql;
+        $this -> assign('_G',$this -> _G);
+		//dump($this);
+
 		
-        
-		dump($this -> view);
-        
-        
-        //dump($sql->toArray());
-		
-		return $this -> fetch2('portal/article');
+		return $this-> fetch2('portal/article');
 	}
 
 }
