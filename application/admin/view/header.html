@@ -17,17 +17,18 @@
 <header class="main">
   
   <nav class="navbar navbar-dark bg-inverse">
-    
-      
+ 	<button class="navbar-toggler hidden-sm-up pull-right" type="button" data-toggle="collapse" data-target="#nav_main"></button>
+	<div class="collapse navbar-toggleable-xs" id="nav_main">
         <ul class="nav navbar-nav">
         {php}$system_menu = config('menu');{/php}
 		{foreach name="system_menu" item="val"}
-        <li class="nav-item dropdown"> <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">{$key} <span class="caret"></span></a>
-        	<ul class="dropdown-menu" role="menu">
+        <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{$key}</a>
+        	<div class="dropdown-menu">
             	{foreach name="val" item="val2"}
                 <a href="{:url($val2)}" class="dropdown-item">{$key}</a>
                 {/foreach}
-            </ul>
+            </div>
         </li>
         {/foreach}
         <li class="nav-item"> <a href="#" class="nav-link">其他 <span class="caret"></span></a>
@@ -35,13 +36,13 @@
                 <li><a href="#">123</a></li>
             </ul>
         </li>
-        
         </ul>
         <ul class="nav navbar-nav pull-right" style="float:right;">
           <li class="nav-item">
             <a href="{:url('Login/out')}" class="nav-link">退出 </a>
           </li>
-        </ul> 
+        </ul>
+    </div>
   </nav>
   
   
