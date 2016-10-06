@@ -9,7 +9,7 @@ $(document).ready(function(e){
 </script>
 <div class="container-fluid">
 <div class="btn-group">
-        <button type="button" id="all" class="btn btn-default">全选</button>
+        <button type="button" id="all" class="btn btn-secondary">全选</button>
         
 </div>
 <br /><br />
@@ -20,7 +20,7 @@ $(document).ready(function(e){
         <tr>
             <th>选择</th>
             <th>编号</th>
-          <th>文章标题</th>
+          	<th>文章标题</th>
             <th class="hidden-xs">时间</th>
             <th>操作</th>
         </tr>
@@ -37,10 +37,10 @@ $(document).ready(function(e){
             <td><a href="{:url('/aid/'.$val['aid'])}" target="_blank">{$val.title}</a></td>
             <td class="hidden-xs">{$val.create_time|date="Y-m-d H:i:s",###}</td>
             <td>
-            <div class="btn-group">
-            <a href="{:url('/portal/article/index?aid='.$val['aid'])}" target="_blank" class="btn btn-default btn-default" role="button">浏览</a>
-            <a href="{:url('/Portal/edit/?aid='.$val['aid'])}" target="_blank" class="btn btn-default btn-default" role="button">编辑</a>
-            <a href="{:url('delete?aid='.$val['aid'])}" class="btn btn-default btn-danger" role="button">删除</a>
+            <div class="">
+            <a href="{:url('/portal/article/index?aid='.$val['aid'])}" target="_blank" class="btn btn-primary" role="button">浏览</a>
+            <a href="{:url('/Portal/edit/?aid='.$val['aid'])}" target="_blank" class="btn btn-primary" role="button">编辑</a>
+            <a href="{:url('delete?aid='.$val['aid'])}" class="btn btn-danger" role="button">删除</a>
             </div>
           </td>
         </tr>

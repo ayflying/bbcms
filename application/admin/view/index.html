@@ -2,18 +2,19 @@
 <div class="container-fluid">
 <div class="row">
 	<div class="col-md-4">
-		<div class="panel panel-default">
-		<div class="panel-heading "><i class="glyphicon glyphicon-list-alt"></i> 内容</div>
-		<div class="panel-body list-unstyled">
+		<div class="card">
+		<div class="card-header"><i class="glyphicon glyphicon-list-alt"></i> 内容</div>
+		<div class="card-block list-unstyled">
 			<li>总    数: {$num.article.num}</li>
             <li>今日添加: {$num.article.today}</li>
 		</div>
 		</div>
     </div>
+    
     <div class="col-md-4">
-		<div class="panel panel-default">
-		<div class="panel-heading "><i class="glyphicon glyphicon-user"></i> 用户</div>
-		<div class="panel-body list-unstyled">
+		<div class="card">
+		<div class="card-header"><i class="glyphicon glyphicon-user"></i> 用户</div>
+		<div class="card-block list-unstyled">
 			<li>用户总数: {$num.user.num}</li>
             
 		</div>
@@ -22,11 +23,11 @@
     <div class="col-md-4"></div>
 </div>
 
-<div class="panel panel-default">
-<div class="panel-heading"><i class="glyphicon glyphicon-wrench"></i> 系统配置</div>
-<ul class="panel-body">
+<div class="card ">
+<div class="card-header">系统配置</div>
+<ul class="card-block list-unstyled">
 	{foreach name="list" item="val"}
-		<li class="row list-unstyled">
+		<li class="row">
 			<div class="col-md-2">{$key}</div>
     		<div class="col-md-10">{$val}</div>
 		</li>
