@@ -126,4 +126,40 @@ class Member extends Common{
 		return $this -> success('删除成功','group');
 	}
 	
+    
+    function action()
+    {
+        
+        $list = Db::name('member_action') -> paginate(PAGE_NUM);
+        $page = $list->render();
+        $this->assign('list', $list);
+        $this->assign('page', $page);
+        return $this -> fetch('./member_action_list');
+        
+    }
+    
+    function action_add()
+    {
+        
+        if(request()->isPost()){
+            $post = input('post.');
+            //$post['status'] = 1;
+            
+            
+            
+            if(!Db::name('member_action') -> where(['module'=> $post['module'],'controller'=> $post['controller'],'action'=> $post['action']]) -> find()){
+                Db::name('member_action') -> insert($post);
+                //dump($post);
+                $this -> success("添加成功",null,null,1);
+            }else{
+                $this -> error('行为添加错误');
+            }
+        }else{
+            
+            return $this -> fetch('./member_action_edit');
+        }
+        
+        
+    }
+    
 }
