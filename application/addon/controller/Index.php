@@ -9,19 +9,21 @@ class Index extends Common{
 	 * @param Mixed $params 传入的参数
 	 * @return void
 	 */
-    public function index($name,$tag='run',$params=NULL)
+    public function index($name=null,$tag='run',$params=NULL)
     {
-        
+        //dump($tag);
+        echo 'abnc';
 		/*
 		$c = config('root_namespace');
 		dump($c);
-		*/
 		
 		//$class   =  "Addons\\{$name}\\{$name}Addon";
-		$class = 'addons\\'.$name.'\\'.$name;
-		//$class = "addons\\ceshi\\ay";
-		$addon   = new $class();
-		return $addon->$tag($params);
+		//$class = 'addons\\'.$name.'\\'.$name;
+        */
+        
+		//$class = 'addons\\'.$name.'\\index';
+        //$addon   = new $class();
+		//return  $addon->$tag($params);
 		
     }
 }

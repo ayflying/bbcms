@@ -1,1 +1,6 @@
 <?php
+
+function hook2(){
+    
+    
+};

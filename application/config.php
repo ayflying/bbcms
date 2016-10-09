@@ -21,8 +21,9 @@ return [
     
 	'default_module' => 'portal',
 	// 开启应用Trace调试
-	'app_trace' =>  true,
-	// 扩展函数文件
+	//'app_trace' =>  true,
+	
+    // 扩展函数文件
 	'extra_file_list'        => [ APP_PATH . 'helper.php', THINK_PATH . 'helper.php'],
 	// 注册的根命名空间
 	'root_namespace' => [
