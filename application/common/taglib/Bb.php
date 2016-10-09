@@ -11,16 +11,17 @@ class Bb extends TagLib{
      */
     protected $tags   =  [
         // 标签定义： attr 属性列表 close 是否闭合（0 或者1 默认1） alias 标签别名 level 嵌套层次
-        'close'     => ['attr' => 'time,format', 'close' => 0], //闭合标签，默认为不闭合
-        'open'      => ['attr' => 'name,type', 'close' => 1],
-        'ceshi'      => ['attr' => 'name'],
-        'menu'  => ['attr'=>'pid,row,item','level'=>3],
-        'list'  => ['attr'=>'tid,row,order'],
-        'article'   => ['attr'=>'aid,tid,row,typeid,order,type'],
-        //'url'     => ['attr' => 'aid,tid', 'close' => 0],
-        'sql' => ['attr'=>'table,where,row,order,item','level'=>5],
-        'ad' => ['attr'=>'id','close'=>0],
-        'flink' => ['attr'=>'id,row','level'=>1],
+        'close' => ['attr' => 'time,format', 'close' => 0], //闭合标签，默认为不闭合
+        'open' => ['attr' => 'name,type', 'close' => 1],
+        'ceshi' => ['attr' => 'name'],
+        'menu' => ['attr'=>'pid,row,item','level'=>3],
+        'list'  => ['attr' => 'tid,row,order'],
+        'article' => ['attr' => 'aid,tid,row,typeid,order,type'],
+        //'url' => ['attr' => 'aid,tid', 'close' => 0],
+        'sql' => ['attr' => 'table,where,row,order,item', 'level' => 5],
+        'ad' => ['attr'=>'id', 'close' => 0],
+        'flink' => ['attr'=>'id, row', 'level' => 1],
+        'header' => ['attr' => 'file', 'close' => 0],
         
         
     ];
@@ -217,6 +218,33 @@ class Bb extends TagLib{
 	}
     
     /**
+     * 这是头部引用模板
+     * @param unknown $tag            
+     * @return string
+     */
+    public function tagHeader($tag)
+    {
+        $file =   !empty($tag['file']) ? $tag['file'] : '/common/header';
+        echo "asdgasgsdfgh";
+        $Str = '<?php ';
+        
+        $Str .= '
+            $template = [
+                "view_path" => "/template/",
+            ];
+            //$this -> engine($template);
+            {//include file="'.$file.'" }
+            view("'.$file.'");
+            
+        ';
+        
+        $Str .= '  {//include file="./common/header" title="" keywords="" description=""} ';
+        
+        $Str .= ' ?>';
+        return $Str;
+    }
+    
+    /**
      * 这是一个闭合标签的简单演示
      * @param unknown $tag            
      * @return string
@@ -227,7 +255,8 @@ class Bb extends TagLib{
         $time = empty($tag['time']) ? time() : $tag['time'];
         $parse = '<?php ';
         $parse .= 'echo date("' . $format . '",' . $time . ');';
-        $parse .= ' ?>';
+        $parse .= ' 
+        ?>';
         return $parse;
     }
     /**

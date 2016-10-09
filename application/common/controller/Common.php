@@ -35,16 +35,22 @@ class Common extends Controller{
 		//return $this;
 	}
 	
-	public function fetch2($file = null, $vars = [],$replace = [], $config = []){
-		$config = array_merge(config('template'),$config);
+    //
+    /*
+        覆盖系统fetch方法
+        该方法会自动检测当前主题的模板是否存在
+	*/
+    //
+    public function fetch($file = '', $vars = [],$replace = [], $config = []){
+        $config = array_merge(config('template'),$config);
 		//$config['view_suffix'] = 'abc';
 		$dir = $config['view_path'].DS.$file.'.html';
 		if(!file_exists($dir)){
 			 $config['view_path'] = ROOT_PATH .'template'.DS.'default'.DS;
-             //$this -> engine(['view_path' => './template/default/']);
+             $this -> view -> engine($config);
 		}
-		
-        return $this -> fetch($file,$vars,$replace,$config);
+        
+        return $this -> view -> fetch($file,$vars,$replace,$config);
 	}
 
 }

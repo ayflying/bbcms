@@ -9,21 +9,44 @@ class Index extends Common{
 	 * @param Mixed $params 传入的参数
 	 * @return void
 	 */
-    public function index($name=null,$tag='run',$params=NULL)
+    public function index($name,$tag='run',$params=NULL)
     {
-        //dump($tag);
-        echo 'abnc';
-		/*
+        /*
 		$c = config('root_namespace');
 		dump($c);
 		
 		//$class   =  "Addons\\{$name}\\{$name}Addon";
 		//$class = 'addons\\'.$name.'\\'.$name;
         */
+        //配置模板参数
         
-		//$class = 'addons\\'.$name.'\\index';
-        //$addon   = new $class();
-		//return  $addon->$tag($params);
+        $template = [
+            'view_path' => 'addons' . DS . $name . DS,
+            'view_replace_str' => './addons/'.$name,
+            'view_replace_str' => [
+                '__tpl2__' => './addons/'.$name,
+            ],
+            'layout_on'     =>  true,
+            'layout_name'   =>  './template/default/common/addon.html',
+            
+        ];
+        $template = array_merge(config('template'),$template);
+        $this -> engine($template);
+        
+        //$this->view->engine->layout('./template/default/common/addon.html');
+        $this -> assign('header',VIEW_PATH."common/header.html");
+        $this -> assign('footer',VIEW_PATH."common/footer.html");
+        
+        
+        
+		$class = "addons\\{$name}\\index";
+        $addon   = new $class();
+		return  $addon->$tag($params);
 		
+    }
+    
+    function load_config($name){
+        
+        
     }
 }

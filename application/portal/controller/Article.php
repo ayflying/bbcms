@@ -35,7 +35,7 @@ class Article extends Common{
 		//dump($this);
 
 		
-		return $this-> fetch2('portal/article');
+		return $this-> fetch('portal/article');
 	}
 
 }

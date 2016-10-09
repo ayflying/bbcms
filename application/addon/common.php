@@ -1,6 +1,2 @@
 <?php
 
-function hook2(){
-    
-    
-};
