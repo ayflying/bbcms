@@ -13,7 +13,7 @@ if(version_compare(PHP_VERSION,'5.4.0','<'))  die('require PHP > 5.4.0 !');
 // [ 应用入口文件 ]
 
 // 定义应用目录
-define('APP_PATH', __DIR__ . '/application/');
+define('APP_PATH', './application/');
 // 开启调试模式
 define('APP_DEBUG', true);
 define('EXTEND_PATH', APP_PATH.'common/library');
@@ -30,7 +30,7 @@ $build = [
 		'controller' => ['Common'],
 	],
 	'admin' => [
-		'controller' => ['Common','Index','Login','System','Member','Portal','Mod','Addon','Api'],
+		'controller' => ['Common','Login','System','Member','Portal','Mod','Addon','Api','Update'],
 		'view'       => ['header','footer'],
 	],
 	'portal'   => [
@@ -43,10 +43,17 @@ $build = [
 		'model'	=> ['MemberUser','MemberUserProfile'],
 		'validate'	=> ['MemberUser'],
 	],
+    'update' => [
+        '__dir__' => ['sql'],
+        'controller' => ['Sql', 'Update'],
+    ],
+    'install' => [
+        'controller' => ['Update'],
+    ],
 	'addon' => [],
 	
 ];
 
-\think\Build::run($build);
+//\think\Build::run($build);
 //\think\Build::run($build,'application',true);
 //\think\Build::module('member');

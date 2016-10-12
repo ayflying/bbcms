@@ -1,0 +1,30 @@
+{include file="./header" title="在线升级" /}
+<div class="jumbotron">
+    <p class="lead">请不要关闭该网站，当前正在升级中！</p>
+    <div class="file_list">
+    	
+    </div>
+</div>
+
+<script>
+$(function(){
+	download();
+});
+
+
+function download(){
+	$.getJSON('./update.php?action=file',function(data){
+		//alert(data.dir);
+		if(data != null){
+			$('.file_list').prepend('<p>'+data.dir+'</p>');
+			setTimeout(download,500);
+			//setTimeout(download(),10000);
+		}
+		//return data.dir;
+	});
+	
+}
+
+</script>
+
+{include file="./footer" /}

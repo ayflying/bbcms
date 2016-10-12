@@ -11,6 +11,8 @@ class Common extends Controller{
 	public function _initialize(){
 		$this -> uid = cookie_decode('uid');
 		
+        $this -> authority();      //权限检测
+        
 		if(!cache('settings')){
 			$list = db('system_settings') -> select();
 			foreach($list as $val){
@@ -30,11 +32,35 @@ class Common extends Controller{
 	}
 	
 	public function theme($name=null){
-		
-		
 		//return $this;
 	}
 	
+    public function authority(){
+        /*
+        $where = [
+            'module' => strtolower(request()->module()),
+            'controller' => strtolower(request()->controller()),
+            'action' => strtolower(request()->action()),
+        ];
+        */
+        $module = strtolower(request()->module());
+        $controller = strtolower(request()->controller());
+        $action = strtolower(request()->action());
+        
+        //dump($where);
+        $action = db('member_action') -> where('module',$module) -> select();
+        //dump($action);
+        foreach($action as $val){
+            //检测当前是否存在该权限设置
+            if(($val['controller'] == $controller || $val['controller'] == null) && ($val['action'] == $action || $val['action'] == null)){
+                //echo $val['name'];
+                
+                
+                break;
+            }
+        }
+        
+    }
     //
     /*
         覆盖系统fetch方法

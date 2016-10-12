@@ -1,7 +1,7 @@
 <?php
 namespace app\admin\controller;
 
-class Api
+class Api extends Common
 {
 
 }
