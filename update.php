@@ -30,8 +30,7 @@ function download_file(){
         return null;
     }
     $arr = array_shift($list);
-    //print_r($arr);
-    //print_r($list);
+    //$arr['count'] = count($list);
     $post = [
         'key' => '123',
         'file' => $arr['dir'],
@@ -45,6 +44,11 @@ function download_file(){
     echo json_encode($arr);
 }
 
+function download_sql(){
+    
+    
+    
+}
 
 
 /*

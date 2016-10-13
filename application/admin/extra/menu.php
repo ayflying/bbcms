@@ -6,7 +6,7 @@ return [
 			"网站模板" => 'System/theme',
 			"更新缓存" => 'System/cache',
 			"在线升级" => "Update/index",
-			"数据库" => "sql/index?type=import",
+			"数据库" => "sql/index",
 		],
 		"内容管理" => [
 			"栏目管理" => 'Portal/Menu',

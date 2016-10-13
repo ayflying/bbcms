@@ -1,14 +1,14 @@
 {include file="./header" title="在线升级" /}
 <div class="container-fluid">
 <table class="table table-hover">
-<thead>
-        <tr>
-          <th>路径</th>
-          <th>md5</th>
-          <th>文件大小</th>
-        </tr>
-      </thead>
-      {foreach name="list" item="val"}
+  <thead>
+    <tr>
+      <th>路径</th>
+      <th>md5</th>
+      <th>文件大小</th>
+    </tr>
+  </thead>
+  {foreach name="list" item="val"}
   <tr>
     <td>{$val.dir}</td>
     <td>{$val.md5}</td>
@@ -16,6 +16,6 @@
   </tr>
   {/foreach}
 </table>
-<a class="btn btn-primary" href="{:url('download')}" role="button">全部更新</a>
+<a class="btn btn-primary" href="{:url('download')}" role="button">全部更新{$count}个</a>
 </div>
 {include file="./footer" /}

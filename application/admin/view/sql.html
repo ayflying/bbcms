@@ -1,0 +1,33 @@
+{include file="./header" title="执行SQL" /}
+<div class="container-fluid">
+	<div class="btn-group">
+        
+        <a class="btn btn-primary" href="{:url('Sql/index?type=import')}">数据还原</a>
+        <a class="btn btn-primary" href="{:url('Sql/index?type=export')}">数据备份</a>
+        <a class="btn btn-primary active">执行SQL</a>
+    </div>
+
+<p>执行的语句:{$sql|default=''}</p>
+<p>{$return|default=''}</p>
+<form action="" method="post" enctype="multipart/form-data" id="sql">
+  <div class="form-group">
+    <label for="sql">SQL语句:</label>
+    <textarea name="sql" rows="3" class="form-control" id="sql"></textarea>
+  </div>
+  
+<button type="button" id="button" class="btn btn-primary">提交</button>
+</form>
+
+
+
+<script>
+$("#button").click(function(e) {
+    var r = confirm("确定要执行该SQL语法吗吗？可能会造成不可逆转的故障！");
+	if(r == true){
+		$("#sql").submit();	
+	}
+});
+	
+</script>
+</div>
+{include file="./footer" /}

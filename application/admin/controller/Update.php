@@ -8,8 +8,8 @@ class Update extends Common
     public function index()
     {
         
-        Cache::set('old_version',Config::get('version'),3600);
-        $url =  UPDATE_URL . "/update/index/updatelist";
+        Cache::set('old_version',Config::get('version'),0);
+        $url =  UPDATE_URL . "/update";
         $put = curl($url);
         $put = json_decode($put,true);
         $list = [];
@@ -20,16 +20,28 @@ class Update extends Common
         }
         file_put_contents('./update.txt',json_encode($list));
         $this -> assign('list',$list);
+        $this -> assign('count',count($list));
         return $this -> fetch('./update');
     }
     
     public function download(){
         
-        //$list = json_decode(file_get_contents('./update.txt'),true);
-        $list = file_get_contents('./update.txt');
-        //dump($list);
+        $list = json_decode(file_get_contents('./update.txt'),true);
         $this -> assign('list',$list);
+        $this -> assign('count',count($list));
         return $this -> fetch('./update_download');
+    }
+    
+    
+    /*准备升级sql*/
+    public function sql(){
+        $post['version'] = Cache::get('old_version');
+        
+        $url =  UPDATE_URL . "/update/sql/index";
+        $put = curl($url,$post);
+        //dump($put);
+        echo $put;
+        
     }
     
 }
