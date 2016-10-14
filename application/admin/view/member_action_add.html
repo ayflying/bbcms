@@ -11,23 +11,44 @@
   </thead>
   
   
+  
+  <tr class="form-group">
+    <td><label for="pid">上级权限</label></td>
+    <td class="row">
+    	<div class="col-md-6" >
+        <select class="form-control pid" id="pid_1" >
+          <option>请选择</option>
+          {foreach name="list" item="val"}
+          <option value="{$val.id}">{$val.name}</option>
+          {/foreach}
+        </select>
+        </div>
+        <div class="col-md-6">
+        <select class="form-control pid" id="pid_2" >
+          <option value="0">请选择</option>
+        </select>
+        </div>
+    </td>
+    <td>权限名称</td>
+  </tr>
+  
   <tr class="form-group">
     <td><label for="name">名称</label></td>
-    <td><input name="name" type="text" class="form-control" id="name" value="{$sql.name|default=''}" /></td>
+    <td><input name="name" type="text" class="form-control" id="name" /></td>
     <td>权限名称</td>
   </tr>
   
   <tr class="form-group">
     <td><label for="value">参数</label></td>
-    <td><input name="value" type="text" class="form-control" id="value" value="{$sql.value|default=''}" /></td>
+    <td><input name="value" type="text" class="form-control" id="value" /></td>
     <td>&nbsp;</td>
   </tr>
   
   <tr class="form-group">
     <td><label for="status">状态</label></td>
     <td>
-        <input type="radio" name="status" value="1" {$sql['status']=='1'?'checked="checked"':''}>开启
-        <input type="radio" name="status" value="0" {$sql['status']=='0'?'checked="checked"':''}>关闭
+        <input type="radio" name="status" value="1">开启
+        <input name="status" type="radio" value="0" checked="checked">关闭
         
     </td>
     <td>&nbsp;</td>

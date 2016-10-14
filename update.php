@@ -23,11 +23,13 @@ switch($get){
 
 function download_file(){
     $url = UPDATE_URL . '/update/index/download';
-    
-    file_exists('./update.txt') && $list = json_decode(file_get_contents('./update.txt'),true);
+    $file = './update.txt';
+    file_exists($file) && $list = json_decode(file_get_contents('./update.txt'),true);
     if(empty($list)){
+        unlink($file);
         echo null;
         return null;
+        exit;
     }
     $arr = array_shift($list);
     //$arr['count'] = count($list);
@@ -40,7 +42,7 @@ function download_file(){
     $file_sub_path = dirname($post['file']).'/';
     !file_exists($file_sub_path) && mkdir($file_sub_path,0777,true);
     file_put_contents($post['file'],$put);
-    file_put_contents("update.txt",json_encode($list));
+    file_put_contents($file, json_encode($list));
     echo json_encode($arr);
 }
 

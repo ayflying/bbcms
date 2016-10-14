@@ -1,4 +1,4 @@
-<include file="./header"  title="插件编辑" />
+{include file="./header"  title="插件设计" /}
 <div class="container-fluid">
 <form action="" method="post" enctype="multipart/form-data">
     <table class="table table-hover">
@@ -13,78 +13,46 @@
   
   <tr class="form-group"> 
     <td><label for="name">插件名称(name)</label></td>
-    <td><input name="name" type="text" class="form-control" id="name" value="{$sql.name}" /></td>
+    <td><input name="name" type="text" class="form-control" id="name" /></td>
     <td>插件名称</td>
   </tr>
   
   <tr class="form-group">
     <td><label for="copyright">版权信息(copyright)</label></td>
-    <td><input name="copyright" type="text" class="form-control" id="copyright" value="{$sql.copyright}" /></td>
+    <td><input name="copyright" type="text" class="form-control" id="copyright" /></td>
     <td>版权信息</td>
   </tr>
   
   <tr class="form-group">
     <td><label for="version">插件版本(version)</label></td>
-    <td><input name="version" type="text" class="form-control" id="version" value="{$sql.name}" /></td>
+    <td><input name="version" type="text" class="form-control" id="version" /></td>
     <td>插件版本</td>
   </tr>
   
   <tr class="form-group">
     <td><label for="identifier">唯一标识(identifier)</label></td>
-    <td><input name="identifier" type="text" class="form-control" id="identifier" value="{$sql.name}" /></td>
+    <td><input name="identifier" type="text" class="form-control" id="identifier" /></td>
     <td>唯一标识只能为英文和数字</td>
   </tr>
   
   <tr class="form-group">
     <td><label for="directory">插件目录(directory)</label></td>
-    <td><input name="directory" type="text" class="form-control" id="directory" value="{$sql.name}" /></td>
+    <td><input name="directory" type="text" class="form-control" id="directory" /></td>
     
     <td>插件目录只能为英文和数字</td>
   </tr>
   
   <tr class="form-group">
     <td><label for="description">插件描述(description)</label></td>
-    <td><textarea name="description" rows="3" class="form-control" id="value">{$sql.description}</textarea></td>
+    <td><textarea name="description" rows="3" class="form-control" id="value"></textarea></td>
     <td>插件描述</td>
   </tr>
-  
-  
-  <tr class="form-group">
-    <td><label for="start_time">开始时间</label></td>
-    <td>
-    <input name="start_time" type="text" class="form-control" id="start_time" value="{$sql['start_time']?date('Y-m-d',$sql['start_time']):''}" > 
-    </td>
-    <td>开始时间</td>
-  </tr>
-  
-  <tr class="form-group">
-    <td><label for="end_time">结束时间</label></td>
-    <td>
-    <input name="end_time" type="text" class="form-control" id="end_time" value="{$sql['end_time']?date('Y-m-d',$sql['end_time']):''}" > 
-    </td>
-    <td>结束时间</td>
-  </tr>
-  
-  <script type="text/javascript">
-	$( "#start_time" ).datepicker({
-		changeYear: true,
-		onClose: function( selectedDate ) {
-			$( "#end_time" ).datepicker( "option", "minDate", selectedDate );
-		}
-	});
-    $( "#end_time" ).datepicker({
-		changeYear: true,
-		onClose: function( selectedDate ) {
-			$( "#start_time" ).datepicker( "option", "maxDate", selectedDate );
-		}
-	});
-</script>   
   
   <tr class="form-group">
     <td><label for="status">状态</label></td>
     <td>
-        <input type="radio" name="status" value="1" {$sql['status']==1?'checked="checked"':''}>开启
-        <input type="radio" name="status" value="0" {$sql['status']==0?'checked="checked"':''}>关闭
+        <input name="status" type="radio" value="1" >开启
+        <input name="status" type="radio" value="0" checked="checked" >关闭
     </td>
     <td>&nbsp;</td>
   </tr>
@@ -100,4 +68,4 @@
 </table>
     </form>
 </div>
-<include file="./footer" />
+{include file="./footer" /}

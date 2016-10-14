@@ -143,20 +143,61 @@ class Member extends Common{
         
         if(request()->isPost()){
             $post = input('post.');
-            //$post['status'] = 1;
             
+           empty($post['status']) && $post['status'] =  1;
+            Db::name('member_action') -> insert($post);
+            //dump($post);
+            $this -> success("添加成功",null,null,1);
             
-            
-            if(!Db::name('member_action') -> where(['module'=> $post['module'],'controller'=> $post['controller'],'action'=> $post['action']]) -> find()){
-                Db::name('member_action') -> insert($post);
-                //dump($post);
-                $this -> success("添加成功",null,null,1);
-            }else{
-                $this -> error('行为添加错误');
-            }
         }else{
-            
+            $list = Db::name('member_action') -> where(['pid'=>0,'status'=>1]) -> select();
+            $this -> assign('list', $list);
             return $this -> fetch('./member_action_edit');
+        }
+        
+    }
+    
+    function action_edit($id){
+        if(request()->isPost()){
+            $post = input('post.');
+            
+           empty($post['status']) && $post['status'] =  1;
+            Db::name('member_action') -> insert($post);
+            //dump($post);
+            $this -> success("添加成功",null,null,1);
+            
+        }else{
+            /*
+            $list = Db::name('member_action') -> where(['pid'=>0,'status'=>1]) -> select();
+            $this -> assign('list', $list);
+            */
+            
+            $sql = Db::name('member_action') -> find($id);
+            $this -> assign('sql', $sql);
+            return $this -> fetch('./member_action_edit');
+        }
+    }
+    
+    
+    public function action_delete($id){
+        $where['id|pid'] = $id;
+        Db::name('member_action') -> where($where) -> delete();
+        return $this -> success("删除成功");
+    }
+    
+    public function action_ajax($id = null, $pid = null){
+        
+        if(!empty($id)){
+            $sql = Db::name('member_action') -> find($id);
+            return $this -> success('返回成功',null,$sql,10);
+        }
+        
+        
+        if(!empty($pid)){
+            $list = Db::name('member_action') -> where(['pid'=>$pid,'status'=>1]) -> select();
+            //$this -> assign('list', $list);
+            $this -> success("返回成功",null,$list);
+            //$this -> fetch("返回成功",null,$list);
         }
         
         

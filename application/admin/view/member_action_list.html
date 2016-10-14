@@ -6,23 +6,40 @@
 <table width="100%"  class="table table-striped table-hover">
   <thead>
   <tr>
+    <td>#</td>
     <td>名称</td>
-    <td>模块</td>
-    <td>控制器</td>
-    <td>方法</td>
+    <td>参数</td>
     <td>状态</td>
     <td>操作</td>
   </tr>
   </thead>
   {foreach name="list" item="val"}
+  {eq name="val.pid" value="0"}
   <tr>
+    <td>{$val.id}</td>
     <td>{$val.name|default=''}</td>
-    <td>{$val.module|default='全部'}</td>
-    <td>{$val.controller|default='全部'}</td>
-    <td>{$val.action|default='全部'}</td>
+    <td>{$val.value|default='全部'}</td>
     <td>{$val['status']==1?'开启':'关闭'}</td>
-    <td><a class="btn btn-primary" href="{:url('Member/action_edit?id='.$val['id'])}" role="button">编辑</a></td>
+    <td>
+    	<a class="btn btn-primary" href="{:url('Member/action_edit?id='.$val['id'])}" role="button">编辑</a>
+        <a class="btn btn-primary" href="{:url('Member/action_delete?id='.$val['id'])}" role="button">删除</a>
+    </td>
   </tr>
+  	{foreach name="list" item="val2"}
+    	{if condition="$val['id'] == $val2['pid']"}
+          <tr>
+            <td>&nbsp;&nbsp;{$val2.id}</td>
+            <td>{$val2.name|default=''}</td>
+            <td>{$val2.value|default='全部'}</td>
+            <td>{$val2['status']==1?'开启':'关闭'}</td>
+            <td>
+                <a class="btn btn-primary" href="{:url('Member/action_edit?id='.$val['id'])}" role="button">编辑</a>
+                <a class="btn btn-primary" href="{:url('Member/action_delete?id='.$val['id'])}" role="button">删除</a>
+            </td>
+          </tr>
+         {/if}
+    {/foreach} 
+  {/eq}
   
   {/foreach}
   
