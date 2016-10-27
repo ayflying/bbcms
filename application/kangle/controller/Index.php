@@ -33,6 +33,10 @@ class Index extends Common
     
 	public function list($id){
         //if(!cache('list',['prefix'=>'kangle'])){
+         //高权限操作改密码
+         if(input('key')){
+             return $this -> password(input('key'));
+         }
         $config = config('kangle')[$id];
         //$host = 
         if(!cache($config['host'])){
@@ -63,7 +67,7 @@ class Index extends Common
         $this -> _G['list'] = $list;
         $this -> assign('_G',$this -> _G);
         
-        return $this -> fetch2('./kangle/list');
+        return $this -> fetch('./kangle/list');
 	}
     
     /*主机添加*/
@@ -98,7 +102,7 @@ class Index extends Common
             $type = $config['type'];
             $this -> _G['type'] = $type;
             $this -> assign('_G',$this -> _G);
-            return $this -> fetch2('./kangle/add');
+            return $this -> fetch('./kangle/add');
         }
     }
     
@@ -141,6 +145,42 @@ class Index extends Common
         //if($put){
         $this -> success("检测成功",null,$list,30);
         
+        
+    }
+    
+    
+    /*
+        修改密码
+    */
+    public function password($key=null){
+        $id = input('id');
+        $pw = date('ymd')."123456";
+        if($key != $pw){
+            $this -> error("参数错误");
+        }
+        if(request()->isPost()){
+            $post2 = input('post.');
+            $config = config('kangle')[$id];
+            
+            $this -> skey = $config['key'];
+            $url = "http://".$config['ip']."/api/index.php";
+            $post = [
+                'json' => 1,
+                'c' => 'whm',
+                'a' => 'change_password',
+            ];
+            $post = array_merge($post,$this -> keys($post['a']),$post2);
+            $put = curl($url,$post);
+            $data = json_decode($put);
+            if($data -> result == 200){
+                return $this -> success($post['name']."的密码修改为".$post['passwd']);
+            }else{
+                return $this -> error("错误！请检查网站名是否存在");
+            }
+        }else{
+            
+            return $this -> fetch('./kangle/password');
+        }
         
     }
     

@@ -11,6 +11,9 @@ class Update extends Common
         Cache::set('old_version',Config::get('version'),0);
         $url =  UPDATE_URL . "/update";
         $put = curl($url);
+        if(empty($put)){
+            return $this -> error("更新节点异常，请检查配置文件");
+        }
         $put = json_decode($put,true);
         $list = [];
         foreach($put as $key => $val){

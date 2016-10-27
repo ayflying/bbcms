@@ -43,6 +43,7 @@ class Common extends Controller{
             'action' => strtolower(request()->action()),
         ];
         */
+        /*
         $module = strtolower(request()->module());
         $controller = strtolower(request()->controller());
         $action = strtolower(request()->action());
@@ -59,6 +60,7 @@ class Common extends Controller{
                 break;
             }
         }
+        */
         
     }
     //
