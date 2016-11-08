@@ -7,9 +7,12 @@ class PortalArticle extends Model
 	
 	protected $name = 'portal_article';
 	protected $insert = ['status'=>1];
-	protected $autoWriteTimestamp = false;
+	protected $autoWriteTimestamp = true;
 	
-	
+    //字段类型
+	protected $type = [
+        'thumb'    =>  'json',
+    ];
 	
 	public function addonarticle(){
 		return $this->hasOne('PortalAddonarticle','aid');
@@ -17,7 +20,6 @@ class PortalArticle extends Model
 	public function attachment(){
 		return $this->hasMany('PortalAttachment','aid');
 	}
-    
     
     public function menu(){
 		//return $this->hasOne('PortalMenu','tid','tid');

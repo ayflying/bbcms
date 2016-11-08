@@ -9,7 +9,8 @@ class Common extends Controller{
     public $_G;
 	
 	public function _initialize(){
-		$this -> uid = cookie_decode('uid');
+        //检测当前用户UID
+		$this -> uid = cookie_decode('uid') > 0 ? cookie_decode('uid') : 0;
 		
         $this -> authority();      //权限检测
         

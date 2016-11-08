@@ -1,23 +1,21 @@
 {include file="common/header" title='首页' keywords='' description=''}
-    
-
-
 <div class="index container-fluid">
   <div class="t1 row">
     <div class="jdt col-md-4" style="height:300px;">
       <ul class="hd list-unstyled">
-            <li>1</li><li>2</li><li>3</li>
+      	<li>1</li>
+        <li>2</li>
+        <li>3</li>
+      	<li>4</li>
+        <li>5</li>
+        <li>6</li>
       </ul>
       <ul class="bd list-unstyled">
-        <li><a href="http://www.SuperSlide2.com" target="_blank">
-            <img src="../images/temp.jpg" class="img-responsive">
+        {bb:article type="litpic" row="6"}
+        <li><a href="{$bb.url}" target="_blank">
+            <img src="{$bb.litpic}" class="img-responsive">
         </a></li>
-        <li><a href="http://www.SuperSlide2.com" target="_blank">
-            <img src="../images/temp.jpg" class="img-responsive">
-        </a></li>
-        <li><a href="http://www.SuperSlide2.com" target="_blank">
-            <img src="../images/temp.jpg" class="img-responsive">
-        </a></li>
+        {/bb:article}
       </ul>
     </div>
     

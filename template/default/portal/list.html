@@ -3,11 +3,15 @@
 <div class="list container-fluid">
   <div class="left col-md-3">
   	<ul class="list-group">
-      <a href="#" class="list-group-item">Dapibus ac facilisis in</a>
-      <a href="#" class="list-group-item">Dapibus ac facilisis in</a>
-      <a href="#" class="list-group-item">Dapibus ac facilisis in</a>
-      <a href="#" class="list-group-item">Dapibus ac facilisis in</a>
-      <a href="#" class="list-group-item">Dapibus ac facilisis in</a>
+      {eq name='$_G.menu.pid' value='0'}
+	    {bb:menu pid='$_G.menu.tid'}
+        <a href="{$bb.url}" class="list-group-item">{$bb.name}</a>
+        {/bb:menu}
+      {else/}
+      	{bb:menu pid='$_G.menu.pid'}
+        <a href="{$bb.url}" class="list-group-item">{$bb.name}</a>
+        {/bb:menu}
+      {/eq}
     </ul>
   </div>
   
@@ -15,11 +19,11 @@
   <div class="panel panel-default">
     <ol class="breadcrumb panel-heading">
       <li><a href="{:url('/')}">首页</a></li>
-      <li class="active">Data</li>
+      <li class="active">{$_G.menu.name}</li>
     </ol>
     <ul class="panel-body list-unstyled">
       {foreach name="_G.list" item="val"}
-      <a class="col-md-2" href="{:url('/aid/'.$val['aid'])}" style="height:120px;"><img src="{$val.litpic}" class="img-thumbnail" /></a>
+      <a class="col-md-2" href="{:url('/aid/'.$val['aid'])}" style="height:120px;"><img data-original="{$val.litpic}" class="img-thumbnail" /></a>
       <dl class="col-md-10">
       	<dt><a href="{:url('/aid/'.$val['aid'])}">{$val.title}</a><time class="pull-right">{$val.create_time|date='Y-m-d H:i:s',###}</time></dt>
       	<dd><a href="{:url('/aid/'.$val['aid'])}">{$val.description}</a></dd>

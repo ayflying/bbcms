@@ -48,14 +48,15 @@ class Bb extends TagLib{
         $row = !empty($tag['row'])?$tag['row']:999;
         $item = !empty($tag['item'])?$tag['item']:'bb';
         
-        $pid = $this -> autoBuildVar($pid); //格式化数组变量
+        
         
         $Str = '<?php
             $where = [];
         ';
         
         if(isset($tag['pid'])){
-            $Str .= ' $where["pid"] = '.$tag['pid'].'; ';
+            $pid = $this -> autoBuildVar($tag['pid']); //格式化数组变量
+            $Str .= ' $where["pid"] = '.$pid.'; ';
         }
         
         $Str .= '
@@ -99,12 +100,17 @@ class Bb extends TagLib{
             ];
         ';
         
+        if(!empty($type)){
+            $Str .= ' $where["portal_article.'.$type.'"] = ["exp", "is not null"]; ';
+        }
+        
         if(!empty($tid)){
             $Str .= ' $where["portal_article.tid"] = '.$tid.'; ';
         }
         
         $Str .= ' $db = model("portal/PortalArticle");
             $relation = ["attachment","menu"];
+            
         ';
         
         if(!empty($aid)){
@@ -113,8 +119,11 @@ class Bb extends TagLib{
             $Str .= '$tag_sql = $db -> all(function($query) use ($where){
                 $query -> where($where)  -> limit('.$row.') -> order("'.$order.'");
 
-            },$relation);';
+            },$relation); ';
+            
         }
+        
+        
         
         //循环获取模型
         $Str .= ' foreach($tag_sql as $key => $'.$item.'):
