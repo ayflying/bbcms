@@ -9,6 +9,9 @@ class Article extends Common{
 	
 	public function index($aid){
 		
+		
+		
+		
 		$sql = PortalArticle::get($aid);
 		$sql -> addonarticle;
 		$sql -> attachment;
@@ -29,7 +32,7 @@ class Article extends Common{
 			}
 			$this -> assign('mod',$mod);
 		}
-		
+		$this -> _G['menu'] = Db::name('portal_menu') -> find($sql['tid']);
         $this -> _G['article'] = $sql;
         $this -> assign('_G',$this -> _G);
 		//dump($this);

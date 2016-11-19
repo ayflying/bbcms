@@ -22,7 +22,7 @@ return [
     
 	'default_module' => 'portal',
 	// 开启应用Trace调试
-	'app_trace' =>  true,
+	//'app_trace' =>  true,
 	
     // 扩展函数文件
 	'extra_file_list'        => [ APP_PATH . 'helper.php', THINK_PATH . 'helper.php'],

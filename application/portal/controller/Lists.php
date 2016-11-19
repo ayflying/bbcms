@@ -27,10 +27,10 @@ class Lists extends Common{
 			$list = Db::view(['portal_article','a'],'*')
 			//->view('portal_mod_'.$mod['table'],'*','portal_article.aid = portal_mod_'.$mod['table'].'.aid')
 			->view(['portal_mod_'.$sql['mod'],'m'],'*','a.aid = m.aid')
-			->where($where) -> order($order) -> paginate(5);
+			->where($where) -> order($order) -> paginate(PAGE_NUM);
 		}else{
 			$list = Db::name('portal_article')
-			->where($where) -> order($order) -> paginate(5);
+			->where($where) -> order($order) -> paginate(PAGE_NUM);
 		}
 		$page = $list->render();
 		//$this -> assign('page',$page);

@@ -6,11 +6,8 @@ use app\common\controller\Common;
 use app\admin\controller\Login as AdminLogin;
 
 class Login extends Common{
-	function index(){
-	}
 	
 	public function login(){
-		
 		if (request()->isPost()){
 			$post = input('post.');
 			$where['username|email|mobile'] = $post['username'];
@@ -28,7 +25,6 @@ class Login extends Common{
 			}
 			
 		}else{
-		
 			return $this->fetch('member/login');
 		}
 		

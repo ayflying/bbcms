@@ -89,7 +89,7 @@ class Portal extends Common{
             if(!empty($tid)){
                 $where['tid'] = $tid;
             }
-            
+            //$page_num = cookie('page_num') > 0 ? cookie('page_num') : PAGE_NUM;
 			$list = Db::name('PortalArticle') -> where($where)-> order($order) -> paginate(PAGE_NUM);
             // 获取分页显示
 			$page = $list->render();
@@ -114,7 +114,7 @@ class Portal extends Common{
 	
 	
 	function recycle(){//回收站
-		
+		//$page_num = cookie('page_num') > 0 ? cookie('page_num') : PAGE_NUM;
 		$list = Db::name('portal_article') -> order('aid desc') ->where('status','<',0) -> paginate(PAGE_NUM);
 		
 		$page = $list->render();
@@ -154,10 +154,9 @@ class Portal extends Common{
 	
 	/*彻底删除文章*/
 	public function delete2($aid){
-		//echo $aid;
-		//$db_article =  Db::name('portal_article');
-		//$db_addonarticle = Db::name('PortalAddonarticle');
-		//$db_attachment = Db::name('PortalAttachment');
+         //设置为永久执行不超时
+         set_time_limit(0) ;
+         
 		$article = Db::name('portal_article') -> find($aid);
 		
 		/*
@@ -170,7 +169,7 @@ class Portal extends Common{
 		$attachment = Db::name('PortalAttachment') ->field('url') -> where('aid',$aid) -> select();
 		foreach($attachment as $val){
 			//echo "删除：".$f."<br/>";
-			file_exists($val['url']) and unlink($val['url']);
+			file_exists($val['url']) && unlink($val['url']);
 		}
 		
 		//删除模型表

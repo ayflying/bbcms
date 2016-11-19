@@ -15,7 +15,7 @@ class Post extends Common{
     
     /*      UEditor 编辑器插件   */
     public function UEditor(){
-        config('app_trace',false);  //必须关闭调试允许使用
+        config('app_trace',false);  //必须关闭调试
         header("Content-Type:text/html;charset=utf-8");
         //$type = $_REQUEST['type'];
         //$noCache = input('noCache');
@@ -37,7 +37,7 @@ class Post extends Common{
             break;
             
         case 'listimage':   //图片列表
-            $sql = Db::name('portal_attachment') -> where('uid',$this->uid) -> select();
+            $sql = Db::name('portal_attachment') -> where('uid',$this->uid) -> where('type',in('jpg,png,bmp,gif')) -> select();
             //dump($list);
             foreach($sql as $val){
                 $list[] = [
@@ -115,8 +115,6 @@ class Post extends Common{
         if (request()->isPost()){
             $post = input('post.');
             
-           
-            
             $add = new PortalArticle;
             $add -> uid = $uid;
             $add -> tid = $tid;
@@ -135,29 +133,7 @@ class Post extends Common{
             $aid = $add -> aid;
             $add -> addonarticle() ->save(['content'=>$post['content']]);
             
-            /*
-            $attachment = Db::name('portal_attachment') -> field('id',true) -> where('uid',$uid) -> where('aid','null') -> find();
-            if($attachment){
-                Db::name('portal_attachment') -> where('uid',$uid) -> where('aid','null') -> setField('aid',$aid);
-                
-                $path = './uploads/thumb/';
-                $url = $path.$attachment['name'];
-                is_dir($path) or mkdir($path,0777,true);
-                $this -> thumb($attachment['url'],300,300,$url);
-                $attachment['aid'] = $aid;
-                $attachment['url'] = $url;
-                $attachment['size'] = filesize($url);
-                Db::name('portal_attachment') -> insert($attachment);
-                PortalArticle::where('aid',$aid) -> setField('litpic',$url);
-                if(isset($mod)){
-                    $save = ['aid' => $aid];
-                    foreach($mod_data as $key => $val){
-                        $save[$key] = $post[$key];
-                    }
-                    Db::name('portal_mod_'.$mod['table']) -> insert($save);
-                }
-            }
-            */
+            //修改附件为当前aid
             Db::name('portal_attachment') -> where('aid','null') ->  where('uid',$uid) -> setField('aid',$aid);
             
             return $this -> success("添加成功");
@@ -168,6 +144,13 @@ class Post extends Common{
             return $this->fetch('/post/add');
         }
     }
+	
+	public function edit($aid){
+		$uid = $this -> uid;
+		
+		
+		
+	}
     
     /*
         缩略图上传类
@@ -179,8 +162,6 @@ class Post extends Common{
         }
         $url = './uploads/thumb/';
         foreach($files as $file){
-            //dump($file->getInfo()['tmp_name']);
-            //$name = md5_file($file->getInfo()['tmp_name']);
             $info = $file->validate(['ext' => 'bmp,jpg,jpeg,png,gif'])  -> move($url);
             $this -> thumb($info->getPathname());   //压缩
             $data = [

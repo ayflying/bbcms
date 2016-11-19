@@ -19,14 +19,14 @@ header .top {
     background: #F2F2F2;		
 }
 
-.index .jdt{overflow:hidden; position:relative; }
-.index .jdt .hd{ height:15px; overflow:hidden; position:absolute; right:25px; bottom:5px; z-index:1; }
-.index .jdt .hd{ overflow:hidden; zoom:1; float:left;  }
-.index .jdt .hd li{ float:left; margin-right:2px;  width:15px; height:15px; line-height:14px; text-align:center; background:#fff; cursor:pointer; }
-.index .jdt .hd li.on{ background:#f00; color:#fff; }
-.index .jdt .bd{ position:relative; height:100%; z-index:0;   }
-.index .jdt .bd li{ zoom:1; vertical-align:middle; }
-.index .jdt .bd img{ width:100%; display:block;  }
+.jdt{overflow:hidden; position:relative; }
+.jdt .hd{ height:15px; overflow:hidden; position:absolute; right:25px; bottom:5px; z-index:1; }
+.jdt .hd{ overflow:hidden; zoom:1; float:left;  }
+.jdt .hd li{ float:left; margin-right:2px;  width:15px; height:15px; line-height:14px; text-align:center; background:#fff; cursor:pointer; }
+.jdt .hd li.on{ background:#f00; color:#fff; }
+.jdt .bd{ position:relative; height:100%; z-index:0;   }
+.jdt .bd li{ zoom:1; vertical-align:middle; }
+.jdt .bd img{ width:100%; display:block;  }
 
 .index .t2 .panel-body{
 	min-height:190px;

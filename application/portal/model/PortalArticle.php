@@ -20,7 +20,6 @@ class PortalArticle extends Model
 	public function attachment(){
 		return $this->hasMany('PortalAttachment','aid');
 	}
-    
     public function menu(){
 		//return $this->hasOne('PortalMenu','tid','tid');
         return $this->belongsTo('PortalMenu','tid');

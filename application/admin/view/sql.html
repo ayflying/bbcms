@@ -4,7 +4,9 @@
         
         <a class="btn btn-primary" href="{:url('Sql/index?type=import')}">数据还原</a>
         <a class="btn btn-primary" href="{:url('Sql/index?type=export')}">数据备份</a>
-        <a class="btn btn-primary active">执行SQL</a>
+        <a class="btn btn-primary">执行SQL</a>
+        <a href="{:url('optimize')}" class="btn btn-primary">优化表</a>
+        <a href="{:url('repair')}" class="btn btn-primary">修复表</a>
     </div>
 
 <p>执行的语句:{$sql|default=''}</p>
