@@ -101,6 +101,8 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
     protected $failException = false;
     // 全局查询范围
     protected $useGlobalScope = true;
+    // 是否采用批量验证
+    protected $batchValidate = false;
 
     /**
      * 初始化过的模型.
@@ -741,7 +743,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
             // 数据批量验证
             $validate = $this->validate;
             foreach ($dataSet as $data) {
-                if (!$this->validate($validate)->validateData($data)) {
+                if (!$this->validateData($data, $validate)) {
                     return false;
                 }
             }
@@ -757,9 +759,9 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
             }
             foreach ($dataSet as $key => $data) {
                 if (!empty($auto) && isset($data[$pk])) {
-                    $result[$key] = self::update($data);
+                    $result[$key] = self::update($data, [], $this->field);
                 } else {
-                    $result[$key] = self::create($data);
+                    $result[$key] = self::create($data, $this->field);
                 }
             }
             $db->commit();
@@ -854,9 +856,10 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
      * @access public
      * @param array|string|bool $rule 验证规则 true表示自动读取验证器类
      * @param array             $msg 提示信息
+     * @param bool              $batch 批量验证
      * @return $this
      */
-    public function validate($rule = true, $msg = [])
+    public function validate($rule = true, $msg = [], $batch = false)
     {
         if (is_array($rule)) {
             $this->validate = [
@@ -866,6 +869,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
         } else {
             $this->validate = true === $rule ? $this->name : $rule;
         }
+        $this->batchValidate = $batch;
         return $this;
     }
 
@@ -885,12 +889,15 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
      * 自动验证数据
      * @access protected
      * @param array $data 验证数据
+     * @param mixed $rule 验证规则
+     * @param bool  $batch 批量验证
      * @return bool
      */
-    protected function validateData($data)
+    protected function validateData($data, $rule = null, $batch = null)
     {
-        if (!empty($this->validate)) {
-            $info = $this->validate;
+        $info = is_null($rule) ? $this->validate : $rule;
+
+        if (!empty($info)) {
             if (is_array($info)) {
                 $validate = Loader::validate();
                 $validate->rule($info['rule']);
@@ -905,7 +912,9 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
                     $validate->scene($scene);
                 }
             }
-            if (!$validate->check($data)) {
+            $batch = is_null($batch) ? $this->batchValidate : $batch;
+
+            if (!$validate->batch($batch)->check($data)) {
                 $this->error = $validate->getError();
                 if ($this->failException) {
                     throw new ValidateException($this->error);
@@ -970,12 +979,16 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
     /**
      * 写入数据
      * @access public
-     * @param array     $data 数据数组
+     * @param array         $data 数据数组
+     * @param array|true    $field 允许字段
      * @return $this
      */
-    public static function create($data = [])
+    public static function create($data = [], $field = null)
     {
         $model = new static();
+        if (!empty($field)) {
+            $model->allowField($field);
+        }
         $model->isUpdate(false)->save($data, []);
         return $model;
     }
@@ -983,13 +996,17 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
     /**
      * 更新数据
      * @access public
-     * @param array     $data 数据数组
-     * @param array     $where 更新条件
+     * @param array         $data 数据数组
+     * @param array         $where 更新条件
+     * @param array|true    $field 允许字段
      * @return $this
      */
-    public static function update($data = [], $where = [])
+    public static function update($data = [], $where = [], $field = null)
     {
-        $model  = new static();
+        $model = new static();
+        if (!empty($field)) {
+            $model->allowField($field);
+        }
         $result = $model->isUpdate(true)->save($data, $where);
         return $model;
     }
@@ -1356,17 +1373,8 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
 
     public static function __callStatic($method, $params)
     {
-        $query = self::getDb();
+        $query = (new static())->db();
         return call_user_func_array([$query, $method], $params);
-    }
-
-    protected static function getDb()
-    {
-        $model = get_called_class();
-        if (!isset(self::$links[$model])) {
-            self::$links[$model] = (new static())->db();
-        }
-        return self::$links[$model];
     }
 
     /**
@@ -1462,6 +1470,49 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
     public function __wakeup()
     {
         $this->initialize();
+    }
+
+    /**
+     * 模型事件快捷方法
+     */
+    protected static function beforeInsert($callback, $override = false)
+    {
+        self::event('before_insert', $callback, $override);
+    }
+
+    protected static function afterInsert($callback, $override = false)
+    {
+        self::event('after_insert', $callback, $override);
+    }
+
+    protected static function beforeUpdate($callback, $override = false)
+    {
+        self::event('before_update', $callback, $override);
+    }
+
+    protected static function afterUpdate($callback, $override = false)
+    {
+        self::event('after_update', $callback, $override);
+    }
+
+    protected static function beforeWrite($callback, $override = false)
+    {
+        self::event('before_write', $callback, $override);
+    }
+
+    protected static function afterWrite($callback, $override = false)
+    {
+        self::event('after_write', $callback, $override);
+    }
+
+    protected static function beforeDelete($callback, $override = false)
+    {
+        self::event('before_delete', $callback, $override);
+    }
+
+    protected static function afterDelete($callback, $override = false)
+    {
+        self::event('after_delete', $callback, $override);
     }
 
 }
