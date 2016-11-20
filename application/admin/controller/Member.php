@@ -57,7 +57,9 @@ class Member extends Common{
 		
 		if(request()->isPost()){
 			$post = input('post.');
-			
+            if($post['password'] == null){
+                unset($post['password']);
+            }
 			//验证开始
 			$validate = [
 				'email|邮箱' => ['require','email','unique'=>'member_user,email,'.$uid,],
@@ -79,7 +81,7 @@ class Member extends Common{
 			
 			
 			if($db -> save($post,['uid' => $uid])){
-				return $this->success($uid.'编辑成功');
+				return $this->success('编辑完成');
 			}else{
 				return $this -> error($db->getError());
 			}
