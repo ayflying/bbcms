@@ -24,10 +24,6 @@ class Member extends Common{
 			$user = new User();
 			
 			$validate = [
-				/*
-				'email|邮箱' => ['require','email','unique'=>'member_user,email,'.$uid,],
-				'pword|密码'	=>['length'=>'6,25'],
-				*/
 				'email|邮箱' => ['require','email','unique'=>'member_user'],
 				'password|密码' => ['length'=>'6,25'],
 			];
@@ -53,40 +49,40 @@ class Member extends Common{
 	}
 	
 	public function user_edit($uid){
-		$db = new User();
 		
 		if(request()->isPost()){
 			$post = input('post.');
-            if($post['password'] == null){
-                unset($post['password']);
-            }
 			//验证开始
 			$validate = [
 				'email|邮箱' => ['require','email','unique'=>'member_user,email,'.$uid,],
 				'password|密码'	=>['length'=>'6,25'],
 			];
-			/*
-			$msg = [
-				'email.require' => '邮箱不能为空',
-				'email.email' => '邮箱格式错误',
-				'email.unique' => '该邮箱已存在',
-				'pword.length'     => '密码长度为6-25个字符',
-			];
-			*/
 			$result = $this -> validate($post,$validate);
 			if($result !== true){
 				$this -> error($result);
 			}
 			//验证结束
+            
+            //密码进行md5加密
+			if($post['password'] == null){
+                unset($post['password']);
+            }else{
+                $post['password'] = md5($post['password']);
+            }
+            
 			
-			
+            Db::name('member_user') -> where('uid',$uid) -> update($post);
+            return $this -> success('编辑完成',null,null,1);
+            /*
 			if($db -> save($post,['uid' => $uid])){
 				return $this->success('编辑完成');
 			}else{
 				return $this -> error($db->getError());
 			}
+            */
 		}else{
-			$sql = $db -> get($uid);
+			//$sql = $db -> get($uid);
+            $sql = Db::name('member_user') -> find($uid);
 			$group = Db::name('member_group') -> select();
 			$this -> assign('group',$group);
 			$this -> assign('sql',$sql);

@@ -13,13 +13,19 @@ class MemberUser extends Model{
 	protected function setEmailAttr($value){
 		return strtolower($value);
 	}
-	protected function setPasswordAttr($value){
-		return md5($value);
+    
+	protected function setPasswordAttr($value)
+    {
+        return md5($value);
 	}
-	protected function setCreateIpAttr($value){
+    
+	protected function setCreateIpAttr($value)
+    {
 		return request()->ip();
 	}
-	protected function setUpdateIpAttr($value){
+    
+	protected function setUpdateIpAttr($value)
+    {
 		return request()->ip();
 	}
 	

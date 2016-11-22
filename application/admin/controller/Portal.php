@@ -74,6 +74,12 @@ class Portal extends Common{
 			return $this-> fetch('./portal_menu_edit');
 		}
 	}
+    
+    public function menu_delete($tid){
+        
+        
+        return $this -> success("删除完成");
+    }
 	
 
 	
