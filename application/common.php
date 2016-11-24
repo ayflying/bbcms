@@ -5,15 +5,17 @@
 * @param str $url
 * @param array $post
 */
-function curl($url,$post=NULL){
+function curl($url,$post=NULL,$time=30){
 	
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_TIMEOUT,$time);
 	if(stripos($url,"https://")!==FALSE){
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
 		curl_setopt($ch, CURLOPT_SSLVERSION, 1); //CURL_SSLVERSION_TLSv1
 	}
+    
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	curl_setopt($ch, CURLOPT_HEADER, 0);
 	if(isset($post)){	// post数据
