@@ -121,7 +121,7 @@ class Portal extends Common{
 	
 	function recycle(){//回收站
 		//$page_num = cookie('page_num') > 0 ? cookie('page_num') : PAGE_NUM;
-		$list = Db::name('portal_article') -> order('aid desc') ->where('status','<',0) -> paginate(PAGE_NUM);
+		$list = Db::name('portal_article') -> order('aid desc') ->where('status',-1) -> paginate(PAGE_NUM);
 		
 		$page = $list->render();
 		$this->assign('page', $page);
@@ -135,7 +135,10 @@ class Portal extends Common{
 		get.action = 2 为删除
 	*/
 	public function recover($action,$aid=null){			//恢复 彻底删除
-        empty($aid) && $this -> error("请选择需要删除内容");
+        isset($aid) or $this -> error("请选择需要删除内容");
+        if($aid == 0){
+            $aid = Db::name('portal_article') -> where('status',-1) -> column('aid');
+        }
 		if($action == 2){	//彻底删除
 			if(is_array($aid)){	//判断是否为数组
 				foreach($aid as $val){
@@ -145,7 +148,7 @@ class Portal extends Common{
 				$this -> delete($aid);
 			}
 			$action = "删除";
-		}else{	//恢复
+		}elseif($action == 1){	//恢复
 			$db_article =  Db::name('portal_article');
 			if(is_array($aid)){	//判断是否为数组
 				foreach($aid as $val){
