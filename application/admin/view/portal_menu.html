@@ -3,7 +3,6 @@
 
   <div class="btn-group">
     <a href="{:url('menu_add')}" class="btn btn-secondary" role="button">添加</a>
-    <a href="{:url('lists?tid=0')}" class="btn btn-secondary" role="button">查看未分类文章</a>
   </div>
   <br />
   <br />
@@ -18,9 +17,9 @@
             <td>
             <span class="btn-group" style="float:right;">
             <a href="{:url('/add/'.$val['tid'])}" target="_blank" class="btn btn-primary">添加文章</a>
-            <a href="{:url('article_list?tid='.$val['tid'])}" class="btn btn-secondary">查看文章</a>
+            <a href="{:url('Portal/article_list?tid='.$val['tid'])}" class="btn btn-secondary">查看文章</a>
             <a href="{:url('menu_edit?tid='.$val['tid'])}" class="btn btn-secondary">编辑</a>
-            <button  href="{:url('menu_delete?tid='.$val['tid'])}" class="btn btn-danger" >删除</button >
+            <button  href="{:url('menu_delete?tid='.$val['tid'])}" class="btn btn-danger delete" >删除</button >
             </span>
           </td>
         </tr>
@@ -32,7 +31,7 @@
             <td>
             <span class="btn-group" style="float:right;">
             <a href="{:url('/add/'.$val2['tid'])}" target="_blank" class="btn btn-primary">添加文章</a>
-            <a href="{:url('article_list?tid='.$val2['tid'])}" class="btn btn-secondary">查看文章</a>
+            <a href="{:url('Portal/article_list?tid='.$val2['tid'])}" class="btn btn-secondary">查看文章</a>
             <a href="{:url('menu_edit?tid='.$val2['tid'])}" class="btn btn-secondary">编辑</a>
             <button href="{:url('menu_delete?tid='.$val2['tid'])}" class="btn btn-danger delete">删除</button >
             </span>

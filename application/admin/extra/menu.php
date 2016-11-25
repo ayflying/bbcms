@@ -9,7 +9,7 @@ return [
 			"数据库" => "sql/index",
 		],
 		"内容管理" => [
-			"栏目管理" => 'Portal/Menu',
+			"栏目管理" => 'Menu/index',
 			"内容列表" => 'Portal/article_list',
 			"回收站" => 'Portal/recycle',
 			'功能模型' => 'Mod/mod',
