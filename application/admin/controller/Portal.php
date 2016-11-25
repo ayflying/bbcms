@@ -106,8 +106,8 @@ class Portal extends Common{
 		}
 	}
 	
-	/*内容删除*/
-	function delete($aid){			
+	/*内容软删除*/
+	function remove($aid){			
 		if(is_array($aid)){
 			foreach($aid as $val){
 				Db::name('portal_article') -> where('aid',$val) -> setField('status',-1);
@@ -134,16 +134,17 @@ class Portal extends Common{
 		get.action = 1 为恢复
 		get.action = 2 为删除
 	*/
-	public function recover($action,$aid){			//恢复 彻底删除
+	public function recover($action,$aid=null){			//恢复 彻底删除
+        empty($aid) && $this -> error("请选择需要删除内容");
 		if($action == 2){	//彻底删除
 			if(is_array($aid)){	//判断是否为数组
 				foreach($aid as $val){
-					$this -> delete2($val);
+					$this -> delete($val);
 				}
 			}else{
-				$this -> delete2($aid);
+				$this -> delete($aid);
 			}
-			$action = "彻底删除";
+			$action = "删除";
 		}else{	//恢复
 			$db_article =  Db::name('portal_article');
 			if(is_array($aid)){	//判断是否为数组
@@ -155,13 +156,13 @@ class Portal extends Common{
 			}
 			$action = "恢复";
 		}
-		$this -> success($action.'成功');
+		$this -> success($action.'完成');
 	}
 	
-	/*彻底删除文章*/
-	public function delete2($aid){
+	/*物理删除文章*/
+	public function delete($aid){
          //设置为永久执行不超时
-         set_time_limit(0) ;
+         set_time_limit(3600);
          
 		$article = Db::name('portal_article') -> find($aid);
 		
