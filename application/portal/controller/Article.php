@@ -9,9 +9,6 @@ class Article extends Common{
 	
 	public function index($aid){
 		
-		
-		
-		
 		$sql = PortalArticle::get($aid);
 		$sql -> addonarticle;
 		$sql -> attachment;
@@ -36,9 +33,8 @@ class Article extends Common{
         $this -> _G['article'] = $sql;
         $this -> assign('_G',$this -> _G);
 		//dump($this);
-
 		
-		return $this-> fetch('portal/article');
+		return $this-> fetch($this -> _G['menu']['template2']);
 	}
 
 }

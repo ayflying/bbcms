@@ -206,8 +206,8 @@ class Bb extends TagLib{
 	* @return string|void
 	*/
 	public function tagFlink($tag,$content){
-		$id =   !empty($tag['id'])?$tag['id']:null;
-		$row =   !empty($tag['row'])?$tag['row']: 99;
+		$id =   !empty($tag['id']) ? $tag['id'] : null;
+		$row =   !empty($tag['row']) ? $tag['row'] : 99;
         
 		//$where = $tag['where'];
 		$Str = '<?php ';
