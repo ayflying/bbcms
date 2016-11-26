@@ -1,12 +1,10 @@
 <?php
 // +----------------------------------------------------------------------
-// | ThinkPHP [ WE CAN DO IT JUST THINK ]
+// | BBCMS
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2015 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2014-2017 http://www.luoe.cn All rights reserved.
 // +----------------------------------------------------------------------
-// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
-// +----------------------------------------------------------------------
-// | Author: liu21st <liu21st@gmail.com>
+// | Author:  ayflying<ay@7cuu.com>
 // +----------------------------------------------------------------------
 
 if(version_compare(PHP_VERSION,'5.4.0','<'))  die('require PHP > 5.4.0 !');
@@ -15,7 +13,7 @@ if(version_compare(PHP_VERSION,'5.4.0','<'))  die('require PHP > 5.4.0 !');
 // 定义应用目录
 define('APP_PATH', './application/');
 // 开启调试模式
-define('APP_DEBUG', true);
+//define('APP_DEBUG', true);
 define('EXTEND_PATH', APP_PATH.'common/library');
 //全局静态变量
 include 'config.php';
