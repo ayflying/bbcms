@@ -85,10 +85,25 @@
 <!--内容结束-->
 
 <script>
-
 $(function(){
+	var html;
+	$(".box").each(function(i){
+	  var html = $(this).find('dd li').html();
+	  if(html == null){
+		  $(this).remove();
+	  }
+	  /*
+	  if(html.length == 0){
+		  alert(html);
+	  }
+	  */
+	  
+	  //alert($(this).text())
+	  
+	});
+  
+	
 	jQuery(".jdt").slide({mainCell:".bd",autoPlay:true});
 });
-
 </script>
 {include file="common/footer"}
