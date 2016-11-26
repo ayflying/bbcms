@@ -88,21 +88,13 @@
 $(function(){
 	var html;
 	$(".box").each(function(i){
-	  var html = $(this).find('dd li').html();
+	  html = $(this).find('dd li').html();
 	  if(html == null){
 		  $(this).remove();
 	  }
-	  /*
-	  if(html.length == 0){
-		  alert(html);
-	  }
-	  */
-	  
-	  //alert($(this).text())
-	  
 	});
   
-	
+	//焦点图
 	jQuery(".jdt").slide({mainCell:".bd",autoPlay:true});
 });
 </script>

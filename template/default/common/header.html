@@ -57,9 +57,9 @@
               </ul>
               
               <ul class="nav navbar-nav navbar-right">
-              	<form class="navbar-form navbar-left" role="search">
+              	<form action="{:url('portal/search/index')}" class="navbar-form navbar-left" role="search">
                   <div class="form-group">
-                    <input type="text" class="form-control" placeholder="请输入关键词">
+                    <input name="search" type="text" class="form-control" id="search" placeholder="请输入关键词">
                   </div>
                   <button type="submit" class="btn btn-default"><i class="glyphicon glyphicon-search"></i>搜索</button>
                 </form>

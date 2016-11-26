@@ -12,7 +12,7 @@ class Lists extends Common{
         }
 		//$this -> assign('title',$sql['name'].' - ');
 		//$this -> assign('bb',$sql);
-        $this -> _G['menu'] = $sql;
+        
 		$where['status']= 1;
 		
 		
@@ -22,7 +22,7 @@ class Lists extends Common{
 			$type[] = (int)$tid;
 			$where['tid'] = ['in',$type];
 		}
-		isset($search) and $where['title'] = ['like' , '%'.$search.'%'];
+		//isset($search) and $where['title'] = ['like' , '%'.$search.'%'];
 		
 		if($sql['mod']>0){
 			$list = Db::view(['portal_article','a'],'*')
@@ -34,8 +34,10 @@ class Lists extends Common{
 		}
 		$page = $list->render();
         
+        $this -> _G['menu'] = $sql;
         $this -> _G['page'] = $page;
         $this -> _G['list'] = $list;
+        $this -> _G['title'] = $sql['name'];
         $this -> assign('_G',$this -> _G);
         
 		return $this-> fetch($this -> _G['menu']['template']);
