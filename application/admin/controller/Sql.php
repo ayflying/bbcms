@@ -8,7 +8,6 @@ class Sql extends Common
 {
     
     public function index(){
-        
         if(request()->isPost()){
             $sql = input('post.sql');
             $this -> assign('sql', $sql);
@@ -22,9 +21,14 @@ class Sql extends Common
     */
     public function sql($sql)
     {
-        $arr = explode(';',$sql);
+        $sql = str_replace("\r\n", "", $sql);
+        $sql = preg_replace('/--(.*?)---/', '', $sql);
+        $prefix = Config::get('database.prefix');
+        $sql = str_replace('bb_', $prefix, $sql);
+        
+        $sql_arr = explode(';',$sql);
         $return = 0;
-        foreach($arr as $val){
+        foreach($sql_arr as $val){
             if(!empty($val)){
                 try{
                     $return += Db::execute($val);
