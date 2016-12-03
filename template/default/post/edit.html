@@ -1,0 +1,181 @@
+{include file="common/header" title='编辑' keywords='' description='' /}
+<style type="text/css">
+.thumb>ul>li {
+	position: relative;
+}
+.thumb>ul>li>img {
+}
+.thumb>ul>li>input {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	left: 0px;
+	top: 0px;
+	opacity: 0.0;
+}
+</style>
+{load href="__PUBLIC__/cloud/script/jquery.form.min.js" /}
+
+<div class="container">
+    <form id="edit" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+   	  <label for="title">标题</label>
+      <input name="title" type="text" class="form-control" id="title" value="{$_G.article.title}">
+	</div>
+    
+    <div class="thumb form-group">
+   	  <label for="title">焦点图</label>
+      <ul class="row list-unstyled">
+      	<li class="col-md-2">
+          <img class="img-thumbnail" src="{$_G.article.thumb.0|default='./public/cloud/images/image.png'}" width="100%" />
+          <input name="thumb[]" thumb_id="0" type="file" accept="image/*" />
+        </li>
+        <li class="col-md-2">
+          <img class="img-thumbnail" src="{$_G.article.thumb.1|default='./public/cloud/images/image.png'}" width="100%" />
+          <input name="thumb[]" thumb_id="1" type="file" accept="image/*" />
+        </li>
+        <li class="col-md-2">
+          <img class="img-thumbnail" src="{$_G.article.thumb.2|default='./public/cloud/images/image.png'}" width="100%" />
+          <input name="thumb[]" thumb_id="2" type="file" accept="image/*" />
+        </li>
+        <li class="col-md-2">
+          <img class="img-thumbnail" src="{$_G.article.thumb.3|default='./public/cloud/images/image.png'}" width="100%" />
+          <input name="thumb[]" thumb_id="3" type="file" accept="image/*" />
+        </li>
+        <li class="col-md-2">
+          <img class="img-thumbnail" src="{$_G.article.thumb.4|default='./public/cloud/images/image.png'}" width="100%" />
+          <input name="thumb[]" thumb_id="4" type="file" accept="image/*" />
+        </li>
+        <li class="col-md-2">
+          <img class="img-thumbnail" src="{$_G.article.thumb.5|default='./public/cloud/images/image.png'}" width="100%" />
+          <input name="thumb[]" thumb_id="5" type="file" accept="image/*" />
+        </li>
+      </ul>
+	</div>
+    
+    
+    <div class="form-group">
+   	  <label for="description">摘要</label>
+      <textarea id="description" name="description" class="form-control" rows="2">{$_G.article.description}</textarea>
+	</div>
+    
+    <div class="form-group">
+   	  <label for="content">内容</label>
+      {include file="../default/common/editor" name="content" value="$_G.article.addonarticle.content" /}
+	</div>
+    
+	
+    
+    <br />
+	<input type="submit" class="btn btn-default" id="submit" value="提交">
+	
+    </form>
+</div>
+
+<script>
+
+$(function(){
+	/*
+	//上传焦点图
+	var obj = $(".thumb input");   //设置上传按钮的对象
+	obj.change(function(e) {
+		var imgobj = $(this).siblings("img");
+		var objUrl = getObjectURL(this.files[0]);
+		if(!objUrl){	//如果图片不存在
+			objUrl = "./public/cloud/images/image.png";
+		}
+		imgobj.attr("src",objUrl);
+    });
+	*/
+	//上传焦点图-end
+	var obj = $(".thumb input");   //设置上传按钮的对象
+	obj.change(function(e) {
+		var thumb_id = $(this).attr('thumb_id');
+		var imgobj = $(this).siblings("img");
+		var objUrl = getObjectURL(this.files[0]);
+		imgobj.attr("src",objUrl);
+		$('#edit').ajaxSubmit({
+			data:{
+				thumb_id:thumb_id,	
+			}	
+		});
+		//$(this).attr("value","");
+		var file = $(this) 
+		file.after(file.clone().val("")); 
+		file.remove();
+		/*
+		filename = $(this).val();
+		//alert(filename);
+		$.ajax({
+		  type: "POST",
+		  url: "{:request()->url()}",
+		  enctype: 'multipart/form-data',
+		  data: {
+			file: filename
+		  },
+		  success: function () {
+			alert("Data Uploaded: ");
+		  }
+		});
+		*/
+		
+	});
+	
+	
+	//检测提交按钮
+	$("#submit").click(function(e) {
+		//判断再有是否为空，否则写入摘要
+		var description = $("#description").val();
+		if(description.length <= 0){
+			var str = editor.getContentTxt();
+			
+		  $("#description").val(editor.getContentTxt());
+		}
+		//摘要-end
+		
+		//检测标题是否为空
+		var msg = '';
+		var title = $("#title").val();
+		if(title.length < 2){
+			var msg = "标题不能为空";	
+		}
+		
+		if(msg != ''){
+			//e.preventDefault();
+			alert(msg);
+			return false;
+		}
+			
+		$("#edit").submit();
+		
+		
+	});
+	
+});
+
+	
+//建立一個可存取到該file的url
+function getObjectURL(file) {
+	var url = null ; 
+	if (window.createObjectURL!=undefined) { // basic
+		url = window.createObjectURL(file) ;
+	} else if (window.URL!=undefined) { // mozilla(firefox)
+		url = window.URL.createObjectURL(file) ;
+	} else if (window.webkitURL!=undefined) { // webkit or chrome
+		url = window.webkitURL.createObjectURL(file) ;
+	}
+	return url ;
+}
+
+var aa = "asdfsdgsdh";
+$.post('index.php',
+{
+	name:'123',
+	ayay:aa,	
+},function(e){
+	
+});
+
+</script>
+
+{include file="common/footer" /}

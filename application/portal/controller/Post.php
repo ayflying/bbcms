@@ -132,11 +132,10 @@ class Post extends Common{
             $add -> allowField(true) -> save($post);
             $aid = $add -> aid;
             $add -> addonarticle() ->save(['content'=>$post['content']]);
-            
             //修改附件为当前aid
             Db::name('portal_attachment') -> where('aid','null') ->  where('uid',$uid) -> setField('aid',$aid);
             
-            return $this -> success("添加成功");
+            return $this -> success("发布完成",null,null,1);
         }else{
             
             $this -> _G['title'] = $sql['name'].' - ';
@@ -147,7 +146,46 @@ class Post extends Common{
 	
 	public function edit($aid){
 		$uid = $this -> uid;
-		
+        
+        if(request() -> isAjax()){
+            $post = input('post.');
+            $article = PortalArticle::get($aid)->thumb;
+            //修改thumb
+            $thumb_id = $post['thumb_id'];
+            //dump($article['thumb']);
+            $data['thumb'] = $article;
+            $files = request()->file('thumb');
+            foreach($files as $file){
+                //dump($file);
+                $info = $file -> move('./uploads/ceshi');
+                $this -> thumb($info->getPathname(),300);
+                $file_data = $this -> attachment($info,$aid,$file-> getInfo()['name']);
+                $data['thumb'][$thumb_id] = $file_data['url'];
+                $data['aid'] = $aid;
+                PortalArticle::update($data);
+            }
+            $this -> success("success");
+        }
+        
+        
+		if (request()->isPost()){
+            $post = input('post.');
+            unset($post['thumb']);
+            $article = PortalArticle::get($aid);
+            $article -> allowField(true) -> save($post);
+            $article -> addonarticle -> save(['content' => $post['content']]);
+            $this -> success("编辑完成",null,null,1);
+            
+        }else{
+            $article = PortalArticle::get($aid);
+            $article -> addonarticle;
+            //dump($article -> toArray());
+            $this -> _G['title'] = $article -> title.' - ';
+            $this -> _G['article'] = $article;
+            $this -> assign('_G',$this -> _G);
+            
+            return $this->fetch('/post/edit');
+        }
 		
 		
 	}
@@ -177,6 +215,23 @@ class Post extends Common{
             $thumb[] = $data['url'];
         }
         return $thumb;
+    }
+    
+    //写入附件数据库
+    public function attachment($info,$aid=null,$original=null){
+        
+        $data = [
+                'uid' => $this -> uid,
+                'aid' => $aid,
+                'original' => $original,
+                'name' => $info->getFilename(),
+                'url' => $info->getPathname(),
+                'size' => filesize($info->getPathname()),   //获取实际大小
+                'type' => $info-> getExtension(),
+                'create_time' => time(),
+            ];
+        $id = Db::name("portal_attachment") -> insert($data);
+        return $data;
     }
     
     /*图片压缩*/

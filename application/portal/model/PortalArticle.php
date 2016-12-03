@@ -15,7 +15,7 @@ class PortalArticle extends Model
     ];
 	
 	public function addonarticle(){
-		return $this->hasOne('PortalAddonarticle','aid');
+		return $this->hasOne('PortalAddonarticle','aid')->field('aid,content');
 	}
 	public function attachment(){
 		return $this->hasMany('PortalAttachment','aid');

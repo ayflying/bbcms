@@ -1,0 +1,100 @@
+<div class="form-group">
+  <label for="title">焦点图</label>
+  <!--<input name="thumb" accept="image/*" multiple="true" type="file" id="thumb" />-->
+  <div id="tuozhuai" class="jumbotron">
+  
+    <div class="list row"></div>
+    <hr />
+    <div id="fileList" class="uploader-list"></div>
+    <div id="filePicker" class="btn btn-default">点击选择文件</div>
+  </div>
+</div>
+
+<script>
+
+$(function(){
+	
+	
+	// 初始化Web Uploader
+	var uploader = WebUploader.create({
+		// 选完文件后，是否自动上传。
+		auto: false,
+		dnd : "#tuozhuai",
+		// swf文件路径
+		swf: 'http://cdn.staticfile.org/webuploader/0.1.0/Uploader.swf',
+		// 文件接收服务端。
+		server: 'http://webuploader.duapp.com/server/fileupload.php',
+		// 选择文件的按钮。可选。
+		// 内部根据当前运行是创建，可能是input元素，也可能是flash.
+		pick: '#filePicker',
+		// 只允许选择图片文件。
+		accept: {
+			title: 'Images',
+			extensions: 'gif,jpg,jpeg,bmp,png',
+			mimeTypes: 'image/*'
+		},
+		//允许数量
+		fileNumLimit : 6,
+		
+		
+		
+	});
+	
+	var list = $(".list");
+	// 当有文件添加进来的时候
+	uploader.on( 'fileQueued', function( file ) {
+		var $li = $(
+				'<div class="col-md-2 img-box" ><div id="' + file.id + '" class="file-item thumbnail">' +
+					'<a href="javascript:;" class="cancel">删除</a>'+
+					'<img>' +
+					'<div class="caption">' + file.name + '</div>' +
+				'</div></div>'
+				),
+				/*
+			 $btns = $('<div class="file-panel">' +
+				'<span class="cancel">删除</span>' +
+				'<span class="rotateRight">向右旋转</span>' +
+				'<span class="rotateLeft">向左旋转</span></div>').appendTo( $li ),
+				*/
+			$img = $li.find('img');
+	
+		// $list为容器jQuery实例
+		list.append( $li );
+		
+		
+		
+		// 创建缩略图
+		// 如果为非图片文件，可以不用调用此方法。
+		// thumbnailWidth x thumbnailHeight 为 100 x 100
+		var thumbnailWidth = 80;
+		var thumbnailHeight = 100;
+		uploader.makeThumb( file, function( error, src ) {
+			if ( error ) {
+				$img.replaceWith('<span>不能预览</span>');
+				return;
+			}
+	
+			$img.attr( 'src', src );
+		}, thumbnailWidth, thumbnailHeight );
+		
+		$li.on('click', '.cancel', function() {
+			//alert('111');
+			console.log(file);
+			uploader.removeFile(file);
+			$(this).parents(".img-box").remove();
+			//alert(html);
+		})
+		
+	});
+	
+	/*
+	$("#tuozhuai div .thumbnail .cancel").click(function(e) {
+        alert('2222');
+		//uploader.removeFile(file);
+    });
+	*/
+	
+	
+});
+
+</script>

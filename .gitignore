@@ -1,3 +1,5 @@
-/runtime
-**/application/update
-**/application/wechat
+/runtime/
+/application/update/
+/application/wechat/
+/template/*
+!/template/default/
