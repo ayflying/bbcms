@@ -1,5 +1,14 @@
 /runtime/
-/application/update/
-/application/wechat/
+/update.txt
+/application/*
+!/application/addon/
+!/application/admin/
+!/application/common/
+!/application/extra/
+!/application/install/
+!/application/member/
+!/application/portal/
+!/application/update/
+!/application/*.php
 /template/*
 !/template/default/
