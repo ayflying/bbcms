@@ -3,20 +3,26 @@
 <div class="row">
 	<div class="col-md-4">
 		<div class="card">
-		<div class="card-header"><i class="glyphicon glyphicon-list-alt"></i> 内容</div>
+		<div class="card-header"><i class="glyphicon glyphicon-list-alt"></i> 内容统计</div>
 		<div class="card-block list-unstyled">
-			<li>总    数: {$num.article.num}</li>
-            <li>今日添加: {$num.article.today}</li>
+            <li>今日: {$num.article.today}</li>
+            <li>昨天: {$num.article.yesterday}</li>
+            <li>本周: {$num.article.week}</li>
+            <li>本月: {$num.article.month}</li>
+            <li>总数: {$num.article.num}</li>
 		</div>
 		</div>
     </div>
     
     <div class="col-md-4">
 		<div class="card">
-		<div class="card-header"><i class="glyphicon glyphicon-user"></i> 用户</div>
+		<div class="card-header"><i class="glyphicon glyphicon-user"></i> 用户统计</div>
 		<div class="card-block list-unstyled">
-			<li>用户总数: {$num.user.num}</li>
-            
+        	<li>今日: {$num.user.today}</li>
+            <li>昨天: {$num.user.yesterday}</li>
+            <li>本周: {$num.user.week}</li>
+            <li>本月: {$num.user.month}</li>
+            <li>总数: {$num.user.num}</li>
 		</div>
 		</div>
     </div>
