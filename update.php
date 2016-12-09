@@ -22,7 +22,7 @@ switch($get){
 
 
 function download_file(){
-    $url = UPDATE_URL . '/update/index/download';
+    $url = UPDATE_URL . '/update/download';
     $file = './update.txt';
     file_exists($file) && $list = json_decode(file_get_contents('./update.txt'),true);
     if(empty($list)){
@@ -34,24 +34,17 @@ function download_file(){
     $arr = array_shift($list);
     //$arr['count'] = count($list);
     $post = [
-        'key' => '123',
+        'host' => $_SERVER['HTTP_HOST'],
         'file' => $arr['dir'],
     ];
     $put = curl($url,$post);
     
     $file_sub_path = dirname($post['file']).'/';
-    !file_exists($file_sub_path) && mkdir($file_sub_path,0777,true);
+    file_exists($file_sub_path) or mkdir($file_sub_path,0777,true);
     file_put_contents($post['file'],$put);
     file_put_contents($file, json_encode($list));
     echo json_encode($arr);
 }
-
-function download_sql(){
-    
-    
-    
-}
-
 
 /*
 * curl函数

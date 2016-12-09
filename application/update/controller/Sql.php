@@ -20,7 +20,11 @@ class Sql extends Controller
 		$filelist = scandir($dir);
 		unset($filelist[0]);
 		unset($filelist[1]);
-		
+        
+		if($filelist == null){
+            $this -> error('无需更新',null,['success'=>0]);
+        }
+        
         foreach($filelist as $val){
 			$sql_list[] = basename($dir.$val,".sql");
 		}

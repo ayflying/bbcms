@@ -7,7 +7,8 @@ use think\Db;
 class Sql extends Common
 {
     
-    public function index(){
+    public function index()
+    {
         if(request()->isPost()){
             $sql = input('post.sql');
             $this -> assign('sql', $sql);

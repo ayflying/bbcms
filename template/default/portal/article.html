@@ -1,24 +1,20 @@
 {include file="common/header" title="$_G.article.title" keywords="" description="$bb.description" /}
 <!-- /header -->
-<div class="article container-fluid">
-  <div class="left col-md-3"></div>
-  
-  <div class="right col-md-9">
+<div class="article">
+  <div class="col-md-3"></div>
+  <div class="col-md-9">
   	<div class="panel panel-default">
   	  <ol class="breadcrumb panel-heading">
       	<li><a href="{:url('/')}">首页</a></li>
       	<li><a href="{:url('/tid/'.$_G.article.tid)}">{$_G.menu.name}</a></li>
-        <li class="active">{$_G.article.title}</li>
       	<div class="pull-right"><a href="{:url('@portal/post/edit?aid='.$_G.article.aid)}">编辑</a></div>
       </ol>
   	
   	  <article class="panel-body">
     	<div class="jdt" style="width:auto;">
           <ul class="hd list-unstyled">
-          	{php}$i=0;{/php}
             {foreach name="$_G.article.thumb" item="val"}
-              {php}$i++;{/php}
-              <li>{$i}</li>
+              <li>{$key+1}</li>
             {/foreach}
             
           </ul>

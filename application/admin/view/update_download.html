@@ -21,7 +21,8 @@ function download(){
 			setTimeout(download,500);
 			//setTimeout(download(),10000);
 		}else{
-			$('.file_list').prepend('<p>文件更新完成</p>');	
+			$('.file_list').prepend('<p>文件更新完成,准备更新数据库</p>');
+			window.location.href="{:url('sql')}";	
 		}
 		//return data.dir;
 	});

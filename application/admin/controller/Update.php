@@ -13,7 +13,7 @@ class Update extends Common
         }
         
         Cache::set('old_version',Config::get('version'),0);
-        $url =  UPDATE_URL . "/update";
+        $url =  UPDATE_URL . "/update/list";
         $put = curl($url);
         if(empty($put)){
             return $this -> error("更新节点异常，请检查配置文件");
@@ -43,12 +43,11 @@ class Update extends Common
     /*准备升级sql*/
     public function sql(){
         $post['version'] = Cache::get('old_version');
-        
-        $url =  UPDATE_URL . "/update/sql/index";
-        $put = curl($url,$post);
-        //dump($put);
-        echo $put;
-        
+        $url =  UPDATE_URL . "/update/sql";
+        $sql = curl($url,$post);
+        $db = new Sql();
+        $num = $db -> sql($sql);
+        $this -> success("升级完成，影响数据".$num."条","system/cache");
     }
     
 }
