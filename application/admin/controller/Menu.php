@@ -55,11 +55,11 @@ class Menu extends Common{
 			$save = $post;
 			if(empty($post['template'])){
 				//$menu_db -> template = './Portal/list';
-				$save['template'] = './Portal/list';
+				$save['template'] = './portal/list';
 			}
 			if(empty($post['template2'])){
 				//$menu_db -> template2 = './Portal/article';
-				$save['template2'] = './Portal/article';
+				$save['template2'] = './portal/article';
 			}
 			//默认值
 			

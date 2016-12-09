@@ -5,4 +5,5 @@ return [
 	'add/:tid' => '@portal/post/add',
 	'edit/:aid' => '@portal/post/edit',
     's' => '@portal/search/index',
+    'uid/:uid' => '@member/index/index',
 ];

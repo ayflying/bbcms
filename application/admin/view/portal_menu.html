@@ -16,7 +16,7 @@
             <td>&nbsp;</td>
             <td>
             <span class="btn-group" style="float:right;">
-            <a href="{:url('/add/'.$val['tid'])}" target="_blank" class="btn btn-primary">添加文章</a>
+            <a href="{:url('@portal/post/add?tid='.$val['tid'])}" target="_blank" class="btn btn-primary">添加文章</a>
             <a href="{:url('Portal/article_list?tid='.$val['tid'])}" class="btn btn-secondary">查看文章</a>
             <a href="{:url('menu_edit?tid='.$val['tid'])}" class="btn btn-secondary">编辑</a>
             <button  href="{:url('menu_delete?tid='.$val['tid'])}" class="btn btn-danger delete" >删除</button >

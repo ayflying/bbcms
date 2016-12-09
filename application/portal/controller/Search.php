@@ -15,7 +15,7 @@ class Search extends Common
         $this -> _G['list'] = $list;
         $this -> assign('_G',$this -> _G);
         
-        return $this-> fetch('./Portal/search');
+        return $this-> fetch('./portal/search');
         
     }
 
