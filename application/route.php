@@ -1,8 +1,8 @@
 <?php
 return [
-    'aid/:aid' => '@portal/Article/index',
-	'tid/[:tid]' => '@portal/Lists/index',
+    'aid/:aid' => '@portal/article/index',
+	'tid/[:tid]' => '@portal/lists/index',
 	'add/:tid' => '@portal/post/add',
 	'edit/:aid' => '@portal/post/edit',
-    'ss/:search' => '@portal/Search/index',
+    's' => '@portal/search/index',
 ];
