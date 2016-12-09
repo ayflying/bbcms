@@ -68,4 +68,5 @@ return [
 		'__Tpl__' => VIEW_PATH,
 		'__PUBLIC__' => './public/',
 	],
+    
 ];

@@ -16,10 +16,12 @@ function download(){
 	$.getJSON('./update.php?action=file',function(data){
 		//alert(data.dir);
 		console.log(data);
-		if(data != null){
+		if(data.size > 0){
 			$('.file_list').prepend('<p>'+data.dir+'</p>');
 			setTimeout(download,500);
 			//setTimeout(download(),10000);
+		}else{
+			$('.file_list').prepend('<p>文件更新完成</p>');	
 		}
 		//return data.dir;
 	});

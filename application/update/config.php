@@ -16,9 +16,11 @@ return [
         APP_PATH.'extra',
 	],
 	'file' => [
+        './update.php',
 		'./robots.txt',
 		'./.htaccess',
 		'./public/install.lock',
+        './README.md',
         APP_PATH.'config.php',
         APP_PATH.'helper.php',
         APP_PATH.'route.php',

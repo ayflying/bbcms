@@ -63,7 +63,7 @@ class Bb extends TagLib{
             $tag_sql = \think\Db::name("PortalMenu") -> where($where) -> order("weight desc") -> limit("'.$row.'") -> select();
             foreach($tag_sql as $key => $'.$item.'):
             //input("tid") and $'.$item.'["action"] = "click";
-            $'.$item.'["url"] = url("/tid/".$'.$item.'["tid"]);
+            $'.$item.'["url"] = url("@portal/lists/index?tid=".$'.$item.'["tid"]);
         ?>';
         $Str  .=   $content;
         $Str  .=   '<?php endforeach; ?>';
@@ -131,8 +131,8 @@ class Bb extends TagLib{
                 $mod_table = "portal_mod_".$'.$item.'["mod"];
                 $'.$item.'["mod"] = db($mod_table) -> find($'.$item.'["aid"]);
             }
-            $'.$item.'["url"] = url("/aid/".$'.$item.'["aid"]);
-            $'.$item.'["turl"] = url("/tid/".$'.$item.'["tid"]);
+            $'.$item.'["url"] = url("@portal/article/index?aid=".$'.$item.'["aid"]);
+            $'.$item.'["turl"] = url("@portal/Lists/index?tid=".$'.$item.'["tid"]);
             //dump($'.$item.');
             
             ?>';

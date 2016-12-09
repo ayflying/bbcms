@@ -27,7 +27,7 @@ function download_file(){
     file_exists($file) && $list = json_decode(file_get_contents('./update.txt'),true);
     if(empty($list)){
         unlink($file);
-        echo null;
+        echo json_encode(['size'=>0]);
         return null;
         exit;
     }

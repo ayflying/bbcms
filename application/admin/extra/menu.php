@@ -5,7 +5,7 @@ return [
 			"系统设置" => "System/index",
 			"网站模板" => 'System/theme',
 			"更新缓存" => 'System/cache',
-			"在线升级" => "Update/index",
+			"在线升级" => "Update/index?msg=正在检测节点服务器，请稍候！",
 			"数据库" => "sql/index",
 		],
 		"内容管理" => [

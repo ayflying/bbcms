@@ -7,6 +7,10 @@ class Update extends Common
 {
     public function index()
     {
+        if($msg = input('msg')){
+            $this -> success($msg,'index',null,1);
+            exit;
+        }
         
         Cache::set('old_version',Config::get('version'),0);
         $url =  UPDATE_URL . "/update";
