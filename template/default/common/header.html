@@ -9,27 +9,26 @@
     <meta name="description" content="[description]{$_G.system.description}" />
 
     <!-- Bootstrap -->
-    <link rel="stylesheet" href="__Tpl__/css/bootstrap.min.css">
-    <link rel="stylesheet" href="__Tpl__/css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="__Tpl__/css/bb.css">
-    <script type="text/javascript" src="__Tpl__/js/jquery-1.11.1.min.js"></script>
-  	<script type="text/javascript" src="__Tpl__/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="__Tpl__/js/jquery.SuperSlide.2.1.1.js"></script>
+    <link rel="stylesheet" href="./template/default/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./template/default/css/bb.css">
+    <script type="text/javascript" src="__PUBLIC__/cloud/script/jquery.min.js"></script>
+  	<script type="text/javascript" src="./template/default/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./template/default/js/jquery.SuperSlide.2.1.1.js"></script>
     {load href="__PUBLIC__/cloud/script/jquery.lazyload.min.js" /}
-    {load href="__Tpl__/js/bb.js"}
+    {load href="./template/default/js/bb.js"}
   </head>
   <body>
   	<header>
     	<div class="top">
         <div class="container">
-        	<div class="col-md-4 hidden-sm hidden-xs">湖北络易科技有限公司</div>
+        	<div class="col-md-4 hidden-sm hidden-xs">{$_G.system.webname}</div>
             <div class="pull-right"><a href="">登录</a> | <a href="">注册</a></div>
         </div>
         </div>
         
         <div class="container-fluid hidden-xs">
         	<div class="logo" style="margin:10px 0;">
-            	<a href="{:url('/')}"><img src="__Tpl__/images/logo.png" alt="湖北络易科技有限公司" height="60" /></a>
+            	<a href="{:url('/')}"><img src="./template/default/images/logo.png" height="60" /></a>
             </div>
         </div>
         <!--导航开始-->

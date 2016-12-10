@@ -19,12 +19,12 @@
       <dl class="col-md-12">
         {notempty name="val.litpic"}
       	<div class="col-md-2">
-          <a href="{:url('/aid/'.$val['aid'])}" style="height:120px;"><img data-original="{$val.litpic}" class="img-thumbnail" /></a>
+          <a href="{:url('@portal/article/index?aid='.$val['aid'])}" style="height:120px;"><img data-original="{$val.litpic}" class="img-thumbnail" /></a>
         </div>
         {/notempty}
         <div>
-      	  <dt><a href="{:url('/aid/'.$val['aid'])}">{$val.title}</a><time class="hidden-xs pull-right">{$val.create_time|date='Y-m-d H:i:s',###}</time></dt>
-      	  <dd><a href="{:url('/aid/'.$val['aid'])}">{$val.description}</a></dd>
+      	  <dt><a href="{:url('@portal/article/index?aid='.$val['aid'])}">{$val.title}</a><time class="hidden-xs pull-right">{$val.create_time|date='Y-m-d H:i:s',###}</time></dt>
+      	  <dd><a href="{:url('@portal/article/index?aid='.$val['aid'])}">{$val.description}</a></dd>
         </div>
       </dl>
       {/foreach}
