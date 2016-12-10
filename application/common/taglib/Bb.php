@@ -185,7 +185,7 @@ class Bb extends TagLib{
 		$id = $tag['id'];
 		//$where = $tag['where'];
 		$Str = '<?php ';
-		$Str .= ' $tag_sql = db("announce_ad") -> find('.$id.'); ';
+		$Str .= ' $tag_sql = db("operate_ad") -> find('.$id.'); ';
 		$Str .= ' if($tag_sql["status"] != 0 || $tag_sql["end_time"] > time()): ';
 		$Str .= ' echo htmlspecialchars_decode($tag_sql["value"]); ';
 		$Str .= ' endif; ';
@@ -211,7 +211,7 @@ class Bb extends TagLib{
         
 		//$where = $tag['where'];
 		$Str = '<?php ';
-		$Str .= ' $tag_sql = db("announce_flink")  -> limit('.$row.') -> select(); ';
+		$Str .= ' $tag_sql = db("operate_flink")  -> limit('.$row.') -> select(); ';
 		$Str .=   ' foreach($tag_sql as $bb): ';
 		$Str .= '?>';
 		//$Str .= $this->tpl->parse($content);
