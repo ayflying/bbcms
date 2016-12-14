@@ -686,7 +686,12 @@ class Request
     public function post($name = '', $default = null, $filter = '')
     {
         if (empty($this->post)) {
-            $this->post = $_POST;
+            $content = $this->input;
+            if (empty($_POST) && strpos($content, '":')) {
+                $this->post = json_decode($content, true);
+            } else {
+                $this->post = $_POST;
+            }
         }
         if (is_array($name)) {
             $this->param       = [];
@@ -847,7 +852,7 @@ class Request
                     $keys  = array_keys($file);
                     $count = count($file['name']);
                     for ($i = 0; $i < $count; $i++) {
-                        if (empty($file['tmp_name'][$i])) {
+                        if (empty($file['tmp_name'][$i]) || !is_file($file['tmp_name'][$i])) {
                             continue;
                         }
                         $temp['key'] = $key;
@@ -861,7 +866,7 @@ class Request
                     if ($file instanceof File) {
                         $array[$key] = $file;
                     } else {
-                        if (empty($file['tmp_name'])) {
+                        if (empty($file['tmp_name']) || !is_file($file['tmp_name'])) {
                             continue;
                         }
                         $array[$key] = (new File($file['tmp_name']))->setUploadInfo($file);
@@ -1258,7 +1263,7 @@ class Request
         }
         // IP地址合法验证
         $long = sprintf("%u", ip2long($ip));
-        $ip   = $long ? array($ip, $long) : array('0.0.0.0', 0);
+        $ip   = $long ? [$ip, $long] : ['0.0.0.0', 0];
         return $ip[$type];
     }
 
