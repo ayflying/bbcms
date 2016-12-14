@@ -60,7 +60,7 @@ class System extends Common{
             
             $this -> assign('sql',$sql);
             $this -> assign('config',$config);
-			return $this->fetch('/system');
+			return $this->fetch('./system');
 			
 		}
     }

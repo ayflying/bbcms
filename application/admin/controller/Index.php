@@ -35,7 +35,7 @@ class Index extends Common{
 			'user' => $this -> user(),
 		];
 		$this -> assign('num',$num);
-		return $this->fetch('/index');
+		return $this->fetch('./index');
 		
 	}
 	

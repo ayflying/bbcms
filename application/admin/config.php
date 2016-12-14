@@ -13,8 +13,8 @@ return [
         '__PUBLIC__' => './public/',
 	],
 	
-	'dispatch_success_tmpl'  => '/jump',
-	'dispatch_error_tmpl'    => '/jump',
+	'dispatch_success_tmpl'  => './jump',
+	'dispatch_error_tmpl'    => './jump',
 	
 	
 ];
