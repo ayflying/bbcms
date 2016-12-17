@@ -106,8 +106,7 @@ class Portal extends Common{
 		
 		//删除模型表
 		if($article['mod'] > 0){
-			$mod = Db::name('PortalMod') -> field('table') -> find($article['mod']);
-			Db::name('portal_mod_'.$mod['table']) -> delete($aid);
+			Db::name('portal_mod_'.$article['mod']) -> delete($aid);
 		}
 		Db::name('portal_article') -> delete($aid);
 		Db::name('PortalAddonarticle') -> delete($aid);

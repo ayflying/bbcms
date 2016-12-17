@@ -107,10 +107,7 @@ class Post extends Common{
         $sql = Db::name('portal_menu') -> find($tid);
         $this -> assign('title',$sql['name'].'发布 - ');
         
-        if($sql['mod'] > 0){
-            $mod = Db::name('portal_mod')-> field('table,data') -> find($sql['mod']);
-            $mod_data = json_decode($mod['data'],true);
-        }
+        
         
         if (request()->isPost()){
             $post = input('post.');
@@ -120,7 +117,6 @@ class Post extends Common{
             $add -> tid = $tid;
             $add -> mod = $sql['mod'];
             //$add -> title = $post['title'];
-            
             
             //焦点图
             $thumb = $this -> thumb_upload('thumb');
@@ -132,11 +128,21 @@ class Post extends Common{
             $add -> allowField(true) -> save($post);
             $aid = $add -> aid;
             $add -> addonarticle() ->save(['content'=>$post['content']]);
+            
+            //检测当前内容模型
+            if($sql['mod'] > 0){
+                $post['mod']['aid'] = $aid;
+                $mod = Db::name('portal_mod_'.$sql['mod'])-> insert($post['mod']);
+            }
+            
             //修改附件为当前aid
             Db::name('portal_attachment') -> where('aid','null') ->  where('uid',$uid) -> setField('aid',$aid);
-            
             return $this -> success("发布完成",null,null,1);
         }else{
+            if($sql['mod'] > 0){
+                $mod = Db::name('portal_mod')-> field('table,data') -> find($sql['mod']);
+                $mod_data = json_decode($mod['data'],true);
+            }
             
             $this -> _G['title'] = $sql['name'].' - ';
             $this -> assign('_G',$this -> _G);
@@ -157,7 +163,7 @@ class Post extends Common{
             $files = request()->file('thumb');
             foreach($files as $file){
                 //dump($file);
-                $info = $file -> move('./uploads/ceshi');
+                $info = $file -> move('./uploads/thumb');
                 $this -> thumb($info->getPathname(),300);
                 $file_data = $this -> attachment($info,$aid,$file-> getInfo()['name']);
                 $data['thumb'][$thumb_id] = $file_data['url'];
@@ -174,6 +180,12 @@ class Post extends Common{
             $article = PortalArticle::get($aid);
             $article -> allowField(true) -> save($post);
             $article -> addonarticle -> save(['content' => $post['content']]);
+            
+            //检测模型层是否修改
+            if($article->mod > 0 && isset($post['mod'])){
+                $mod = Db::name('portal_mod_'.$article -> mod) -> where('aid',$aid) -> update($post['mod']);
+            }
+            
             $this -> success("编辑完成",null,null,1);
             
         }else{

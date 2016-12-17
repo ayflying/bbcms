@@ -15,7 +15,7 @@ class Article extends Common{
 		//dump($sql -> toArray());
 		
 		if($sql['mod']>0){
-			//$mod = Db::name('portal_mod') -> find($sql['mod']);
+			$mod = Db::name('portal_mod') -> find($sql['mod']);
 			$mod_list = Db::name('portal_mod_'.$sql['mod']) -> find($aid);
 			$mod = json_decode($mod['data'],true);
 			foreach($mod as $key => $val){

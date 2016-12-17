@@ -23,17 +23,18 @@ class Lists extends Common{
 			$where['tid'] = ['in',$type];
 		}
 		//isset($search) and $where['title'] = ['like' , '%'.$search.'%'];
-		
+		$table_article = 'portal_article';
 		if($sql['mod']>0){
-			$list = Db::view(['portal_article','a'],'*')
-			->view(['portal_mod_'.$sql['mod'],'m'],'*','a.aid = m.aid')
+			$table_mod = 'portal_mod_'.$sql['mod'];
+            //$list = Db::view(['portal_article'=>'a'],'*')
+			$list = Db::view($table_article)
+            ->view($table_mod,'*',$table_article.'.aid = '.$table_mod.'.aid','left')
 			->where($where) -> order($order) -> paginate(PAGE_NUM);
 		}else{
 			$list = Db::name('portal_article')
 			->where($where) -> order($order) -> paginate(PAGE_NUM);
 		}
 		$page = $list->render();
-        
         $this -> _G['menu'] = $sql;
         $this -> _G['page'] = $page;
         $this -> _G['list'] = $list;
