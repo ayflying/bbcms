@@ -91,7 +91,7 @@ class Post extends Common{
             ];
             //exit($file->getError());
         }else{
-            $arr = ['state' => '错误代码'.$file['error'].'文件上传失败，请检查php配置参数'];
+            $arr = ['state' => lang('错误').$file['error'].lang('文件上传失败')];
         }
         if(isset($arr)){
             return json_encode($arr);
@@ -137,7 +137,7 @@ class Post extends Common{
             
             //修改附件为当前aid
             Db::name('portal_attachment') -> where('aid','null') ->  where('uid',$uid) -> setField('aid',$aid);
-            return $this -> success("发布完成",null,null,1);
+            return $this -> success(lang('提交完成'),null,null,1);
         }else{
             if($sql['mod'] > 0){
                 $mod = Db::name('portal_mod')-> field('table,data') -> find($sql['mod']);
@@ -186,7 +186,7 @@ class Post extends Common{
                 $mod = Db::name('portal_mod_'.$article -> mod) -> where('aid',$aid) -> update($post['mod']);
             }
             
-            $this -> success("编辑完成",null,null,1);
+            $this -> success(lang('编辑完成'),null,null,1);
             
         }else{
             $article = PortalArticle::get($aid);

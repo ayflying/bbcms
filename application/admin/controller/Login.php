@@ -24,7 +24,7 @@ class Login extends Controller{
 		$sql = $user -> find($uid);
 		
 		if($sql['status'] != 1 ){
-			return $this -> error("该账户被停用！");
+			return $this -> error(lang("该账户被停用"));
 		}
 		$uid = cookie_encode('uid',$uid);
 		cookie('username',$sql['username'],2592000);
@@ -46,7 +46,7 @@ class Login extends Controller{
 		if(request()->isPost()){
 			$post = input('post.');
 			if(empty($post['username']) || empty($post['password'])){
-				$this -> error("用户名或者密码为空");
+				$this -> error(lang("用户名或者密码为空"));
 			}else{
 				$where['email|username|mobile'] = $post['username'];
 				$where['password'] = md5($post['password']);
@@ -64,9 +64,9 @@ class Login extends Controller{
 					//guid为管理员登录的重要标识，结构为md5(域名,加密的uid，数据库密码)三部分组成
 					$guid = md5($_SERVER['SERVER_NAME'].$uid.config('database.password'));
 					cookie('guid',$guid,0);
-					return $this->success('登陆成功',cookie('from'),'',1);
+					return $this->success(lang('登陆成功'),cookie('from'),'',1);
 				}else{
-					return $this -> error("用户名或者密码错误");
+					return $this -> error(lang("用户名或者密码错误"));
 				}
 			}
 		}else{

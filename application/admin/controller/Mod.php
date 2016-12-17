@@ -18,8 +18,7 @@ class Mod extends Common{
 			$post = input('post.');
 			$table = 'portal_mod';
 			$validate = [
-				'name|模型名称' => ['require','unique'=>$table],
-				//'table|数据表名'	=>['require','alphaNum','unique'=>$table],
+				"name|模型名称" => ['require','unique'=>$table],
 			];
 			$result = $this -> validate($post,$validate);
 			if($result !== true){
@@ -30,7 +29,7 @@ class Mod extends Common{
 			$table_id = Db::name($table) -> insertGetId($post);
 			$sql = 'create table '.config('database')['prefix'].'portal_mod_'.$table_id.' (aid int(11) not null auto_increment primary key)';
 			Db::execute($sql);
-			return $this -> success('创建成功');
+			return $this -> success(lang('添加完成'));
 			
 		}else{
 			return $this -> fetch('./mod_add');
@@ -51,7 +50,7 @@ class Mod extends Common{
 				$db -> where('id',$id) -> update(['data'=>$data]);
 				$sql = 'ALTER TABLE '.$prefix.'portal_mod_'.$id.' ADD '.$post['field'].' varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci';
 				Db::execute($sql);
-				return $this -> success("添加成功");
+				return $this -> success(lang('添加完成'));
 			
 			}else{	//修改字段
 				
@@ -66,7 +65,7 @@ class Mod extends Common{
 					}
 				}
 				$db -> where('id',$id) -> update(['data'=>json_encode2($post2)]);
-				return $this -> success("修改成功");
+				return $this -> success(lang('修改完成 '));
 			}
 		
 		}else{
@@ -89,14 +88,15 @@ class Mod extends Common{
 			unset($data[$field]);
 			$data = json_encode2($data);
 			$db -> where('id',$id) -> update(['data'=>$data]);
-			$sql = 'ALTER TABLE '.$prefix.'portal_mod_'.$id.' DROP COLUMN '.$field;
+            
+			echo $sql = 'ALTER TABLE '.$prefix.'portal_mod_'.$id.' DROP COLUMN '.$field;
 		}else{
 			$sql = "DROP TABLE ".$prefix."portal_mod_".$id;
 			$db -> delete($id);
 		}
 		
 		Db::execute($sql);
-		$this -> success("删除成功");
+		$this -> success(lang('删除完成'));
 	}
 	
 }

@@ -1,113 +1,99 @@
-{include file="./header" title="编辑模型" /}
+{include file="./header" title="$list.name" /}
 <div class="container-fluid">
-<form class="form-horizontal" action="" method="post" enctype="multipart/form-data">
-  <div class="panel panel-default">
-  <div class="panel-body">
-    <div class="col-sm-6">
-    	模型名称：{$list.name}
-    </div>
-    <div class="col-sm-6">
-    	数据表名：portal_mod_{$list.id}
-    </div>
-  </div>
-  </div>
+<form class="form-horizontal card card-block" action="" method="post" enctype="multipart/form-data">
   
-  <div class="panel panel-default">
-  <p class="panel-heading">模型字段</p>
-  <div class="panel-body">
+  <p class="card-title">{:lang('模型字段')}</p>
+  <div class="card-text">
   {foreach name='list.data' item='val'}
   
-  <div class="form-group field" id="box">
+  <fieldset class="form-group row">
   
   	<div class="col-sm-3">
     	<label for="name[]" class="sr-only">栏目名</label>
-		<input name="name[]" type="text" class="form-control" id="name" placeholder="输入名称" value="{$val.0}">
+		<input name="name[]" type="text" class="form-control" id="name" placeholder="{:lang('名称')}" value="{$val.0}">
     </div>
     <div class="col-sm-3">
 		<label for="field[]" class="sr-only">字段名</label>
-		<input name="field[]" type="text" class="form-control" id="name" placeholder="输入字段名字" value="{$key}">
+		<input name="field[]" type="text" class="form-control" id="name" placeholder="{:lang('字段')}" value="{$key}">
     </div>
     
     <div class="col-sm-4">
-		<label for="type[]" class="sr-only">类型</label>
+		<label for="type[]" class="sr-only">{:lang('类型')}</label>
         <select name="type[]" class="form-control" id="type[]">
-          <option value="text" {$val['1']=='text'?'selected ':''}>文本</option>
-          <option value="textarea" {$val['1']=='textarea'?'selected ':''}>多行文本</option>
-          <option value="select" {$val['1']=='select'?'selected ':''}>选项</option>
-          <option value="checkbox" {$val['1']=='checkbox'?'selected ':''}>多选</option>
-          <option value="radio" {$val['1']=='radio'?'selected ':''}>单选</option>
+          <option value="text" {$val['1']=='text'?'selected ':''}>{:lang('文本')}</option>
+          <option value="textarea" {$val['1']=='textarea'?'selected ':''}>{:lang('多行文本')}</option>
+          <option value="select" {$val['1']=='select'?'selected ':''}>{:lang('选项')}</option>
+          <option value="checkbox" {$val['1']=='checkbox'?'selected ':''}>{:lang('多选')}</option>
+          <option value="radio" {$val['1']=='radio'?'selected ':''}>{:lang('单选')}</option>
         </select>
   	</div>
     <div class="col-sm-2">
-           	  <a class="btn btn-primary" href="{:url('mod_del?',['id'=>input('id'),'field'=>$key])}" role="button">删除字段</a>
+           	  <a class="btn btn-primary" href="{:url('mod_del?',['id'=>input('id'),'field'=>$key])}" role="button">{:lang('删除字段')}</a>
 	</div>
     <div class="col-sm-12" style="margin-top:10px;">
     <label for="value[]" class="sr-only">数据</label>
-    <textarea name="value[]" rows="3" class="form-control" placeholder="输入数据，每个内容用半角','分割，如：买房,卖房,东城区,城关镇">{$val.2}</textarea>
+    <textarea name="value[]" rows="3" class="form-control">{$val.2}</textarea>
     </div>
    
-  </div>
+  </fieldset>
   {/foreach}
-  </div>
-  </div>
-
   
-  
-<br/>
-  <div class="btn-group" role="group" aria-label="...">
-    <input type="submit" class="btn btn-primary" value="提交" />
+  <div class="" role="group" aria-label="...">
+    <input type="submit" class="btn btn-primary" value="{:lang('提交')}" />
     <notempty name="list.table">
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ziduanadd">添加字段</button>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ziduanadd">{:lang('添加字段')}</button>
     </notempty>
   </div>
+  
+  </div>
+
 </form>
 </div>
+
 <!-- Modal -->
 <div class="modal fade" id="ziduanadd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">添加字段</h4>
+        <h4 class="modal-title" id="myModalLabel">{:lang('添加字段')}</h4>
       </div>
-      <div class="modal-body">
-        <div class="panel-body">
-        
-			<form action="{:url('?action=add&id='.input('id'))}" method="post" enctype="application/x-www-form-urlencoded" id="ziduan">
+      
+      <div class="modal-body row">
+		<form action="{:url('?action=add&id='.input('id'))}" method="post" enctype="application/x-www-form-urlencoded" id="ziduan">
             
-        	<div class="form-group" id="box">
-			<div class="col-sm-4">
-    			<label for="name" class="sr-only">栏目名</label>
-				<input name="name" type="text" class="form-control" id="name" placeholder="输入名称">
-    		</div>
-    		<div class="col-sm-4">
-				<label for="field" class="sr-only">字段名</label>
-				<input name="field" type="text" class="form-control" id="field" placeholder="输入字段名字">
-    		</div>
+			<fieldset class="form-group col-sm-4">
+    			<label for="name" class="sr-only">{:lang('名称')}</label>
+				<input name="name" type="text" class="form-control" id="name" placeholder="{:lang('名称')}">
+    		</fieldset>
+            
+    		<fieldset class="form-group col-sm-4">
+				<label for="field" class="sr-only">{:lang('字段')}</label>
+				<input name="field" type="text" class="form-control" id="field" placeholder="{:lang('字段')}">
+    		</fieldset>
     		
-    		<div class="col-sm-4">
-				<label for="type" class="sr-only">类型</label>
+    		<fieldset class="form-group col-sm-4">
+				<label for="type" class="sr-only">{:lang('类型')}</label>
 				<select name="type" class="form-control" id="type">
-				<option value="text">文本</option>
-				<option value="textarea">多行文本</option>
-				<option value="select">选项</option>
-				<option value="checkbox">多选</option>
-                <option value="radio">单选</option>
+				<option value="text">{:lang('文本')}</option>
+				<option value="textarea">{:lang('多行文本')}</option>
+				<option value="select">{:lang('选项')}</option>
+				<option value="checkbox">{:lang('多选')}</option>
+                <option value="radio">{:lang('单选')}</option>
 				</select>
-			</div>
+			</fieldset>
             
-			<div class="col-sm-12" style="margin-top:10px;">
+			<fieldset class="col-sm-12" style="margin-top:10px;">
 				<label for="value" class="sr-only">数据</label>
-				<textarea name="value" rows="3" class="form-control" placeholder="输入数据，每个内容用半角','分割，如：买房,卖房,东城区,城关镇" id="value"></textarea>
-			</div>
-   
-		</div>
+				<textarea name="value" rows="3" class="form-control" placeholder="{:lang('输入数据，如：汽车,火车,飞机')}" id="value"></textarea>
+			</fieldset>
 		</form>
-        </div>
       </div>
+      
       <div class="modal-footer">
-        <button type="button" onclick="post('#ziduan')" class="btn btn-primary">提交表单</button>
+        <button type="button" onclick="post('#ziduan')" class="btn btn-primary">{:lang("提交")}</button>
       </div>
+      
     </div>
   </div>
 </div>

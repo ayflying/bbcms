@@ -40,7 +40,7 @@ class System extends Common{
 			file_put_contents($file, $word);
 			//修改本地配置文件
 			*/
-			return  $this->success('修改成功',null,null,1);
+			return  $this->success(lang('修改完成'),null,null,1);
 			//$this -> cache();
 		}else{
 			$sql = $db -> where("class > '0'") -> select();
@@ -85,7 +85,7 @@ class System extends Common{
 			//$config = strtr($config,VIEW_PATH,'/template/'.$dir.'/');
 			$config = str_replace(VIEW_PATH,'./template/'.$dir.'/',$config);
 			file_put_contents('./config.php',$config);
-			return $this -> success('切换为模板'.$dir);
+			return $this -> success(lang('切换模板').' ['.$dir.']');
 			
 		}else{
 			//dump($list);
@@ -99,7 +99,7 @@ class System extends Common{
 		$this -> deldir(CACHE_PATH);		//CACHE_PATH 项目模板缓存目录（默认为 RUNTIME_PATH.'cache/'）
 		$this -> deldir(TEMP_PATH);		//TEMP_PATH 应用缓存目录（默认为 RUNTIME_PATH.'temp/'）
 		
-		return $this -> success("更新缓存成功",'index','',1);
+		return $this -> success(lang("更新缓存完成"),'index','',1);
 	}
 	
 	

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>[title] - by bbcms.luoe.cn</title>
+    <title>{:lang("[title]")} - by bbcms.luoe.cn</title>
     
     <!-- Bootstrap -->
     <link rel="stylesheet" href="__Tpl__/css/bootstrap.min.css">
@@ -23,15 +23,15 @@
         {php}$system_menu = config('menu');{/php}
 		{foreach name="system_menu" item="val"}
         <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{$key}</a>
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{$key|lang}</a>
         	<div class="dropdown-menu">
-            	{foreach name="val" item="val2"}
-                <a href="{:url($val2)}" class="dropdown-item">{$key}</a>
+            	{foreach name="val" key='key2' item="val2"}
+                	<a href="{:url($val2)}" class="dropdown-item">{:lang($key2)}</a>
                 {/foreach}
             </div>
         </li>
         {/foreach}
-        <li class="nav-item"> <a href="#" class="nav-link">其他 <span class="caret"></span></a>
+        <li class="nav-item"> <a href="#" class="nav-link">{:lang('其他')} <span class="caret"></span></a>
         	<ul class="dropdown-menu" role="menu">
                 <li><a href="#">123</a></li>
             </ul>
@@ -39,10 +39,10 @@
         </ul>
         <ul class="nav navbar-nav pull-right" style="float:right;">
           <li class="nav-item">
-            <a href="{:url('/')}" target="_blank" class="nav-link">首页 </a>
+            <a href="{:url('/')}" target="_blank" class="nav-link">{:lang('首页')} </a>
           </li>
           <li class="nav-item">
-            <a href="{:url('Login/out')}" class="nav-link">退出 </a>
+            <a href="{:url('Login/out')}" class="nav-link">{:lang('注销')} </a>
           </li>
         </ul>
     </div>
@@ -50,6 +50,6 @@
   
   
   <div class="container-fluid" style="margin:10px 0;">
-	<h1>[title]</h1>
+	<h1>{:lang("[title]")}</h1>
   </div>
 </header>

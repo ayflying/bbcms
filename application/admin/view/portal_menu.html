@@ -1,8 +1,8 @@
-{include file="./header" title="栏目列表" /}
+{include file="./header" title="菜单管理" /}
 <div class="container-fluid">
 
   <div class="btn-group">
-    <a href="{:url('menu_add')}" class="btn btn-secondary" role="button">添加</a>
+    <a href="{:url('menu_add')}" class="btn btn-secondary" role="button">{:lang('添加')}</a>
   </div>
   <br />
   <br />
@@ -16,10 +16,10 @@
             <td>&nbsp;</td>
             <td>
             <span class="btn-group" style="float:right;">
-            <a href="{:url('@portal/post/add?tid='.$val['tid'])}" target="_blank" class="btn btn-primary">添加文章</a>
-            <a href="{:url('Portal/article_list?tid='.$val['tid'])}" class="btn btn-secondary">查看文章</a>
-            <a href="{:url('menu_edit?tid='.$val['tid'])}" class="btn btn-secondary">编辑</a>
-            <button  href="{:url('menu_delete?tid='.$val['tid'])}" class="btn btn-danger delete" >删除</button >
+            <a href="{:url('@portal/post/add?tid='.$val['tid'])}" target="_blank" class="btn btn-primary">{:lang('添加文章')}</a>
+            <a href="{:url('Portal/article_list?tid='.$val['tid'])}" class="btn btn-secondary">{:lang('查看文章')}</a>
+            <a href="{:url('menu_edit?tid='.$val['tid'])}" class="btn btn-secondary">{:lang('编辑')}</a>
+            <button  href="{:url('menu_delete?tid='.$val['tid'])}" class="btn btn-danger delete" >{:lang('删除')}</button >
             </span>
           </td>
         </tr>
@@ -30,10 +30,10 @@
             <td>&nbsp;</td>
             <td>
             <span class="btn-group" style="float:right;">
-            <a href="{:url('/add/'.$val2['tid'])}" target="_blank" class="btn btn-primary">添加文章</a>
-            <a href="{:url('Portal/article_list?tid='.$val2['tid'])}" class="btn btn-secondary">查看文章</a>
-            <a href="{:url('menu_edit?tid='.$val2['tid'])}" class="btn btn-secondary">编辑</a>
-            <button href="{:url('menu_delete?tid='.$val2['tid'])}" class="btn btn-danger delete">删除</button >
+            <a href="{:url('/add/'.$val2['tid'])}" target="_blank" class="btn btn-primary">{:lang('添加文章')}</a>
+            <a href="{:url('Portal/article_list?tid='.$val2['tid'])}" class="btn btn-secondary">{:lang('查看文章')}</a>
+            <a href="{:url('menu_edit?tid='.$val2['tid'])}" class="btn btn-secondary">{:lang('编辑')}</a>
+            <button href="{:url('menu_delete?tid='.$val2['tid'])}" class="btn btn-danger delete">{:lang('删除')}</button >
             </span>
             </td>
         </tr>

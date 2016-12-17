@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
-    <title>页面跳转</title>
+    <title>{:lang('页面跳转')}</title>
     
     <!-- 新 Bootstrap 核心 CSS 文件 -->
 <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css">
@@ -36,7 +36,7 @@ body {
 
       <div class="jumbotron">
         <h1><?php echo($msg); ?></h1>
-        <p class="lead">页面自动 <a id="href" href="<?php echo($url);?>">跳转</a> 等待时间： <b id="wait"><?php echo($wait);?></b></p>
+        <p class="lead">{:lang('页面自动')} <a id="href" href="<?php echo($url);?>">{:lang('跳转')}</a> {:lang('等待时间')}： <b id="wait"><?php echo($wait);?></b></p>
       </div>
 
     </div><!-- /.container -->

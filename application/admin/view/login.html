@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>后台登录 - 络易后台管理系统</title>
+    <title>{:lang('后台登录')} - 络易后台管理系统</title>
     
 	<!-- Bootstrap -->
     <link rel="stylesheet" href="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/css/bootstrap.css">
@@ -60,11 +60,11 @@ body {
    <div class="container">
 
       <form method="post" enctype="application/x-www-form-urlencoded" class="form-signin" id="form1">
-        <h2 class="form-signin-heading">后台登录系统</h2>
-        <label for="username" class="sr-only">登录邮箱</label>
-        <input name="username" type="text" autofocus required class="form-control" id="username" placeholder="邮箱\用户名\手机号">
-        <label for="password" class="sr-only">密码</label>
-        <input name="password" type="password" id="password" class="form-control" placeholder="密码" required>
+        <h2 class="form-signin-heading">{:lang('后台登录')}</h2>
+        <label for="username" class="sr-only">{:lang('用户名')}</label>
+        <input name="username" type="text" autofocus required class="form-control" id="username" placeholder="{:lang('邮箱')}\{:lang('用户名')}\{:lang('手机')}">
+        <label for="password" class="sr-only">{:lang('密码')}</label>
+        <input name="password" type="password" id="password" class="form-control" placeholder="{:lang('密码')}" required>
         <!--
         <div class="form-group">
 		<label for="code" class="sr-only">验证码</label>
@@ -72,7 +72,7 @@ body {
         <a href="javascript:;" class="verify form-group"><img class="form-control" src="" /></a>
         </div>
         -->
-        <button id="submit1" class="btn btn-lg btn-primary btn-block" type="submit">登录</button>
+        <button id="submit1" class="btn btn-lg btn-primary btn-block" type="submit">{:lang('登录')}</button>
       </form>
 		<div class="ds-login form-signin"></div>
     </div> <!-- /container -->

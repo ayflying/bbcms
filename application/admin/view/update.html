@@ -3,9 +3,9 @@
 <table class="table table-hover">
   <thead>
     <tr>
-      <th>路径</th>
+      <th>{:lang('路径')}</th>
       <th>md5</th>
-      <th>文件大小</th>
+      <th>{:lang('大小')}</th>
     </tr>
   </thead>
   {foreach name="list" item="val"}
@@ -16,6 +16,6 @@
   </tr>
   {/foreach}
 </table>
-<a class="btn btn-primary" href="{:url('download')}" role="button">全部更新{$count}个</a>
+<a class="btn btn-primary" href="{:url('download')}" role="button">{:lang('全部更新')} {$count}</a>
 </div>
 {include file="./footer" /}

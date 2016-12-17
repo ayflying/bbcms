@@ -47,7 +47,7 @@ class Update extends Common
         $sql = curl($url,$post);
         $db = new Sql();
         $num = $db -> sql($sql);
-        $this -> success("升级完成，影响数据".$num."条","system/cache");
+        $this -> success("升级完成，影响数据".$num,"system/cache");
     }
     
 }
