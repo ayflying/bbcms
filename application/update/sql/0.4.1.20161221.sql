@@ -1,0 +1,1 @@
+update `bb_system_settings`set `value` = '0.4.1.20161222' where `name` = 'version';

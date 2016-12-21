@@ -2,6 +2,7 @@
 namespace app\admin\controller;
 use think\Cache;
 use think\Config;
+use think\Db;
 
 class Update extends Common
 {
@@ -42,9 +43,13 @@ class Update extends Common
     
     /*准备升级sql*/
     public function sql(){
-        $post['version'] = Cache::get('old_version');
+        $post['version'] = Db::name('system_settings') -> where('name','version') -> value('value');
+        if(empty($post['version'])){
+            $post['version'] = '0.2.2016120';
+        }
         $url =  UPDATE_URL . "/update/sql";
         $sql = curl($url,$post);
+        
         $db = new Sql();
         $num = $db -> sql($sql);
         $this -> success("升级完成，影响数据".$num,"system/cache");

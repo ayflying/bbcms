@@ -37,13 +37,13 @@ class Common extends Controller{
 	}
 	
     public function authority(){
-        /*
+        
         $where = [
             'module' => strtolower(request()->module()),
             'controller' => strtolower(request()->controller()),
             'action' => strtolower(request()->action()),
         ];
-        */
+        //dump($where);
         /*
         $module = strtolower(request()->module());
         $controller = strtolower(request()->controller());

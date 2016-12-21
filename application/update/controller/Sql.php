@@ -4,17 +4,17 @@ use think\Cache;
 use think\Config;
 use think\Request;
 use think\Controller;
+use think\Db;
 
 class Sql extends Controller
 {
     public function index(){
         
-        $v= Request::instance()->post('version');
-        if(empty($v)){
+        $version= Request::instance()->post('version');
+        if(empty($version)){
 			$this -> error("版本不存在");
 		}
-        $version = Config::get('version');
-        
+        $main_version = Db::name('system_settings') -> where('name','version') -> value('value');
         //列出sql文件目录，显示出哪些可更新
 		$dir = './application/update/sql/';
 		$filelist = scandir($dir);
@@ -32,8 +32,8 @@ class Sql extends Controller
         
         foreach($sql_list as $k => $val){
 			
-            //echo $v.' < '.$val.' && '.$version.' >= '.$val.'<br/>';
-			if($v < $val && $version >= $val){
+            //echo $version.' < '.$val.' && '.$main_version.' >= '.$val.'<br/>';
+			if($version < $val && $main_version >= $val){
 				$file = $dir.$val;
                 echo file_get_contents($file.'.sql');
 				//echo $this -> sql($k);
