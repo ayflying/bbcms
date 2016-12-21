@@ -1,3 +1,4 @@
+{include file="common/header" title='发布' keywords='' description='' /}
 <style type="text/css">
 .thumb>ul>li {
 	position: relative;
@@ -13,8 +14,6 @@
 	opacity: 0.0;
 }
 </style>
-{include file="common/header" title='发布' keywords='' description='' /}
-
 
 <div class="container">
     <form id="add" method="post" enctype="multipart/form-data">
@@ -53,11 +52,15 @@
       </ul>
 	</div>
     
+    <div class="mod">
+    {include file="post/input" /}
+    </div>
     
     <div class="form-group">
    	  <label for="description">摘要</label>
       <textarea id="description" name="description" class="form-control" rows="2"></textarea>
 	</div>
+    
     
     <div class="form-group">
    	  <label for="content">内容</label>
@@ -104,17 +107,16 @@ $(function(){
 		if(title.length < 2){
 			var msg = "标题不能为空";	
 		}
-		
 		if(msg != ''){
 			//e.preventDefault();
 			alert(msg);
 			return false;
-		}
-			
+		}	
 		$("#add").submit();
-		
-		
 	});
+	//检测提交按钮
+	
+	
 	
 });
 
@@ -131,16 +133,6 @@ function getObjectURL(file) {
 	}
 	return url ;
 }
-
-var aa = "asdfsdgsdh";
-$.post('index.php',
-{
-	name:'123',
-	ayay:aa,	
-},function(e){
-	
-});
-
 </script>
 
 {include file="common/footer" /}

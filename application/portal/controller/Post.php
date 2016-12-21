@@ -4,12 +4,9 @@ use think\Db;
 use think\Request;
 use think\Image;
 use think\Config;
-//use app\member\controller\Common;
-use app\common\controller\Common;
 
+use app\common\controller\Common;
 use app\portal\model\PortalArticle;
-use app\portal\model\PortalAddonarticle;
-//use app\portal\model\PortalAttachment;
 
 class Post extends Common{
     
@@ -112,6 +109,11 @@ class Post extends Common{
         if (request()->isPost()){
             $post = input('post.');
             
+            if(isset($post['mod'])){
+                $mod_data = $post['mod'];
+                unset($post['mod']);
+            }
+            
             $add = new PortalArticle;
             $add -> uid = $uid;
             $add -> tid = $tid;
@@ -131,8 +133,13 @@ class Post extends Common{
             
             //检测当前内容模型
             if($sql['mod'] > 0){
-                $post['mod']['aid'] = $aid;
-                $mod = Db::name('portal_mod_'.$sql['mod'])-> insert($post['mod']);
+                foreach($mod_data as $key => $val){
+                    if(is_array($val)){
+                        $mod_data[$key] = implode(',',$val);
+                    }
+                }
+                $mod_data['aid'] = $aid;
+                $mod = Db::name('portal_mod_'.$sql['mod'])-> insert($mod_data);
             }
             
             //修改附件为当前aid
@@ -142,8 +149,11 @@ class Post extends Common{
             if($sql['mod'] > 0){
                 $mod = Db::name('portal_mod')-> field('table,data') -> find($sql['mod']);
                 $mod_data = json_decode($mod['data'],true);
+                foreach($mod_data as $key => $val){
+                    $mod_data[$key][2] = explode(',',$val[2]);
+                }
+                $this -> _G['mod'] = $mod_data;
             }
-            
             $this -> _G['title'] = $sql['name'].' - ';
             $this -> assign('_G',$this -> _G);
             return $this->fetch('/post/add');
@@ -176,14 +186,23 @@ class Post extends Common{
         
 		if (request()->isPost()){
             $post = input('post.');
+            if(isset($post['mod'])){
+                $mod_data = $post['mod'];
+                unset($post['mod']);
+            }
             unset($post['thumb']);
             $article = PortalArticle::get($aid);
             $article -> allowField(true) -> save($post);
             $article -> addonarticle -> save(['content' => $post['content']]);
             
             //检测模型层是否修改
-            if($article->mod > 0 && isset($post['mod'])){
-                $mod = Db::name('portal_mod_'.$article -> mod) -> where('aid',$aid) -> update($post['mod']);
+            if($article->mod > 0 && isset($mod_data)){
+                foreach($mod_data as $key => $val){
+                    if(is_array($val)){
+                        $mod_data[$key] = implode(',',$val);
+                    }
+                }
+                $mod = Db::name('portal_mod_'.$article -> mod) -> where('aid',$aid) -> update($mod_data);
             }
             
             $this -> success(lang('编辑完成'),null,null,1);
@@ -192,6 +211,23 @@ class Post extends Common{
             $article = PortalArticle::get($aid);
             $article -> addonarticle;
             //dump($article -> toArray());
+            if($article -> mod > 0){
+                $mod = Db::name('portal_mod')-> field('table,data') -> find($article -> mod);
+                $mod_data = json_decode($mod['data'],true);
+                $mod_value = Db::name('portal_mod_'.$article->mod) -> find($aid);
+                foreach($mod_data as $key => $val){
+                    
+                    $mod_data[$key][2] = explode(',',$val[2]);
+                    $value = explode(',',$mod_value[$key]);
+                    if(isset($value[2])){
+                        $mod_data[$key]['value'] = $value;
+                    }else{
+                        $mod_data[$key]['value'] = $mod_value[$key];
+                    } 
+                }
+                $this -> _G['mod'] = $mod_data;
+            }
+            
             $this -> _G['title'] = $article -> title.' - ';
             $this -> _G['article'] = $article;
             $this -> assign('_G',$this -> _G);
