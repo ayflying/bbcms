@@ -1,0 +1,1 @@
+ALTER TABLE `bb_member_group` add `value` varchar(2048) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL after `status`;

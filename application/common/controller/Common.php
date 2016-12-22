@@ -2,6 +2,7 @@
 namespace app\common\controller;
 use think\Controller;
 use think\Cache;
+use think\Db;
 
 class Common extends Controller{
 	public $uid;
@@ -11,8 +12,8 @@ class Common extends Controller{
 	public function _initialize(){
         //检测当前用户UID
 		$this -> uid = cookie_decode('uid') > 0 ? cookie_decode('uid') : 0;
-		
-        $this -> authority();      //权限检测
+		$user = Db::name('member_user') ->cache('user_'.$this->uid) -> find($this -> uid);
+        $this -> authority($user['gid']);      //权限检测
         
 		if(!cache('settings')){
 			$list = db('system_settings') -> select();
@@ -36,18 +37,23 @@ class Common extends Controller{
 		//return $this;
 	}
 	
-    public function authority(){
+    public function authority($gid){
         
         $where = [
             'module' => strtolower(request()->module()),
             'controller' => strtolower(request()->controller()),
             'action' => strtolower(request()->action()),
         ];
+        //$list = Db::name('member_action') -> where('module',$where['module']) -> select();
+        $group = Db::name('member_group') -> cache('group_'.$gid) -> find($gid);
+        $group_arr = explode(',',$group['value']);
+        $action = Db::name('member_action') -> where('id','not in',$group_arr) -> cache('action_'.$group['value']) -> select();
+        //dump($group_arr);
+        //dump($action);
+        
+        
         //dump($where);
         /*
-        $module = strtolower(request()->module());
-        $controller = strtolower(request()->controller());
-        $action = strtolower(request()->action());
         
         //dump($where);
         $action = db('member_action') -> where('module',$module) -> select();

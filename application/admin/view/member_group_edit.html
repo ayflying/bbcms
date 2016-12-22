@@ -1,4 +1,4 @@
-{include file="./header"  title="用户组添加" /}
+{include file="./header"  title="用户组设置" /}
 <div class="container-fluid">
 <form action="" method="post" enctype="multipart/form-data">
     <table class="table table-hover">
@@ -16,7 +16,30 @@
     <td><input name="name" type="text" class="form-control" id="name" value="{$sql.name|default=''}" /></td>
     <td>用户组名称</td>
   </tr>
-  
+  {foreach name="list" item="val"}
+  {eq name="val.pid" value="0"}
+  <tr class="form-group">
+  	<td>
+      <label class="top c-input c-checkbox">
+    	<input id="{$val.id}" name="value[{$val.id}]" type="checkbox" value="{$val.id}">
+		<span class="c-indicator"></span>
+		{$val.name}
+      </label>
+    </td>
+    <td>
+      {foreach name="list" item="val2"}
+        {eq name="$val.id" value="$val2.pid"}
+          <label class="c-input c-checkbox">
+            <input id="{$val2.id}" name="value[{$val2.id}]" type="checkbox" value="{$val2.id}">
+            <span class="c-indicator"></span>
+            {$val2.name}
+          </label>
+        {/eq}
+      {/foreach}
+    </td>
+  </tr>
+  {/eq}
+  {/foreach}
   <tr class="form-group">
     <td><label for="status">状态</label></td>
     <td>
@@ -37,4 +60,27 @@
 </table>
     </form>
 </div>
+<script>
+$(function(){
+	
+	//初始化已选
+	var value = "{$sql.value|default=''}";
+	var arr	= value.split(',');
+	for(val in arr){
+	  $("#"+arr[val]).prop('checked', true);
+	}
+	
+	
+	$(".top input").click(function(e) {
+         if(this.checked){   
+			$(this).parents('tr').find('input').prop("checked", true);
+			//$("#list :checkbox").prop("checked", true);
+		}else{
+			$(this).parents('tr').find('input').prop("checked", false);
+			//$("#list :checkbox").prop("checked", false);
+		}   
+    });
+	
+});
+</script>
 {include file="./footer" /}

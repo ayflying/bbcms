@@ -1,4 +1,4 @@
-{include file="./header"  title="权限编辑"/}
+{include file="./header"  title="权限设置"/}
 <div class="container-fluid">
 <form action="" method="post" enctype="multipart/form-data">
     <table class="table table-hover">
@@ -18,8 +18,31 @@
   </tr>
   
   <tr class="form-group">
-    <td><label for="value">参数</label></td>
-    <td><input name="value" type="text" class="form-control" id="value" value="{$sql.value|default=''}" /></td>
+  	<td><label for="name">上级权限</label></td>
+    <td>
+    <select name="pid" class="form-control" id="pid">
+      <option value="0">顶级权限</option>
+      {foreach name="list" item="val"}
+      <option value="{$val.id}">{$val.name}</option>
+      {/foreach}
+    </select>
+    </td>
+    <td></td>
+  </tr>
+  
+  <tr class="form-group">
+    <td><label for="module">模型</label></td>
+    <td><input name="module" type="text" class="form-control" id="module" value="{$sql.module|default=''}" /></td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr class="form-group">
+    <td><label for="controller">控制器</label></td>
+    <td><input name="controller" type="text" class="form-control" id="controller" value="{$sql.controller|default=''}" /></td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr class="form-group">
+    <td><label for="action">方法</label></td>
+    <td><input name="action" type="text" class="form-control" id="action" value="{$sql.action|default=''}" /></td>
     <td>&nbsp;</td>
   </tr>
   

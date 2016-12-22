@@ -103,6 +103,8 @@ class Member extends Common{
 			Db::name('member_group') -> insert(input('post.'));
 			return $this -> success('添加成功','group');
 		}else{
+            $list = Db::name('member_action') -> where(['status'=>1]) -> select();
+            $this -> assign('list',$list);
 			return $this -> fetch('./member_group_edit');
 		}
 	}
@@ -110,11 +112,15 @@ class Member extends Common{
 	function group_edit($gid){
 		
 		if(request()->isPost()){
-			Db::name('member_group') -> where('gid',$gid) -> update(input('post.'));
-			return $this -> success('修改成功');
+            $post = input('post.');
+            $post['value'] = implode(',',$post['value']);
+			Db::name('member_group') -> where('gid',$gid) -> update($post);
+			return $this -> success(lang('修改完成'),null,null,1);
 		}else{
 			$group = Db::name('member_group') -> find($gid);
+            $list = Db::name('member_action') -> where(['status'=>1]) -> select();
 			$this -> assign('sql',$group);
+            $this -> assign('list',$list);
 			return $this -> fetch('./member_group_edit');
 		}
 	}
@@ -125,10 +131,13 @@ class Member extends Common{
 	}
 	
     
-    function action()
+    function action($pid=0)
     {
-        
-        $list = Db::name('member_action') -> paginate(PAGE_NUM);
+        if($pid > 0){
+            $sql = Db::name('member_action') -> where('id',$pid) -> value("name");
+            $this -> assign('sql',$sql);
+        }
+        $list = Db::name('member_action') -> where(['pid' => $pid, 'status' => 1]) -> paginate(PAGE_NUM);
         $page = $list->render();
         $this->assign('list', $list);
         $this->assign('page', $page);
@@ -160,15 +169,15 @@ class Member extends Common{
             $post = input('post.');
             
            empty($post['status']) && $post['status'] =  1;
-            Db::name('member_action') -> insert($post);
+            Db::name('member_action') -> where('id',$id) -> update($post);
             //dump($post);
-            $this -> success("添加成功",null,null,1);
+            $this -> success(lang('编辑完成'),null,null,1);
             
         }else{
-            /*
+            
             $list = Db::name('member_action') -> where(['pid'=>0,'status'=>1]) -> select();
             $this -> assign('list', $list);
-            */
+            
             
             $sql = Db::name('member_action') -> find($id);
             $this -> assign('sql', $sql);
