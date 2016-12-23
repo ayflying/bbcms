@@ -16,11 +16,11 @@ INSERT INTO `bb_system_settings` VALUES ('15', 'image_width', '', '图片最大�
 INSERT INTO `bb_system_settings` VALUES ('16', 'image_height', '', '图片最大高度', 'text', '4');
 INSERT INTO `bb_system_settings` VALUES ('17', 'pic_width', '', '缩略图宽度', 'text', '4');
 INSERT INTO `bb_system_settings` VALUES ('18', 'pic_height', '', '缩略图高度', 'text', '4');
-INSERT INTO `bb_system_settings` VALUES ('19', 'version', '0.4.2.20161222', '系统版本', 'text', '0');   
-INSERT INTO `bb_member_group` VALUES ('1', '管理员', '1', '0', '0');
-INSERT INTO `bb_member_group` VALUES ('2', '编辑', '1', '0', '0');
-INSERT INTO `bb_member_group` VALUES ('3', '会员', '1', '0', '0');
-INSERT INTO `bb_member_group` VALUES ('4', '游客', '1', '0', '0');
+INSERT INTO `bb_system_settings` VALUES ('19', 'version', '0.4.2.20161222', '系统版本', 'text', '0');
+INSERT INTO `bb_member_group` VALUES ('1', '管理员', '1', '', '0', '0');
+INSERT INTO `bb_member_group` VALUES ('2', '编辑', '1', '', '0', '0');
+INSERT INTO `bb_member_group` VALUES ('3', '会员', '1', '', '0', '0');
+INSERT INTO `bb_member_group` VALUES ('4', '游客', '1', '', '0', '0');
 INSERT INTO `bb_member_user_profile_setting` VALUES ('address', '1', '1', '0', '邮寄地址', '', '90', '0', '0', '0', '0', 'text', '0', '', '', '0', '0');
 INSERT INTO `bb_member_user_profile_setting` VALUES ('affectivestatus', '1', '1', '0', '情感状态', '', '70', '0', '0', '0', '0', 'text', '0', '', '', '0', '0');
 INSERT INTO `bb_member_user_profile_setting` VALUES ('alipay', '1', '1', '0', '支付宝', '', '77', '0', '0', '0', '0', 'text', '0', '', '', '0', '0');

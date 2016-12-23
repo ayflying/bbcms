@@ -51,10 +51,10 @@ CREATE TABLE `bb_member_group` (
   `name` char(50) DEFAULT NULL,
   `status` int(1) NOT NULL,
   `value` varchar(2048) NOT NULL,
-  `create_time` int(11) DEFAULT NULL,
-  `update_time` int(11) DEFAULT NULL,
+  `create_time` int(11) NOT NULL,
+  `update_time` int(11) NOT NULL,
   PRIMARY KEY (`gid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for bb_member_message
@@ -326,19 +326,6 @@ CREATE TABLE `bb_portal_mod` (
   `table` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for bb_portal_mod_6
--- ----------------------------
-DROP TABLE IF EXISTS `bb_portal_mod_6`;
-CREATE TABLE `bb_portal_mod_6` (
-  `aid` int(11) NOT NULL AUTO_INCREMENT,
-  `money` varchar(255) DEFAULT NULL,
-  `kuaidi` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `fudai` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `xuanxiang` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  PRIMARY KEY (`aid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for bb_system_settings
