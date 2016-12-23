@@ -14,6 +14,7 @@ return [
         APP_PATH.'update',
 		APP_PATH.'common',
         APP_PATH.'extra',
+        APP_PATH.'install',
 	],
 	'file' => [
         './update.php',
