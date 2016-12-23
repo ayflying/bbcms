@@ -6,7 +6,7 @@ use app\common\controller\Common;
 
 class Lists extends Common{
 	public function index($tid,$search=null,$order='update_time desc'){
-		$sql = Db::name('portal_menu') -> find($tid);
+		$sql = Db::name('portal_menu')-> cache("menu_".$tid) -> find($tid);
         if(!empty($sql['jump'])){
             header('Location: '.$sql['jump']);
         }
@@ -18,7 +18,7 @@ class Lists extends Common{
 		
 		if($tid > 0){
 			//获取下级目录文章
-			$type = Db::name('portal_menu') -> where('pid',$tid) -> column('tid');
+			$type = Db::name('portal_menu') -> where('pid',$tid) -> cache(true) -> column('tid');
 			$type[] = (int)$tid;
 			$where['tid'] = ['in',$type];
 		}
@@ -29,10 +29,10 @@ class Lists extends Common{
             //$list = Db::view(['portal_article'=>'a'],'*')
 			$list = Db::view($table_article)
             ->view($table_mod,'*',$table_article.'.aid = '.$table_mod.'.aid','left')
-			->where($where) -> order($order) -> paginate(PAGE_NUM);
+			->where($where) -> order($order) -> cache(true) -> paginate(PAGE_NUM);
 		}else{
 			$list = Db::name('portal_article')
-			->where($where) -> order($order) -> paginate(PAGE_NUM);
+			->where($where) -> order($order) -> cache(true) -> paginate(PAGE_NUM);
 		}
 		$page = $list->render();
         $this -> _G['menu'] = $sql;

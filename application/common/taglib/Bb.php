@@ -60,7 +60,7 @@ class Bb extends TagLib{
         }
         
         $Str .= '
-            $tag_sql = \think\Db::name("PortalMenu") -> where($where) -> order("weight desc") -> limit("'.$row.'") -> select();
+            $tag_sql = \think\Db::name("PortalMenu") -> where($where) -> order("weight desc") -> limit("'.$row.'") -> cache(true) -> select();
             foreach($tag_sql as $key => $'.$item.'):
             //input("tid") and $'.$item.'["action"] = "click";
             $'.$item.'["url"] = url("@portal/lists/index?tid=".$'.$item.'["tid"]);
@@ -117,7 +117,7 @@ class Bb extends TagLib{
             $Str .= ' $tag_sql = $db -> all("'.$aid.'",$relation); ';
         }else{
             $Str .= '$tag_sql = $db -> all(function($query) use ($where){
-                $query -> where($where)  -> limit('.$row.') -> order("'.$order.'");
+                $query -> where($where)  -> limit('.$row.') -> order("'.$order.'") -> cache(true);
 
             },$relation); ';
             
@@ -129,7 +129,7 @@ class Bb extends TagLib{
         $Str .= ' foreach($tag_sql as $key => $'.$item.'):
             if($'.$item.'["mod"] > 0){
                 $mod_table = "portal_mod_".$'.$item.'["mod"];
-                $'.$item.'["mod"] = db($mod_table) -> find($'.$item.'["aid"]);
+                $'.$item.'["mod"] = db($mod_table)-> cache(true) -> find($'.$item.'["aid"]);
             }
             $'.$item.'["url"] = url("@portal/article/index?aid=".$'.$item.'["aid"]);
             $'.$item.'["turl"] = url("@portal/Lists/index?tid=".$'.$item.'["tid"]);
@@ -185,7 +185,7 @@ class Bb extends TagLib{
 		$id = $tag['id'];
 		//$where = $tag['where'];
 		$Str = '<?php ';
-		$Str .= ' $tag_sql = db("operate_ad") -> find('.$id.'); ';
+		$Str .= ' $tag_sql = db("operate_ad") -> cache(true) -> find('.$id.'); ';
 		$Str .= ' if($tag_sql["status"] != 0 || $tag_sql["end_time"] > time()): ';
 		$Str .= ' echo htmlspecialchars_decode($tag_sql["value"]); ';
 		$Str .= ' endif; ';
@@ -211,7 +211,7 @@ class Bb extends TagLib{
         
 		//$where = $tag['where'];
 		$Str = '<?php ';
-		$Str .= ' $tag_sql = db("operate_flink")  -> limit('.$row.') -> select(); ';
+		$Str .= ' $tag_sql = db("operate_flink") -> limit('.$row.') -> cache(true) -> select(); ';
 		$Str .=   ' foreach($tag_sql as $bb): ';
 		$Str .= '?>';
 		//$Str .= $this->tpl->parse($content);

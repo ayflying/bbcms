@@ -1,1 +1,2 @@
+update `bb_system_settings`set `value` = '0.4.2.20161222' where `name` = 'version';
 ALTER TABLE `bb_member_group` add `value` varchar(2048) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL after `status`;

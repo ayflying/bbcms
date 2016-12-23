@@ -36,8 +36,12 @@ class Sql extends Controller
 			if($version < $val && $main_version >= $val){
 				$file = $dir.$val;
                 echo file_get_contents($file.'.sql');
-				//echo $this -> sql($k);
+                //echo $this -> sql($k);
 			}
+            //同步版本号
+            if($main_version > $version){
+                echo "update `bb_system_settings`set `value` = '".$main_version."' where `name` = 'version';";
+            }
 		}
         
     }

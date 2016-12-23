@@ -76,8 +76,10 @@
   
   <div class="panel panel-default">
     <div class="panel-heading">友情链接</div>
-      <ul class="panel-body list-unstyled">
-        <li><a href="" target="_blank">络易科技</a></li>
+      <ul class="panel-body list-inline">
+      	{bb:flink row='99'}
+        <li><a href="{$bb.url}" target="_blank">{$bb.name}</a></li>
+        {/bb:flink}
       </ul>
   </div>
   
