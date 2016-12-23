@@ -1,4 +1,5 @@
 /runtime/
+/public/install.lock
 /update.txt
 /application/*
 !/application/addon/
