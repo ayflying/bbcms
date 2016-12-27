@@ -12,8 +12,8 @@
       </ul>
       <ul class="bd list-unstyled">
         {bb:article type="litpic" row="6"}
-        <li><a href="{$bb.url}" target="_blank">
-            <img src="{$bb.litpic}" class="img-responsive">
+        <li><a href="{$bb.url}" target="_blank" title="{$bb.title}">
+            <img src="{$bb.litpic}" class="img-responsive" alt="{$bb.title}">
         </a></li>
         {/bb:article}
       </ul>
@@ -22,13 +22,13 @@
     <div class="col-md-5 panel panel-default">
         <div class="panel-body">
             {bb:article row='1' order='click desc'}
-            <h3 class="text-center" style="margin:0px;"><a href="{$bb.url}">{$bb.title}</a></h3>
+            <h3 class="text-center" style="margin:0px;"><a href="{$bb.url}" title="{$bb.title}">{$bb.title}</a></h3>
             <p>{$bb.description}...[<a href="{$bb.url}">详情</a>]</p>
             {/bb:article}
             <ul class="list-unstyled">
                 {bb:article row='2,4' order='click desc'}
                 
-                <li><a href="{$bb.turl}">[{$bb.menu.name}]</a> <a href="{$bb.url}">{$bb.title|mb_substr=0,24}</a><time class="pull-right hidden-xs">{$bb.create_time|date='Y-m-d H:i:s',###}</time></li>
+                <li><a href="{$bb.turl}">[{$bb.menu.name}]</a> <a href="{$bb.url}" title="{$bb.title}">{$bb.title|mb_substr=0,24}</a><time class="pull-right hidden-xs">{$bb.create_time|date='Y-m-d H:i:s',###}</time></li>
                 {/bb:article}
                 
                 
@@ -37,7 +37,7 @@
             <div class="row">
               <ul class="list-unstyled text-nowrap">
                 {bb:article row='8'}
-                <li class="col-md-6"><a href="{$bb.url}">{$bb.title|mb_substr=0,25}</a></li>
+                <li class="col-md-6"><a href="{$bb.url}" title="{$bb.title}">{$bb.title|mb_substr=0,25}</a></li>
                 {/bb:article}
               </ul>
             </div>
@@ -62,7 +62,7 @@
         {bb:article tid='bb.tid' row='8'}
           <li>
           	<time>{$bb.create_time|date="m-d",###}</time>
-            <a href="{$bb.url}">{$bb.title|mb_substr=0,20}</a>
+            <a href="{$bb.url}" title="{$bb.title}">{$bb.title|mb_substr=0,20}</a>
           </li>
         {/bb:article}
         

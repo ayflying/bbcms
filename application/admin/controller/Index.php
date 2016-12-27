@@ -12,6 +12,7 @@ class Index extends Common{
 			"操作系统" => PHP_OS,
 			"当前主机名:端口" => $_SERVER['SERVER_NAME'].":".$_SERVER['SERVER_PORT'], //当前主机名
 			"当前时间" => date("Y-m-d H:i:s"),
+            "程序版本" => Config::get('version') . " - ". Db::name('system_settings') -> where('name','version') -> value('value'),
 			"框架版本" => THINK_VERSION,
 			"语言" => $_SERVER['HTTP_ACCEPT_LANGUAGE'],
 			"PHP版本" => PHP_VERSION,
@@ -25,6 +26,7 @@ class Index extends Common{
 			"最大上传尺寸" => ini_get("file_uploads") ? ini_get("upload_max_filesize") : "Disabled",
 			"最大执行时间" => ini_get("max_execution_time")."秒",
 			"当前登录IP" => request()->ip(),
+            "附件容量" => format_bytes(Db::name('portal_attachment') -> sum('size')),
 		];
 		//dump($arr);
 		
@@ -86,6 +88,48 @@ class Index extends Common{
         return format_bytes($size);
 	}
 	
+    //计算目录容量
+    private function CalcDirectorySize($DirectoryPath)
+    {
+      $Size = 0;
+      $Dir = opendir($DirectoryPath);
+      if (!$Dir)
+        return -1;
+      while (($File = readdir($Dir)) !== false) {
+        // Skip file pointers
+        if ($File[0] == '.') continue; 
+        // Go recursive down, or add the file size
+        if (is_dir($DirectoryPath . $File))      
+          $Size += $this -> CalcDirectorySize($DirectoryPath . $File . DIRECTORY_SEPARATOR);
+        else 
+          $Size += filesize($DirectoryPath . $File);    
+      }
+      closedir($Dir);
+      return format_bytes($Size);
+    }
+    
+    function getDirSize($dir)
+    {
+        $size = 0;
+        $dirs = [$dir];
+         
+        while(@$dir=array_shift($dirs)){
+            $fd = opendir($dir);
+            while(@$file=readdir($fd)){
+                if($file=='.' && $file=='..'){
+                    continue;
+                }
+                $file = $dir.DIRECTORY_SEPARATOR.$file;
+                if(is_dir($file)){
+                    array_push($dirs, $file);
+                }else{
+                    $size += filesize($file);
+                }
+            }
+            closedir($fd);
+        }
+        return $size;
+    }
 	
 	function body(){
 		$this-> display('./index_body');
