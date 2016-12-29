@@ -16,8 +16,6 @@ use think\Cache;
 use think\Collection;
 use think\Config;
 use think\Db;
-use think\db\Builder;
-use think\db\Connection;
 use think\db\exception\BindParamException;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\ModelNotFoundException;
@@ -959,6 +957,10 @@ class Query
             $where[$field] = ['eq', $op];
         } else {
             $where[$field] = [$op, $condition];
+            if ('exp' == strtolower($op) && isset($param[2]) && is_array($param[2])) {
+                // 参数绑定
+                $this->bind($param[2]);
+            }
             // 记录一个字段多次查询条件
             $this->options['multi'][$field][] = $where[$field];
         }
@@ -1002,14 +1004,16 @@ class Query
     }
 
     /**
-     * 去除某个查询参数
+     * 去除查询参数
      * @access public
-     * @param string $option     参数名
+     * @param string|bool $option     参数名 true 表示去除所有参数
      * @return $this
      */
-    public function removeOption($option)
+    public function removeOption($option = true)
     {
-        if (isset($this->options[$option])) {
+        if (true === $option) {
+            $this->options = [];
+        } elseif (is_string($option) && isset($this->options[$option])) {
             unset($this->options[$option]);
         }
         return $this;
@@ -1181,7 +1185,14 @@ class Query
                     }
                 }
             }
-            $this->options['order'] = $field;
+            if (!isset($this->options['order'])) {
+                $this->options['order'] = [];
+            }
+            if (is_array($field)) {
+                $this->options['order'] = array_merge($this->options['order'], $field);
+            } else {
+                $this->options['order'][] = $field;
+            }
         }
         return $this;
     }
@@ -1551,7 +1562,7 @@ class Query
      */
     protected function getFieldBindType($type)
     {
-        if (preg_match('/(int|double|float|decimal|real|numeric|serial)/is', $type)) {
+        if (preg_match('/(int|double|float|decimal|real|numeric|serial|bit)/is', $type)) {
             $bind = PDO::PARAM_INT;
         } elseif (preg_match('/bool/is', $type)) {
             $bind = PDO::PARAM_BOOL;
@@ -1663,6 +1674,36 @@ class Query
         }
         $this->via();
         $this->options['with'] = $with;
+        return $this;
+    }
+
+    /**
+     * 关联统计
+     * @access public
+     * @param string|array    $relation 关联方法名
+     * @param bool            $subQuery 是否使用子查询
+     * @return $this
+     */
+    public function withCount($relation, $subQuery = true)
+    {
+        if (!$subQuery) {
+            $this->options['with_count'] = $relation;
+        } else {
+            $relations = is_string($relation) ? explode(',', $relation) : $relation;
+            if (!isset($this->options['field'])) {
+                $this->field('*');
+            }
+            foreach ($relations as $key => $relation) {
+                $closure = false;
+                if ($relation instanceof \Closure) {
+                    $closure  = $relation;
+                    $relation = $key;
+                }
+                $relation = Loader::parseName($relation, 1, false);
+                $count    = '(' . (new $this->model)->$relation()->getRelationCountQuery($closure) . ')';
+                $this->field([$count => Loader::parseName($relation) . '_count']);
+            }
+        }
         return $this;
     }
 
@@ -1997,6 +2038,10 @@ class Query
                     if (!empty($options['relation'])) {
                         $result->relationQuery($options['relation']);
                     }
+                    // 关联统计
+                    if (!empty($options['with_count'])) {
+                        $result->relationCount($result, $options['with_count']);
+                    }
                     $resultSet[$key] = $result;
                 }
                 if (!empty($options['with'])) {
@@ -2095,9 +2140,13 @@ class Query
                 if (!empty($options['relation'])) {
                     $data->relationQuery($options['relation']);
                 }
+                // 预载入查询
                 if (!empty($options['with'])) {
-                    // 预载入
                     $data->eagerlyResult($data, $options['with'], is_object($result) ? get_class($result) : '');
+                }
+                // 关联统计
+                if (!empty($options['with_count'])) {
+                    $data->relationCount($data, $options['with_count']);
                 }
             }
         } elseif (!empty($options['fail'])) {
