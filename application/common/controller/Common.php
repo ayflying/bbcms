@@ -84,7 +84,6 @@ class Common extends Controller{
 			 $config['view_path'] = ROOT_PATH .'template'.DS.'default'.DS;
              $this -> view -> engine($config);
 		}
-        
         return $this -> view -> fetch($file,$vars,$replace,$config);
 	}
 
