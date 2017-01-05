@@ -17,8 +17,9 @@ class Login extends Common{
 					$auto = new AdminLogin();
 					$uid = $auto -> authorization($sql['uid']);
 					cookie('uid',$uid,2592000);
-					//$uid = $this -> authorization($sql['uid']);
-				return $this -> success("登录成功",cookie('from'),'',1);
+                    $from = cookie('from') ? cookie('from') : '/';
+                    cookie('from',null);
+				return $this -> success("登录成功",$from,null,1);
 				
 			}else{
 				return $this -> error("帐号或者密码错误！");
