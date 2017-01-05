@@ -78,7 +78,7 @@ class Login extends Controller{
 	function out(){
 		cookie('uid',null);
 		cookie('guid',null);
-		return $this -> success("登出成功",'/admin/login/login','',1);
+		return $this -> success("登出成功",'admin/login/login',null,1);
 	}
 	
 	function ceshi(){
