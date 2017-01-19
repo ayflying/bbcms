@@ -3,13 +3,16 @@ namespace app\common\controller;
 use think\Controller;
 use think\Cache;
 use think\Db;
+use think\Debug;
 
 class Common extends Controller{
+	
 	public $uid;
 	//public $settings;
     public $_G;
 	
 	public function _initialize(){
+		Debug::remark('begin');
         //检测当前用户UID
 		$this -> uid = cookie_decode('uid') > 0 ? cookie_decode('uid') : 0;
 		$user = Db::name('member_user') ->cache('user_'.$this->uid) -> find($this -> uid);
@@ -84,6 +87,7 @@ class Common extends Controller{
 			 $config['view_path'] = ROOT_PATH .'template'.DS.'default'.DS;
              $this -> view -> engine($config);
 		}
+		
         return $this -> view -> fetch($file,$vars,$replace,$config);
 	}
 

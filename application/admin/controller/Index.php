@@ -6,7 +6,6 @@ use think\Db;
 class Index extends Common{
 	
 	public function index(){
-		
 		$list = [
 			"服务器IP" => GetHostByName($_SERVER['SERVER_NAME']),
 			"操作系统" => PHP_OS,
