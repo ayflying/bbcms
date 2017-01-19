@@ -431,7 +431,7 @@ class Cx extends Taglib
     {
         $name     = $tag['name'];
         $name     = $this->autoBuildVar($name);
-        $parseStr = '<?php $_var = ' . $name . ';if(empty($_var) || ($_var instanceof \think\Collection && $_var->isEmpty())): ?>' . $content . '<?php endif; ?>';
+        $parseStr = '<?php if(empty(' . $name . ') || (' . $name . ' instanceof \think\Collection && ' . $name . '->isEmpty())): ?>' . $content . '<?php endif; ?>';
         return $parseStr;
     }
 
@@ -448,7 +448,7 @@ class Cx extends Taglib
     {
         $name     = $tag['name'];
         $name     = $this->autoBuildVar($name);
-        $parseStr = '<?php $_var = ' . $name . ';if(!(empty($_var) || ($_var instanceof \think\Collection && $_var->isEmpty()))): ?>' . $content . '<?php endif; ?>';
+        $parseStr = '<?php if(!(empty(' . $name . ') || (' . $name . ' instanceof \think\Collection && ' . $name . '->isEmpty()))): ?>' . $content . '<?php endif; ?>';
         return $parseStr;
     }
 
@@ -620,8 +620,8 @@ class Cx extends Taglib
         return $parseStr;
     }
 
-    /**
-     * url函数的tag标签
+     /**
+     * U函数的tag标签
      * 格式：{url link="模块/控制器/方法" vars="参数" suffix="true或者false 是否带有后缀" domain="true或者false 是否携带域名" /}
      * @access public
      * @param array $tag 标签属性

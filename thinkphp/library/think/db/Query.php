@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -16,6 +16,8 @@ use think\Cache;
 use think\Collection;
 use think\Config;
 use think\Db;
+use think\db\Builder;
+use think\db\Connection;
 use think\db\exception\BindParamException;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\ModelNotFoundException;
@@ -798,68 +800,6 @@ class Query
     }
 
     /**
-     * 设置数据
-     * @access public
-     * @param mixed $field 字段名或者数据
-     * @param mixed $value 字段值
-     * @return $this
-     */
-    public function data($field, $value = null)
-    {
-        if (is_array($field)) {
-            $this->options['data'] = isset($this->options['data']) ? array_merge($this->options['data'], $field) : $field;
-        } else {
-            $this->options['data'][$field] = $value;
-        }
-        return $this;
-    }
-
-    /**
-     * 字段值增长
-     * @access public
-     * @param string|array  $field    字段名
-     * @param integer       $step     增长值
-     * @return $this
-     */
-    public function inc($field, $step = 1)
-    {
-        $fields = is_string($field) ? explode(',', $field) : $field;
-        foreach ($fields as $field) {
-            $this->data($field, ['exp', $field . '+' . $step]);
-        }
-        return $this;
-    }
-
-    /**
-     * 字段值减少
-     * @access public
-     * @param string|array  $field    字段名
-     * @param integer       $step     增长值
-     * @return $this
-     */
-    public function dec($field, $step = 1)
-    {
-        $fields = is_string($field) ? explode(',', $field) : $field;
-        foreach ($fields as $field) {
-            $this->data($field, ['exp', $field . '-' . $step]);
-        }
-        return $this;
-    }
-
-    /**
-     * 使用表达式设置数据
-     * @access public
-     * @param string  $field    字段名
-     * @param string  $value    字段值
-     * @return $this
-     */
-    public function exp($field, $value)
-    {
-        $this->data($field, ['exp', $value]);
-        return $this;
-    }
-
-    /**
      * 指定JOIN查询字段
      * @access public
      * @param string|array $table 数据表
@@ -1018,11 +958,7 @@ class Query
             // 字段相等查询
             $where[$field] = ['eq', $op];
         } else {
-            $where[$field] = [$op, $condition, isset($param[2]) ? $param[2] : null];
-            if ('exp' == strtolower($op) && isset($param[2]) && is_array($param[2])) {
-                // 参数绑定
-                $this->bind($param[2]);
-            }
+            $where[$field] = [$op, $condition];
             // 记录一个字段多次查询条件
             $this->options['multi'][$field][] = $where[$field];
         }
@@ -1066,16 +1002,14 @@ class Query
     }
 
     /**
-     * 去除查询参数
+     * 去除某个查询参数
      * @access public
-     * @param string|bool $option     参数名 true 表示去除所有参数
+     * @param string $option     参数名
      * @return $this
      */
-    public function removeOption($option = true)
+    public function removeOption($option)
     {
-        if (true === $option) {
-            $this->options = [];
-        } elseif (is_string($option) && isset($this->options[$option])) {
+        if (isset($this->options[$option])) {
             unset($this->options[$option]);
         }
         return $this;
@@ -1247,14 +1181,7 @@ class Query
                     }
                 }
             }
-            if (!isset($this->options['order'])) {
-                $this->options['order'] = [];
-            }
-            if (is_array($field)) {
-                $this->options['order'] = array_merge($this->options['order'], $field);
-            } else {
-                $this->options['order'][] = $field;
-            }
+            $this->options['order'] = $field;
         }
         return $this;
     }
@@ -1624,7 +1551,7 @@ class Query
      */
     protected function getFieldBindType($type)
     {
-        if (preg_match('/(int|double|float|decimal|real|numeric|serial|bit)/is', $type)) {
+        if (preg_match('/(int|double|float|decimal|real|numeric|serial)/is', $type)) {
             $bind = PDO::PARAM_INT;
         } elseif (preg_match('/bool/is', $type)) {
             $bind = PDO::PARAM_BOOL;
@@ -1740,36 +1667,6 @@ class Query
     }
 
     /**
-     * 关联统计
-     * @access public
-     * @param string|array    $relation 关联方法名
-     * @param bool            $subQuery 是否使用子查询
-     * @return $this
-     */
-    public function withCount($relation, $subQuery = true)
-    {
-        if (!$subQuery) {
-            $this->options['with_count'] = $relation;
-        } else {
-            $relations = is_string($relation) ? explode(',', $relation) : $relation;
-            if (!isset($this->options['field'])) {
-                $this->field('*');
-            }
-            foreach ($relations as $key => $relation) {
-                $closure = false;
-                if ($relation instanceof \Closure) {
-                    $closure  = $relation;
-                    $relation = $key;
-                }
-                $relation = Loader::parseName($relation, 1, false);
-                $count    = '(' . (new $this->model)->$relation()->getRelationCountQuery($closure) . ')';
-                $this->field([$count => Loader::parseName($relation) . '_count']);
-            }
-        }
-        return $this;
-    }
-
-    /**
      * 关联预加载中 获取关联指定字段值
      * example:
      * Model::with(['relation' => function($query){
@@ -1864,11 +1761,10 @@ class Query
      * @param string  $sequence     自增序列名
      * @return integer|string
      */
-    public function insert(array $data = [], $replace = false, $getLastInsID = false, $sequence = null)
+    public function insert(array $data, $replace = false, $getLastInsID = false, $sequence = null)
     {
         // 分析查询表达式
         $options = $this->parseExpress();
-        $data    = array_merge($options['data'], $data);
         // 生成SQL语句
         $sql = $this->builder->insert($data, $options, $replace);
         // 获取参数绑定
@@ -1963,10 +1859,9 @@ class Query
      * @throws Exception
      * @throws PDOException
      */
-    public function update(array $data = [])
+    public function update(array $data)
     {
         $options = $this->parseExpress();
-        $data    = array_merge($options['data'], $data);
         $pk      = $this->getPk($options);
         if (isset($options['cache']) && is_string($options['cache'])) {
             $key = $options['cache'];
@@ -2102,10 +1997,6 @@ class Query
                     if (!empty($options['relation'])) {
                         $result->relationQuery($options['relation']);
                     }
-                    // 关联统计
-                    if (!empty($options['with_count'])) {
-                        $result->relationCount($result, $options['with_count']);
-                    }
                     $resultSet[$key] = $result;
                 }
                 if (!empty($options['with'])) {
@@ -2204,13 +2095,9 @@ class Query
                 if (!empty($options['relation'])) {
                     $data->relationQuery($options['relation']);
                 }
-                // 预载入查询
                 if (!empty($options['with'])) {
+                    // 预载入
                     $data->eagerlyResult($data, $options['with'], is_object($result) ? get_class($result) : '');
-                }
-                // 关联统计
-                if (!empty($options['with_count'])) {
-                    $data->relationCount($data, $options['with_count']);
                 }
             }
         } elseif (!empty($options['fail'])) {
@@ -2444,10 +2331,6 @@ class Query
 
         if (!isset($options['field'])) {
             $options['field'] = '*';
-        }
-
-        if (!isset($options['data'])) {
-            $options['data'] = [];
         }
 
         if (!isset($options['strict'])) {

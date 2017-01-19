@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -11,7 +11,11 @@
 
 namespace think;
 
+use think\Config;
 use think\exception\ClassNotFoundException;
+use think\Log;
+use think\Request;
+use think\Response;
 use think\response\Redirect;
 
 class Debug
@@ -174,8 +178,8 @@ class Debug
             $output = '<pre>' . $label . $output . '</pre>';
         }
         if ($echo) {
-            echo($output);
-            return;
+            echo ($output);
+            return null;
         } else {
             return $output;
         }

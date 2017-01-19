@@ -11,6 +11,7 @@
 
 namespace think\process\exception;
 
+
 use think\Process;
 
 class Failed extends \RuntimeException

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -13,7 +13,6 @@ namespace think\model\relation;
 
 use think\Db;
 use think\db\Query;
-use think\Exception;
 use think\Model;
 use think\model\Pivot;
 use think\model\Relation;
@@ -129,11 +128,14 @@ class BelongsToMany extends Relation
      */
     public function eagerlyResult(&$result, $relation, $subRelation, $closure, $class)
     {
+        $localKey   = $this->localKey;
+        $foreignKey = $this->foreignKey;
+
         $pk = $result->getPk();
         if (isset($result->$pk)) {
             $pk = $result->$pk;
             // 查询管理数据
-            $data = $this->eagerlyManyToMany(['pivot.' . $this->localKey => $pk], $relation, $subRelation);
+            $data = $this->eagerlyManyToMany(['pivot.' . $localKey => $pk], $relation, $subRelation);
 
             // 关联数据封装
             if (!isset($data[$pk])) {
@@ -141,35 +143,6 @@ class BelongsToMany extends Relation
             }
             $result->setAttr($relation, $this->resultSetBuild($data[$pk], $class));
         }
-    }
-
-    /**
-     * 关联统计
-     * @access public
-     * @param Model     $result 数据对象
-     * @param \Closure  $closure 闭包
-     * @return integer
-     */
-    public function relationCount($result, $closure)
-    {
-        $pk    = $result->getPk();
-        $count = 0;
-        if (isset($result->$pk)) {
-            $pk    = $result->$pk;
-            $count = $this->belongsToManyQuery($this->middle, $this->foreignKey, $this->localKey, ['pivot.' . $this->localKey => $pk])->count();
-        }
-        return $count;
-    }
-
-    /**
-     * 获取关联统计子查询
-     * @access public
-     * @param \Closure  $closure 闭包
-     * @return string
-     */
-    public function getRelationCountQuery($closure)
-    {
-        return $this->belongsToManyQuery($this->middle, $this->foreignKey, $this->localKey, ['pivot.' . $this->localKey => ['exp', '=' . $this->parent->getTable() . '.' . $this->parent->getPk()]])->fetchSql()->count();
     }
 
     /**
@@ -182,8 +155,10 @@ class BelongsToMany extends Relation
      */
     protected function eagerlyManyToMany($where, $relation, $subRelation = '')
     {
+        $foreignKey = $this->foreignKey;
+        $localKey   = $this->localKey;
         // 预载入关联查询 支持嵌套预载入
-        $list = $this->belongsToManyQuery($this->middle, $this->foreignKey, $this->localKey, $where)->with($subRelation)->select();
+        $list = $this->belongsToManyQuery($this->middle, $foreignKey, $localKey, $where)->with($subRelation)->select();
 
         // 组装模型数据
         $data = [];
@@ -198,8 +173,8 @@ class BelongsToMany extends Relation
                     }
                 }
             }
-            $set->pivot                      = new Pivot($pivot, $this->middle);
-            $data[$pivot[$this->localKey]][] = $set;
+            $set->pivot                = new Pivot($pivot, $this->middle);
+            $data[$pivot[$localKey]][] = $set;
         }
         return $data;
     }
@@ -242,19 +217,13 @@ class BelongsToMany extends Relation
      * @access public
      * @param array     $dataSet 数据集
      * @param array     $pivot 中间表额外数据
-     * @param bool      $samePivot 额外数据是否相同
      * @return integer
      */
-    public function saveAll(array $dataSet, array $pivot = [], $samePivot = false)
+    public function saveAll(array $dataSet, array $pivot = [])
     {
         $result = false;
         foreach ($dataSet as $key => $data) {
-            if (!$samePivot) {
-                $pivotData = isset($pivot[$key]) ? $pivot[$key] : [];
-            } else {
-                $pivotData = $pivot;
-            }
-            $result = $this->attach($data, $pivotData);
+            $result = $this->attach($data, !empty($pivot) ? $pivot[$key] : []);
         }
         return $result;
     }
@@ -269,14 +238,10 @@ class BelongsToMany extends Relation
     public function attach($data, $pivot = [])
     {
         if (is_array($data)) {
-            if (key($data) === 0) {
-                $id = $data;
-            } else {
-                // 保存关联表数据
-                $model = new $this->model;
-                $model->save($data);
-                $id = $model->getLastInsID();
-            }
+            // 保存关联表数据
+            $model = new $this->model;
+            $model->save($data);
+            $id = $model->getLastInsID();
         } elseif (is_numeric($data) || is_string($data)) {
             // 根据关联表主键直接写入中间表
             $id = $data;
@@ -288,14 +253,10 @@ class BelongsToMany extends Relation
 
         if ($id) {
             // 保存中间表数据
-            $pk                     = $this->parent->getPk();
-            $pivot[$this->localKey] = $this->parent->$pk;
-            $ids                    = (array) $id;
-            foreach ($ids as $id) {
-                $pivot[$this->foreignKey] = $id;
-                $result                   = $this->query->table($this->middle)->insert($pivot, true);
-            }
-            return $result;
+            $pk                       = $this->parent->getPk();
+            $pivot[$this->localKey]   = $this->parent->$pk;
+            $pivot[$this->foreignKey] = $id;
+            return $this->query->table($this->middle)->insert($pivot);
         } else {
             throw new Exception('miss relation data');
         }

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -12,7 +12,6 @@
 namespace think\model;
 
 use think\Db;
-use think\db\Query;
 use think\Model;
 
 class Merge extends Model
@@ -169,13 +168,12 @@ class Merge extends Model
         $this->autoCompleteData($this->auto);
 
         // 自动写入更新时间
-        if ($this->autoWriteTimestamp && $this->updateTime && !isset($this->data[$this->updateTime])) {
+        if ($this->autoWriteTimestamp && $this->updateTime) {
             $this->setAttr($this->updateTime, null);
         }
 
         $db = $this->db();
         $db->startTrans();
-        $pk = $this->getPk();
         try {
             if ($this->isUpdate) {
                 // 自动写入
@@ -189,15 +187,19 @@ class Merge extends Model
                     $where = $this->updateWhere;
                 }
 
+                if (!empty($where)) {
+                    $pk = $this->getPk();
+
+                    if (isset($this->mapFields[$pk])) {
+                        $pk = $this->mapFields[$pk];
+                    }
+                    if (isset($where[$pk])) {
+                        unset($where[$pk]);
+                    }
+                }
+
                 // 处理模型数据
                 $data = $this->parseData($this->name, $this->data);
-                if (is_string($pk) && isset($data[$pk])) {
-                    if (!isset($where[$pk])) {
-                        unset($where);
-                        $where[$pk] = $data[$pk];
-                    }
-                    unset($data[$pk]);
-                }
                 // 写入主表数据
                 $result = $db->strict(false)->where($where)->update($data);
 
@@ -207,7 +209,7 @@ class Merge extends Model
                     $table = is_int($key) ? $db->getTable($model) : $model;
                     // 处理关联模型数据
                     $data  = $this->parseData($name, $this->data);
-                    $query = new Query;
+                    $query = clone $db;
                     if ($query->table($table)->strict(false)->where($this->fk, $this->data[$this->getPk()])->update($data)) {
                         $result = 1;
                     }
@@ -221,7 +223,7 @@ class Merge extends Model
                 $this->autoCompleteData($this->insert);
 
                 // 自动写入创建时间
-                if ($this->autoWriteTimestamp && $this->createTime && !isset($this->data[$this->createTime])) {
+                if ($this->autoWriteTimestamp && $this->createTime) {
                     $this->setAttr($this->createTime, null);
                 }
 
@@ -236,6 +238,7 @@ class Merge extends Model
                 if ($result) {
                     $insertId = $db->getLastInsID($sequence);
                     // 写入外键数据
+                    $pk = $this->getPk();
                     if ($insertId) {
                         if (is_string($pk)) {
                             $this->data[$pk] = $insertId;
@@ -256,7 +259,7 @@ class Merge extends Model
                         $table = is_int($key) ? $db->getTable($model) : $model;
                         // 处理关联模型数据
                         $data  = $this->parseData($name, $source, true);
-                        $query = new Query;
+                        $query = clone $db;
                         $query->table($table)->strict(false)->insert($data);
                     }
                 }
@@ -297,7 +300,7 @@ class Merge extends Model
                 // 删除关联数据
                 foreach ($this->relationModel as $key => $model) {
                     $table = is_int($key) ? $db->getTable($model) : $model;
-                    $query = new Query;
+                    $query = clone $db;
                     $query->table($table)->where($this->fk, $pk)->delete();
                 }
             }

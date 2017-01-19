@@ -317,7 +317,7 @@ class Console
 
         if (!$command->isEnabled()) {
             $command->setConsole(null);
-            return;
+            return null;
         }
 
         if (null === $command->getDefinition()) {

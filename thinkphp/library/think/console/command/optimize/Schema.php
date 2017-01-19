@@ -50,7 +50,7 @@ class Schema extends Command
             }
             $output->writeln('<info>Succeed!</info>');
             return;
-        } elseif ($input->hasOption('table')) {
+        } else if ($input->hasOption('table')) {
             $table = $input->getOption('table');
             if (!strpos($table, '.')) {
                 $dbName = Db::getConfig('database');

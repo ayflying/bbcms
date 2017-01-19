@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -16,6 +16,7 @@ use think\Exception;
 use think\Loader;
 use think\Model;
 use think\model\Relation;
+use think\model\relation\BelongsTo;
 
 abstract class OneToOne extends Relation
 {
@@ -160,7 +161,6 @@ abstract class OneToOne extends Relation
      */
     public function getEagerlyType()
     {
-        $this->removeOption();
         return $this->eagerlyType;
     }
 
@@ -178,16 +178,6 @@ abstract class OneToOne extends Relation
         $this->bindAttr = $attr;
         return $this;
     }
-
-    /**
-     * 关联统计
-     * @access public
-     * @param Model     $result 数据对象
-     * @param \Closure  $closure 闭包
-     * @return integer
-     */
-    public function relationCount($result, $closure)
-    {}
 
     /**
      * 一对一 关联模型预查询拼装

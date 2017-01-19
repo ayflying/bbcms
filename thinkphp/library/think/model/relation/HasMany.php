@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -58,8 +58,10 @@ class HasMany extends Relation
      */
     public function eagerlyResultSet(&$resultSet, $relation, $subRelation, $closure, $class)
     {
-        $localKey = $this->localKey;
-        $range    = [];
+        $localKey   = $this->localKey;
+        $foreignKey = $this->foreignKey;
+
+        $range = [];
         foreach ($resultSet as $result) {
             // 获取关联外键列表
             if (isset($result->$localKey)) {
@@ -68,9 +70,9 @@ class HasMany extends Relation
         }
 
         if (!empty($range)) {
-            $this->where[$this->foreignKey] = ['in', $range];
-            $data                           = $this->eagerlyOneToMany($this, [
-                $this->foreignKey => [
+            $this->where[$foreignKey] = ['in', $range];
+            $data                     = $this->eagerlyOneToMany($this, [
+                $foreignKey => [
                     'in',
                     $range,
                 ],
@@ -98,51 +100,17 @@ class HasMany extends Relation
      */
     public function eagerlyResult(&$result, $relation, $subRelation, $closure, $class)
     {
-        $localKey = $this->localKey;
+        $localKey   = $this->localKey;
+        $foreignKey = $this->foreignKey;
 
         if (isset($result->$localKey)) {
-            $data = $this->eagerlyOneToMany($this, [$this->foreignKey => $result->$localKey], $relation, $subRelation, $closure);
+            $data = $this->eagerlyOneToMany($this, [$foreignKey => $result->$localKey], $relation, $subRelation, $closure);
             // 关联数据封装
             if (!isset($data[$result->$localKey])) {
                 $data[$result->$localKey] = [];
             }
             $result->setAttr($relation, $this->resultSetBuild($data[$result->$localKey], $class));
         }
-    }
-
-    /**
-     * 关联统计
-     * @access public
-     * @param Model     $result 数据对象
-     * @param \Closure  $closure 闭包
-     * @return integer
-     */
-    public function relationCount($result, $closure)
-    {
-        $localKey = $this->localKey;
-        $count    = 0;
-        if (isset($result->$localKey)) {
-            if ($closure) {
-                call_user_func_array($closure, [ & $this->query]);
-            }
-            $count = $this->query->where([$this->foreignKey => $result->$localKey])->count();
-        }
-        return $count;
-    }
-
-    /**
-     * 创建关联统计子查询
-     * @access public
-     * @param \Closure  $closure 闭包
-     * @return string
-     */
-    public function getRelationCountQuery($closure)
-    {
-        if ($closure) {
-            call_user_func_array($closure, [ & $this->query]);
-        }
-
-        return $this->query->where([$this->foreignKey => ['exp', '=' . $this->parent->getTable() . '.' . $this->parent->getPk()]])->fetchSql()->count();
     }
 
     /**

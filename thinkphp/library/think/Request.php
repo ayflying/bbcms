@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -10,6 +10,11 @@
 // +----------------------------------------------------------------------
 
 namespace think;
+
+use think\Config;
+use think\Exception;
+use think\File;
+use think\Session;
 
 class Request
 {
@@ -20,7 +25,7 @@ class Request
 
     protected $method;
     /**
-     * @var string 域名（含协议和端口）
+     * @var string 域名
      */
     protected $domain;
 
@@ -221,9 +226,8 @@ class Request
         if (!isset($info['path'])) {
             $info['path'] = '/';
         }
-        $options                      = [];
-        $options[strtolower($method)] = $params;
-        $queryString                  = '';
+        $options     = [];
+        $queryString = '';
         if (isset($info['query'])) {
             parse_str(html_entity_decode($info['query']), $query);
             if (!empty($params)) {
@@ -236,11 +240,6 @@ class Request
         } elseif (!empty($params)) {
             $queryString = http_build_query($params, '', '&');
         }
-        if ($queryString) {
-            parse_str($queryString, $get);
-            $options['get'] = isset($options['get']) ? array_merge($get, $options['get']) : $get;
-        }
-
         $server['REQUEST_URI']  = $info['path'] . ('' !== $queryString ? '?' . $queryString : '');
         $server['QUERY_STRING'] = $queryString;
         $options['cookie']      = $cookie;
@@ -688,8 +687,8 @@ class Request
     {
         if (empty($this->post)) {
             $content = $this->input;
-            if (empty($_POST) && 'application/json' == $this->contentType()) {
-                $this->post = (array) json_decode($content, true);
+            if (empty($_POST) && strpos($content, '":')) {
+                $this->post = json_decode($content, true);
             } else {
                 $this->post = $_POST;
             }
@@ -713,8 +712,8 @@ class Request
     {
         if (is_null($this->put)) {
             $content = $this->input;
-            if ('application/json' == $this->contentType()) {
-                $this->put = (array) json_decode($content, true);
+            if (strpos($content, '":')) {
+                $this->put = json_decode($content, true);
             } else {
                 parse_str($content, $this->put);
             }
@@ -886,7 +885,7 @@ class Request
                 return $array[$name];
             }
         }
-        return;
+        return null;
     }
 
     /**
@@ -1346,21 +1345,6 @@ class Request
     public function remotePort()
     {
         return $this->server('REMOTE_PORT');
-    }
-
-    /**
-     * 当前请求 HTTP_CONTENT_TYPE
-     * @access public
-     * @return string
-     */
-    public function contentType()
-    {
-        $contentType = $this->server('CONTENT_TYPE');
-        if ($contentType) {
-            list($type) = explode(';', $contentType);
-            return trim($type);
-        }
-        return '';
     }
 
     /**

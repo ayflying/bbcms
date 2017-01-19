@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -106,46 +106,14 @@ class MorphMany extends Relation
      */
     public function eagerlyResult(&$result, $relation, $subRelation, $closure, $class)
     {
-        $pk = $result->getPk();
+        $morphType = $this->morphType;
+        $morphKey  = $this->morphKey;
+        $type      = $this->type;
+        $pk        = $result->getPk();
         if (isset($result->$pk)) {
-            $data = $this->eagerlyMorphToMany([$this->morphKey => $result->$pk, $this->morphType => $this->type], $relation, $subRelation, $closure);
+            $data = $this->eagerlyMorphToMany([$morphKey => $result->$pk, $morphType => $type], $relation, $subRelation, $closure);
             $result->setAttr($relation, $this->resultSetBuild($data[$result->$pk], $class));
         }
-    }
-
-    /**
-     * 关联统计
-     * @access public
-     * @param Model     $result 数据对象
-     * @param \Closure  $closure 闭包
-     * @return integer
-     */
-    public function relationCount($result, $closure)
-    {
-        $pk    = $result->getPk();
-        $count = 0;
-        if (isset($result->$pk)) {
-            if ($closure) {
-                call_user_func_array($closure, [ & $this->query]);
-            }
-            $count = $this->query->where([$this->morphKey => $result->$pk, $this->morphType => $this->type])->count();
-        }
-        return $count;
-    }
-
-    /**
-     * 获取关联统计子查询
-     * @access public
-     * @param \Closure  $closure 闭包
-     * @return string
-     */
-    public function getRelationCountQuery($closure)
-    {
-        if ($closure) {
-            call_user_func_array($closure, [ & $this->query]);
-        }
-
-        return $this->query->where([$this->morphKey => ['exp', '=' . $this->parent->getTable() . '.' . $this->parent->getPk()], $this->morphType => $this->type])->fetchSql()->count();
     }
 
     /**

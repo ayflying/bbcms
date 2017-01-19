@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -135,16 +135,6 @@ class MorphTo extends Relation
         $model = $this->parseModel($result->{$this->morphType});
         $this->eagerlyMorphToOne($model, $relation, $result, $subRelation);
     }
-
-    /**
-     * 关联统计
-     * @access public
-     * @param Model     $result 数据对象
-     * @param \Closure  $closure 闭包
-     * @return integer
-     */
-    public function relationCount($result, $closure)
-    {}
 
     /**
      * 多态MorphTo 关联模型预查询

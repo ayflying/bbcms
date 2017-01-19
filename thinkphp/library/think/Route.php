@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -11,7 +11,14 @@
 
 namespace think;
 
+use think\App;
+use think\Config;
 use think\exception\HttpException;
+use think\Hook;
+use think\Loader;
+use think\Log;
+use think\Request;
+use think\Response;
 
 class Route
 {
@@ -289,14 +296,12 @@ class Route
             } elseif ('$' == substr($rule, -1, 1)) {
                 // 是否完整匹配
                 $option['complete_match'] = true;
+                $rule                     = substr($rule, 0, -1);
             }
         } elseif (empty($option['complete_match']) && '$' == substr($rule, -1, 1)) {
             // 是否完整匹配
             $option['complete_match'] = true;
-        }
-
-        if ('$' == substr($rule, -1, 1)) {
-            $rule = substr($rule, 0, -1);
+            $rule                     = substr($rule, 0, -1);
         }
 
         if ('/' != $rule || $group) {
@@ -656,14 +661,14 @@ class Route
     /**
      * rest方法定义和修改
      * @access public
-     * @param string        $name 方法名称
-     * @param array|bool    $resource 资源
+     * @param string    $name 方法名称
+     * @param array     $resource 资源
      * @return void
      */
     public static function rest($name, $resource = [])
     {
         if (is_array($name)) {
-            self::$rest = $resource ? $name : array_merge(self::$rest, $name);
+            self::$rest = array_merge(self::$rest, $name);
         } else {
             self::$rest[$name] = $resource;
         }
@@ -1126,8 +1131,8 @@ class Route
              || (isset($option['ajax']) && !$option['ajax'] && $request->isAjax()) // 非Ajax检测
              || (isset($option['pjax']) && $option['pjax'] && !$request->isPjax()) // Pjax检测
              || (isset($option['pjax']) && !$option['pjax'] && $request->isPjax()) // 非Pjax检测
-             || (isset($option['ext']) && false === stripos('|' . $option['ext'] . '|', $request->ext() ? '|' . $request->ext() . '|' : '')) // 伪静态后缀检测
-             || (isset($option['deny_ext']) && false !== stripos('|' . $option['deny_ext'] . '|', $request->ext() ? '|' . $request->ext() . '|' : ''))
+             || (isset($option['ext']) && false === stripos($option['ext'], $request->ext())) // 伪静态后缀检测
+             || (isset($option['deny_ext']) && false !== stripos($option['deny_ext'], $request->ext()))
             || (isset($option['domain']) && !in_array($option['domain'], [$_SERVER['HTTP_HOST'], self::$subDomain])) // 域名检测
              || (isset($option['https']) && $option['https'] && !$request->isSsl()) // https检测
              || (isset($option['https']) && !$option['https'] && $request->isSsl()) // https检测
@@ -1488,10 +1493,6 @@ class Route
             $route             = substr($route, 1);
             list($route, $var) = self::parseUrlPath($route);
             $result            = ['type' => 'controller', 'controller' => implode('/', $route), 'var' => $var];
-            $request->action(array_pop($route));
-            $request->controller($route ? array_pop($route) : Config::get('default_controller'));
-            $request->module($route ? array_pop($route) : Config::get('default_module'));
-            App::$modulePath = APP_PATH . (Config::get('app_multi_module') ? $request->module() . DS : '');
         } else {
             // 路由到模块/控制器/操作
             $result = self::parseModule($route);

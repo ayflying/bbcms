@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -89,17 +89,6 @@ abstract class Relation
     public function setAlias($alias)
     {
         $this->alias = $alias;
-        return $this;
-    }
-
-    /**
-     * 移除关联查询参数
-     * @access public
-     * @return $this
-     */
-    public function removeOption()
-    {
-        $this->query->removeOption();
         return $this;
     }
 
