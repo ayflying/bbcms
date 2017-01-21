@@ -1,5 +1,15 @@
-{include file="common/header" title='编辑' keywords='' description='' /}
 <style type="text/css">
+.litpic {
+	position: relative;
+}
+.litpic div{
+	position: absolute;
+	overflow: hidden;
+	z-index: 1;
+}
+.litpic div img{
+	
+}
 .thumb>ul>li {
 	position: relative;
 }
@@ -14,14 +24,27 @@
 	opacity: 0.0;
 }
 </style>
+{include file="common/header" title='编辑' keywords='' description='' /}
 {load href="__PUBLIC__/cloud/script/jquery.form.min.js" /}
+
 
 <div class="container">
     <form id="edit" method="post" enctype="multipart/form-data">
+    
     <div class="form-group">
-   	  <label for="title">标题</label>
-      <input name="title" type="text" class="form-control" id="title" value="{$_G.article.title}">
-	</div>
+     <div class="row">
+       <div class="col-md-10">
+   	     <label for="title">标题</label>
+         <input name="title" type="text" class="form-control" id="title" value="{$_G.article.title}">
+	   </div>
+       <div class="litpic col-md-2 hidden-xs">
+          <!--<label for="litpic">封面</label>-->
+    	  <input name="litpic" class="form-control" type="hidden" id="litpic" value="{$_G.article.litpic}" />
+          <div><img class="img-thumbnail" src="{$_G.article.litpic}" /></div>
+        </div>
+     </div>
+    </div>
+    
     
     <div class="thumb form-group">
    	  <label for="title">焦点图</label>
@@ -106,21 +129,6 @@ $(function(){
 		var file = $(this) 
 		file.after(file.clone().val("")); 
 		file.remove();
-		/*
-		filename = $(this).val();
-		//alert(filename);
-		$.ajax({
-		  type: "POST",
-		  url: "{:request()->url()}",
-		  enctype: 'multipart/form-data',
-		  data: {
-			file: filename
-		  },
-		  success: function () {
-			alert("Data Uploaded: ");
-		  }
-		});
-		*/
 		
 	});
 	
@@ -147,12 +155,22 @@ $(function(){
 			//e.preventDefault();
 			alert(msg);
 			return false;
-		}
-			
+		}	
 		$("#edit").submit();
-		
-		
 	});
+	
+	
+	//焦点同滑动显示
+	var h = $(".litpic").parent().height();
+	$(".litpic div").stop().animate({height:h});
+	$(".litpic img").mouseover(function(e) {
+        var h_img = $(this).height();
+		$(".litpic div").stop().animate({height:h_img});
+    });
+	$(".litpic img").mouseout(function(e) {
+        //var h = $(this).height();
+		$(".litpic div").stop().animate({height:h});
+    });
 	
 });
 
@@ -170,14 +188,6 @@ function getObjectURL(file) {
 	return url ;
 }
 
-var aa = "asdfsdgsdh";
-$.post('index.php',
-{
-	name:'123',
-	ayay:aa,	
-},function(e){
-	
-});
 
 </script>
 
