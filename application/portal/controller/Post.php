@@ -1,6 +1,7 @@
 <?php
 namespace app\portal\controller;
 use think\Db;
+use think\Cache;
 use think\Request;
 use think\Image;
 use think\Config;
@@ -162,7 +163,6 @@ class Post extends Common{
 	
 	public function edit($aid){
 		$uid = $this -> uid;
-        
         if(request() -> isAjax()){
             $post = input('post.');
             $article = PortalArticle::get($aid)->thumb;
@@ -185,6 +185,9 @@ class Post extends Common{
         
         
 		if (request()->isPost()){
+            Cache::rm('article_'.$aid);
+            $cache = Cache::pull('article_'.$aid); 
+            
             $post = input('post.');
             if(isset($post['mod'])){
                 $mod_data = $post['mod'];

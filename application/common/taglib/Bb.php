@@ -96,33 +96,36 @@ class Bb extends TagLib{
         
         $Str = '<?php 
             $where = [
-                "portal_article.status" => ["GT",0],
+                "status" => ["GT",0],
             ];
         ';
         
         if(!empty($type)){
-            $Str .= ' $where["portal_article.'.$type.'"] = ["exp", "is not null"]; ';
+            $Str .= ' $where["'.$type.'"] = ["exp", "is not null"]; ';
         }
         
         if(!empty($tid)){
-            $Str .= ' $where["portal_article.tid"] = '.$tid.'; ';
+            $Str .= ' $where["tid"] = '.$tid.'; ';
         }
         
-        $Str .= ' $db = model("portal/PortalArticle");
+        $Str .= ' $db = model("Portal/PortalArticle");
+            //$Article = new \app\portal\model\PortalArticle;
             $relation = ["attachment","menu"];
-            
         ';
         
         if(!empty($aid)){
             $Str .= ' $tag_sql = $db -> all("'.$aid.'",$relation); ';
         }else{
+            /*
             $Str .= '$tag_sql = $db -> all(function($query) use ($where){
                 $query -> where($where)  -> limit('.$row.') -> order("'.$order.'") -> cache(true);
-
             },$relation); ';
+            */
+            $Str .= '$tag_sql = $db -> where($where) -> limit('.$row.') -> order("'.$order.'") -> cache(true) -> select(); 
+            //dump($tag_sql);
+            ';
             
         }
-        
         
         
         //循环获取模型
@@ -134,7 +137,6 @@ class Bb extends TagLib{
             $'.$item.'["url"] = url("@portal/article/index?aid=".$'.$item.'["aid"]);
             $'.$item.'["turl"] = url("@portal/Lists/index?tid=".$'.$item.'["tid"]);
             //dump($'.$item.');
-            
             ?>';
         
         $Str .= $content;
