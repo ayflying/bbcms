@@ -108,7 +108,7 @@ class Bb extends TagLib{
             $Str .= ' $where["tid"] = '.$tid.'; ';
         }
         
-        $Str .= ' $db = model("Portal/PortalArticle");
+        $Str .= ' $db = model("portal/PortalArticle");
             $relation = ["attachment","menu"];
         ';
         
