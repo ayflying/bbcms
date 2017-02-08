@@ -109,7 +109,6 @@ class Bb extends TagLib{
         }
         
         $Str .= ' $db = model("Portal/PortalArticle");
-            //$Article = new \app\portal\model\PortalArticle;
             $relation = ["attachment","menu"];
         ';
         
