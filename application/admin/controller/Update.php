@@ -17,7 +17,7 @@ class Update extends Common
         $url =  UPDATE_URL . "/update/list";
         $put = curl($url);
         if(empty($put)){
-            return $this -> error("更新节点异常，请检查配置文件");
+            return $this -> error("更新节点异常，请检查配置文件",'admin/index/index');
         }
         $put = json_decode($put,true);
         $list = [];
