@@ -33,7 +33,8 @@ class Lists extends Common{
 		}else{
 			$list = Db::name('portal_article')
 			->where($where) -> order($order) -> cache(true) -> paginate(PAGE_NUM);
-		}
+		
+        }
 		$page = $list->render();
         $this -> _G['menu'] = $sql;
         $this -> _G['page'] = $page;

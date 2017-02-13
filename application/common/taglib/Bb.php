@@ -48,8 +48,6 @@ class Bb extends TagLib{
         $row = !empty($tag['row'])?$tag['row']:999;
         $item = !empty($tag['item'])?$tag['item']:'bb';
         
-        
-        
         $Str = '<?php
             $where = [];
         ';
@@ -60,7 +58,7 @@ class Bb extends TagLib{
         }
         
         $Str .= '
-            $tag_sql = \think\Db::name("PortalMenu") -> where($where) -> order("weight desc") -> limit("'.$row.'") -> cache(true) -> select();
+            $tag_sql = think\Db::name("PortalMenu") -> where($where) -> order("weight desc") -> limit("'.$row.'") -> cache(true) -> select();
             foreach($tag_sql as $key => $'.$item.'):
             //input("tid") and $'.$item.'["action"] = "click";
             $'.$item.'["url"] = url("@portal/lists/index?tid=".$'.$item.'["tid"]);
