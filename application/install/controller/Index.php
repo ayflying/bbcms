@@ -67,6 +67,8 @@ class Index extends Controller
         set_time_limit(3600);
         $path = APP_PATH.'install/sql/1_table.sql';
         $sql = file_get_contents($path);
+         //去除多余空行
+        $sql = preg_replace("/(\r\n|\n|\r|\t)/i", '', $sql);
         $sql_arr = $this -> format_sql($sql);
         foreach($sql_arr as $val){
             //dump($val);
