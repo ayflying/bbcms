@@ -11,13 +11,13 @@ class Index extends Common{
 			"操作系统" => PHP_OS,
 			"当前主机名:端口" => $_SERVER['SERVER_NAME'].":".$_SERVER['SERVER_PORT'], //当前主机名
 			"当前时间" => date("Y-m-d H:i:s"),
-            "程序版本" => Config::get('version') . " - ". Db::name('system_settings') -> where('name','version') -> value('value'),
+            '系统与数据版本' =>  Config::get('version') .' - '. Db::name('system_settings') -> where('name','version') -> value('value'),
 			"框架版本" => THINK_VERSION,
 			"语言" => $_SERVER['HTTP_ACCEPT_LANGUAGE'],
 			"PHP版本" => PHP_VERSION,
 			'Zend版本' => Zend_Version(),
 			"DG库版本" => $this -> GD('GD Version'),
-			'系统版本' =>  'V'.THINK_VERSION,
+			
             '最大执行时间' => ini_get("max_execution_time")."秒",
 			"数据库版本" =>  $this->_mysql_version(),
 			"数据库大小" => $this->_mysql_db_size(),

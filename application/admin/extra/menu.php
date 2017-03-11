@@ -2,6 +2,7 @@
 return [
 	
 		"系统首页" => [
+            "首页" => "Index/index",
 			"系统设置" => "System/index",
 			"网站模板" => 'System/theme',
 			"更新缓存" => 'System/cache',
