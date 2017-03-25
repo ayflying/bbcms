@@ -49,4 +49,6 @@ return [
     'auto_timestamp' => true,
     // 是否需要进行SQL性能分析
     'sql_explain' => false,
+    // 时间格式自动进行格式转换
+    'datetime_format' => false,
 ];

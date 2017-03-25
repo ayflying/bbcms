@@ -17,7 +17,6 @@ class Index extends Common{
 			"PHP版本" => PHP_VERSION,
 			'Zend版本' => Zend_Version(),
 			"DG库版本" => $this -> GD('GD Version'),
-			
             '最大执行时间' => ini_get("max_execution_time")."秒",
 			"数据库版本" =>  $this->_mysql_version(),
 			"数据库大小" => $this->_mysql_db_size(),
