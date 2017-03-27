@@ -11,10 +11,4 @@ class Index extends Common{
 		
     }
 	
-	function ceshi(){
-		$this -> theme("2123")->fetch2('112323');
-		
-		return $this -> fetch('portal/index');
-		
-	}
 }
