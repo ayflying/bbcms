@@ -48,7 +48,7 @@ class Login extends Controller{
 			if(empty($post['username']) || empty($post['password'])){
 				$this -> error(lang("用户名或者密码为空"));
 			}else{
-				$where['email|username|mobile'] = $post['username'];
+				$where['email|username|mobile'] = ['like', $post['username']];
 				$where['password'] = md5($post['password']);
 				/*
 				$code = input('post.code');
