@@ -86,7 +86,7 @@ return [
     // | 模板设置
     // +----------------------------------------------------------------------
 	'template'               => [
-		//'tpl_cache'          => false, // 开启模板编译缓存
+		'tpl_cache'          => false, // 开启模板编译缓存
 		'view_path' => VIEW_PATH.DS,	// 模板路径
 		'taglib_pre_load'    =>    'app\\common\\taglib\\Bb',	// 预先加载的标签库
 	],
