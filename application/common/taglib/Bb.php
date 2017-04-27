@@ -44,7 +44,7 @@ class Bb extends TagLib{
      * @return string|void
      */
     public function tagMenu($tag,$content) {
-        //$pid = !empty($tag['pid'])?$tag['pid']:null;
+        $tid = !empty($tag['tid'])?$tag['tid']:null;
         $row = !empty($tag['row'])?$tag['row']:999;
         $item = !empty($tag['item'])?$tag['item']:'bb';
         
@@ -52,11 +52,21 @@ class Bb extends TagLib{
             $where = [];
         ';
         
+        
+        if(!empty($tid)){
+            $tid = $this -> autoBuildVar($tid); //格式化数组变量
+            $Str .= '
+                $'.$item.' = think\Db::name("PortalMenu") -> cache(true) -> find("'.$tid.'");
+                $'.$item.'["url"] = url("@portal/lists/index?tid='.$tid.'"); ?>';
+            
+            $Str  .=   $content;
+            return $Str;
+        }
+        
         if(isset($tag['pid'])){
             $pid = $this -> autoBuildVar($tag['pid']); //格式化数组变量
             $Str .= ' $where["pid"] = '.$pid.'; ';
         }
-        
         $Str .= '
             $tag_sql = think\Db::name("PortalMenu") -> where($where) -> order("weight desc") -> limit("'.$row.'") -> cache(true) -> select();
             foreach($tag_sql as $key => $'.$item.'):
