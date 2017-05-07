@@ -30,6 +30,8 @@ abstract class OneToOne extends Relation
     protected $joinType;
     // 要绑定的属性
     protected $bindAttr = [];
+    // 关联方法名
+    protected $relation;
 
     /**
      * 设置join类型
@@ -243,13 +245,19 @@ abstract class OneToOne extends Relation
                 }
             }
         }
+
         if (isset($list[$relation])) {
             $relationModel = new $model($list[$relation]);
+            $relationModel->setParent(clone $result);
+            $relationModel->isUpdate(true);
+
             if (!empty($this->bindAttr)) {
                 $this->bindAttr($relationModel, $result, $this->bindAttr);
             }
+        } else {
+            $relationModel = null;
         }
-        $result->setAttr(Loader::parseName($relation), !isset($relationModel) ? null : $relationModel->isUpdate(true));
+        $result->setRelation(Loader::parseName($relation), $relationModel);
     }
 
     /**
@@ -309,6 +317,5 @@ abstract class OneToOne extends Relation
      * @return void
      */
     protected function baseQuery()
-    {
-    }
+    {}
 }
