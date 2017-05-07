@@ -5,7 +5,7 @@
 * @param str $url
 * @param array $post
 */
-function curl($url,$post=NULL,$time=30){
+function curl($url,$post=NULL,$time=30,$type=null){
 	
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
@@ -21,8 +21,10 @@ function curl($url,$post=NULL,$time=30){
 	if(isset($post)){	// post数据
 		curl_setopt($ch, CURLOPT_POST, 1);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+        if(isset($type)){
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/*'] );
+        }
 	}
-	
 	$output = curl_exec($ch);
 	curl_close($ch);
 	
