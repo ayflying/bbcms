@@ -36,9 +36,6 @@ class Article extends Common{
         $sql = Cache::get('article_'.$aid);
         $this -> _G['menu'] = Db::name('portal_menu') -> cache('menu_'.$sql['tid']) -> find($sql['tid']);
         $this -> _G['article'] = $sql;
-        $this -> _G['title'] = $sql['title'];
-        $this -> _G['description'] = $sql['description'];
-        $this -> assign('_G',$this -> _G);
 		//dump($this);
 		
 		return $this-> fetch($this -> _G['menu']['template2']);

@@ -103,7 +103,7 @@ class Post extends Common{
     public function add($tid){
         $uid = $this -> uid;
         $sql = Db::name('portal_menu') -> find($tid);
-        $this -> assign('title',$sql['name'].'发布 - ');
+        //$this -> assign('title',$sql['name'].'发布 - ');
         
         
         
@@ -155,8 +155,7 @@ class Post extends Common{
                 }
                 $this -> _G['mod'] = $mod_data;
             }
-            $this -> _G['title'] = $sql['name'].' - ';
-            $this -> assign('_G',$this -> _G);
+            $this -> _G['title'] = '发布 - '.$sql['name'];
             return $this->fetch('/post/add');
         }
     }
@@ -231,9 +230,8 @@ class Post extends Common{
                 $this -> _G['mod'] = $mod_data;
             }
             
-            $this -> _G['title'] = $article -> title.' - ';
+            $this -> _G['title'] = $article -> title;
             $this -> _G['article'] = $article;
-            $this -> assign('_G',$this -> _G);
             
             return $this->fetch('/post/edit');
         }

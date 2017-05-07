@@ -25,20 +25,15 @@ class Common extends Controller{
 			}
 			Cache::set('settings',$settings);
 		}
-		//$settings = Cache::get('settings');
         $this -> _G = [
             'system' => Cache::get('settings'),
         ];
         
-		$this -> assign("_G",$this -> _G);
 		//dump($this -> settings);
 		
 		
 	}
 	
-	public function theme($name=null){
-		//return $this;
-	}
 	
     public function authority($gid){
         
@@ -73,12 +68,11 @@ class Common extends Controller{
         */
         
     }
-    //
-    /*
-        覆盖系统fetch方法
-        该方法会自动检测当前主题的模板是否存在
+    
+   /**
+     *  重写系统fetch方法
+     *  该方法会自动检测当前主题的模板是否存在
 	*/
-    //
     public function fetch($file = '', $vars = [],$replace = [], $config = []){
         $config = array_merge(config('template'),$config);
 		//$config['view_suffix'] = 'abc';
@@ -87,7 +81,7 @@ class Common extends Controller{
 			 $config['view_path'] = ROOT_PATH .'template'.DS.'default'.DS;
              $this -> view -> engine($config);
 		}
-		
+		$this -> assign('_G',$this -> _G);
         return $this -> view -> fetch($file,$vars,$replace,$config);
 	}
 
