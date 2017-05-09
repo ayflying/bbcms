@@ -31,7 +31,7 @@ function curl($url,$post=NULL,$time=30,$type=null){
 	return $output;
 }
 
-/*
+/**
 * json升级版，中文不转义
 * @param array $arr
 */
@@ -88,16 +88,17 @@ function json_encode2($arr) {
  * @author 麦当苗儿 <zuojiazi@vip.qq.com>
  */
 function format_bytes($size, $delimiter = '') {
-	$units = array('B', 'KB', 'MB', 'GB', 'TB', 'PB');
+	$units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
 	for ($i = 0; $size >= 1024 && $i < 5; $i++) $size /= 1024;
 	return round($size, 2) . $delimiter . $units[$i];
 }
 
 
-/*
-// $string： 明文 或 密文  
-// $operation：DECODE表示解密,其它表示加密  
-*/
+/**
+ * 用户cooke解密与加密
+ * @param string $name      需要加密的明文
+ * @return string
+ */
 function cookie_decode($name){
 	$cookie =  new app\common\library\CookieCode();
 	//$cookie =  new luoe\library\CookieCode();
