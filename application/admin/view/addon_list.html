@@ -29,8 +29,8 @@
     <br/>版权：{$val.copyright|default=''} 目录：{$val.directory|default=''}</td>
     <td>{$val.description|default=''}</td>
     <td>
-    <a class="btn btn-primary" href="{:url('addon_install?dir='.$val['directory'])}" role="button">安装</a>
-    <a class="btn btn-primary" href="{:url('addon_del?dir='.$val['directory'])}" role="button">删除</a>
+    <a class="btn btn-primary" href="{//:url('addon_install?dir='.$val['directory'])}" role="button">安装</a>
+    <a class="btn btn-primary" href="{:url('addon_del?dir='.$val['dir'])}" role="button">删除</a>
     </td>
   </tr>
   

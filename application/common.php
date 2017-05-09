@@ -93,6 +93,15 @@ function format_bytes($size, $delimiter = '') {
 	return round($size, 2) . $delimiter . $units[$i];
 }
 
+/**
+ * 处理插件钩子
+ * @param string $hook   钩子名称
+ * @param mixed $params 传入参数
+ * @return void
+ */
+function hook($hook,$params=array()){
+    \Think\Hook::listen($hook,$params);
+}
 
 /**
  * 用户cooke解密与加密

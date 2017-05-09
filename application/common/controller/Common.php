@@ -4,6 +4,7 @@ use think\Controller;
 use think\Cache;
 use think\Db;
 use think\Debug;
+use think\Hook;
 
 class Common extends Controller{
 	
@@ -30,7 +31,6 @@ class Common extends Controller{
         ];
         
 		//dump($this -> settings);
-		
 		
 	}
 	
