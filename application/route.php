@@ -12,4 +12,6 @@ return [
     's' => '@portal/search/index',
     
     'uid/:uid' => '@member/index/index',
+    
+    'addons/:name' => '@addon/index/index',
 ];

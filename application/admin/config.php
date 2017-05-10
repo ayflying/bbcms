@@ -6,7 +6,7 @@ return [
 	],
 	// 视图输出字符串内容替换
 	'view_replace_str'=>[
-		'__Tpl__' => './application/admin/view',
+		'__Tpl__' => APP_PATH.'admin/view',
         '__PUBLIC__' => './public/',
 	],
 	

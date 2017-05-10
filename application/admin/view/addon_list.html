@@ -15,9 +15,9 @@
     <br/>版权：{$val.copyright} 目录：{$val.directory}</td>
     <td>{$val.description}</td>
     <td>
-    <a class="btn btn-primary" href="{:url('addon_start?id='.$val['id'])}" role="button">{$val['status']>0?"启用":"停用"}</a>
+    <a class="btn btn-primary" href="{:url('addon/start/start?id='.$val['id'])}" role="button">{$val['status']>0?"已启用":"已停用"}</a>
     <a class="btn btn-primary" href="{:url('addon_edit?id='.$val['id'])}" role="button">编辑</a>
-    <a class="btn btn-primary" href="{:url('addon_uninstall?id='.$val['id'])}" role="button">卸载</a>
+    <a class="btn btn-danger" href="{:url('addon/install/uninstall?id='.$val['id'])}" role="button">卸载</a>
     </td>
   </tr>
   
@@ -29,8 +29,8 @@
     <br/>版权：{$val.copyright|default=''} 目录：{$val.directory|default=''}</td>
     <td>{$val.description|default=''}</td>
     <td>
-    <a class="btn btn-primary" href="{//:url('addon_install?dir='.$val['directory'])}" role="button">安装</a>
-    <a class="btn btn-primary" href="{:url('addon_del?dir='.$val['dir'])}" role="button">删除</a>
+    <a class="btn btn-primary" href="{:url('addon/install/install?name='.$val['dir'])}" role="button">安装</a>
+    <a class="btn btn-danger" href="{:url('addon_del?dir='.$val['dir'])}" role="button">删除</a>
     </td>
   </tr>
   
@@ -41,15 +41,6 @@
 
 <script>
 
-var clip = new ZeroClipboard( document.getElementById("ltag") );
-
-function ltag(id){
-	/*
-	var tag = "<luoe:ad id='id' />";
-	alert(tag);
-	*/
-	
-}
 </script>
 
 {include file="./footer" /}

@@ -1,8 +1,10 @@
 <?php
 namespace app\addon\controller;
-use app\common\controller\Common;
+//use app\addon\controller\Common;
 
-class Index extends Common{
+//class Index extends Common{
+class Index
+{
 	/**
 	 * 执行某个插件
 	 * @param string $name 插件名称
@@ -12,6 +14,7 @@ class Index extends Common{
     public function index($name,$tag='run',$params=NULL)
     {
         
+        
 		$class = "addons\\{$name}\\Index";
         $addon   = new $class();
 		return  $addon->$tag($params);
@@ -19,8 +22,4 @@ class Index extends Common{
     }
     
     
-    function load_config($name){
-        
-        
-    }
 }

@@ -73,7 +73,7 @@ class Common extends Controller{
      *  重写系统fetch方法
      *  该方法会自动检测当前主题的模板是否存在
 	*/
-    public function fetch($file = '', $vars = [],$replace = [], $config = []){
+    protected function fetch($file = '', $vars = [],$replace = [], $config = []){
         $config = array_merge(config('template'),$config);
 		//$config['view_suffix'] = 'abc';
 		$dir = $config['view_path'].DS.$file.'.html';
