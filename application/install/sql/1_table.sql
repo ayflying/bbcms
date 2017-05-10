@@ -9,23 +9,14 @@ CREATE TABLE `bb_addon` (
   `name` varchar(255) DEFAULT NULL,
   `copyright` varchar(255) DEFAULT NULL,
   `version` varchar(255) DEFAULT NULL,
-  `identifier` varchar(255) DEFAULT NULL,
+  `identifier` varchar(255) NOT NULL,
   `directory` varchar(255) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
-  `listen` varchar(255) DEFAULT NULL,
-  `menu` varchar(255) DEFAULT NULL,
-  `status` smallint(1) DEFAULT NULL,
+  `settings` text,
+  `status` smallint(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- ----------------------------
--- Table structure for bb_addon_hooks
--- ----------------------------
-DROP TABLE IF EXISTS `bb_addon_hooks`;
-CREATE TABLE `bb_addon_hooks` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for bb_member_action
@@ -40,7 +31,7 @@ CREATE TABLE `bb_member_action` (
   `action` varchar(255) DEFAULT NULL,
   `status` smallint(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for bb_member_group
@@ -54,7 +45,7 @@ CREATE TABLE `bb_member_group` (
   `create_time` int(11) NOT NULL,
   `update_time` int(11) NOT NULL,
   PRIMARY KEY (`gid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for bb_member_message
@@ -68,7 +59,7 @@ CREATE TABLE `bb_member_message` (
   `read` int(1) DEFAULT NULL,
   `time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for bb_member_user
@@ -93,7 +84,7 @@ CREATE TABLE `bb_member_user` (
   `update_ip` char(50) DEFAULT NULL,
   `status` smallint(2) NOT NULL,
   PRIMARY KEY (`uid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for bb_member_user_profile
@@ -150,7 +141,7 @@ CREATE TABLE `bb_member_user_profile` (
   `birthdist` varchar(20) NOT NULL DEFAULT '',
   `birthcommunity` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`uid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for bb_member_user_profile_setting
@@ -175,7 +166,7 @@ CREATE TABLE `bb_member_user_profile_setting` (
   `showincard` tinyint(1) NOT NULL DEFAULT '0',
   `showinregister` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`fieldid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for bb_operate_ad
@@ -190,7 +181,7 @@ CREATE TABLE `bb_operate_ad` (
   `end_time` int(11) DEFAULT NULL,
   `status` smallint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for bb_operate_flink
@@ -206,7 +197,7 @@ CREATE TABLE `bb_operate_flink` (
   `create_time` int(11) DEFAULT NULL,
   `end_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for bb_portal_addonarticle
@@ -216,7 +207,7 @@ CREATE TABLE `bb_portal_addonarticle` (
   `aid` int(11) NOT NULL,
   `content` mediumtext,
   PRIMARY KEY (`aid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for bb_portal_article
@@ -239,7 +230,7 @@ CREATE TABLE `bb_portal_article` (
   `create_time` int(11) DEFAULT NULL,
   `update_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`aid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for bb_portal_attachment
@@ -256,7 +247,7 @@ CREATE TABLE `bb_portal_attachment` (
   `size` double DEFAULT NULL,
   `create_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for bb_portal_collect
@@ -270,7 +261,7 @@ CREATE TABLE `bb_portal_collect` (
   `type` int(11) DEFAULT NULL,
   `create_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for bb_portal_comment
@@ -283,7 +274,7 @@ CREATE TABLE `bb_portal_comment` (
   `content` text,
   `create_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`cid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for bb_portal_favorite
@@ -295,7 +286,7 @@ CREATE TABLE `bb_portal_favorite` (
   `uid` int(11) DEFAULT NULL,
   `create_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for bb_portal_menu
@@ -313,7 +304,7 @@ CREATE TABLE `bb_portal_menu` (
   `keywords` varchar(255) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`tid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for bb_portal_mod
@@ -325,7 +316,7 @@ CREATE TABLE `bb_portal_mod` (
   `data` text,
   `table` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for bb_system_settings
@@ -339,62 +330,5 @@ CREATE TABLE `bb_system_settings` (
   `type` char(20) DEFAULT NULL,
   `class` int(5) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
--- ----------------------------
--- Table structure for bb_wechat_menu
--- ----------------------------
-DROP TABLE IF EXISTS `bb_wechat_menu`;
-CREATE TABLE `bb_wechat_menu` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `topid` int(11) DEFAULT NULL,
-  `type` char(50) DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `value` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for bb_wechat_response
--- ----------------------------
-DROP TABLE IF EXISTS `bb_wechat_response`;
-CREATE TABLE `bb_wechat_response` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `from` varchar(255) DEFAULT NULL,
-  `to` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for bb_wechat_user
--- ----------------------------
-DROP TABLE IF EXISTS `bb_wechat_user`;
-CREATE TABLE `bb_wechat_user` (
-  `uid` int(11) NOT NULL AUTO_INCREMENT,
-  `openid` char(50) NOT NULL,
-  `subscribe` int(1) DEFAULT NULL,
-  `nickname` char(50) DEFAULT NULL,
-  `headimgurl` varchar(255) DEFAULT NULL,
-  `uname` varchar(255) DEFAULT NULL,
-  `pword` varchar(255) DEFAULT NULL,
-  `sex` int(1) NOT NULL,
-  `tel` char(30) DEFAULT NULL,
-  `country` char(50) DEFAULT NULL,
-  `province` char(50) DEFAULT NULL,
-  `city` char(50) DEFAULT NULL,
-  `image1` varchar(255) DEFAULT NULL,
-  `image2` varchar(255) DEFAULT NULL,
-  `image3` varchar(255) DEFAULT NULL,
-  `image4` varchar(255) DEFAULT NULL,
-  `tag1` char(50) DEFAULT NULL,
-  `tag2` char(50) DEFAULT NULL,
-  `tag3` char(50) DEFAULT NULL,
-  `tag4` char(50) DEFAULT NULL,
-  `tag5` char(50) DEFAULT NULL,
-  `tag6` char(50) DEFAULT NULL,
-  `latitude` char(255) DEFAULT NULL,
-  `longitude` char(255) DEFAULT NULL,
-  `precision` char(255) DEFAULT NULL,
-  `time` int(11) DEFAULT NULL,
-  PRIMARY KEY (`uid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
