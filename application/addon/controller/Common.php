@@ -19,4 +19,10 @@ class Common extends Common2{
         empty($name) and $name = input('name');
         return include("./addons".DS.$name.DS.'config.php');
     }
+    
+    public function sql($sql){
+        $system = new \app\admin\controller\Sql();
+        $num = $system -> sql($sql);
+        return $num;
+    }
 }

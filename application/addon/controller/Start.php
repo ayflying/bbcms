@@ -2,6 +2,7 @@
 namespace app\addon\controller;
 use app\addon\controller\Common;
 use think\Db;
+use think\Config;
 
 class Start extends Common
 {
@@ -22,13 +23,14 @@ class Start extends Common
         if($sql['status'] != 1){
             
             //注册插件钩子
+            $tag_arr = Config::get('tags');
             foreach($tag as $val){
-                if(isset($tags[$val])){
+                if(array_search($val,$tag_arr)){
                     $tags[$val][$name] = "addons\\{$name}\\Tag";
                 }
             }
             $str = "<?php\nreturn ".var_export($tags,true).";";
-            file_put_contents(APP_PATH.'tags.php',$str);
+            file_put_contents(APP_PATH.'tags.php', $str);
             Db::name('addon') -> where('id',$id) -> update(['status' => 1]);
             $this -> success("启动完成",null,null,1);
         }else{
@@ -41,7 +43,7 @@ class Start extends Common
             }
             //文件写入
             $str = "<?php\nreturn ".var_export($tags,true).";";
-            file_put_contents(APP_PATH.'tags.php',$str);
+            file_put_contents(APP_PATH.'tags.php', $str);
             Db::name('addon') -> where('id',$id) -> update(['status' => 0]);
             $this -> success("关闭完成",null,null,1);
         }

@@ -7,8 +7,6 @@ class Addon extends Common{
 	private $dir = './addons/';
     
     public function addon_list(){
-		
-		//$db = Db::name('addon');
 		$list = Db::name('addon')-> select();
 		$dir = $this -> dir;
 		$list2 = scandir($dir);
@@ -43,9 +41,21 @@ class Addon extends Common{
     *
     */
     public function addon_setting($id){
-        //Db::name('addon') -> where('id',$id) -> value('');
+        $settings = Db::name('addon') -> where('id',$id) -> value('settings');
+        $settings = json_decode($settings,true);
         
-        
+        if(request() -> isPost()){
+            $post = input('post.');
+            foreach($settings as $key => $val){
+                $settings[$key]['value'] = $post[$key];
+            }
+            $data = ['settings' => json_encode($settings)];
+            Db::name('addon') -> where('id',$id) -> update($data);
+            return $this -> success(lang("操作完成"));
+        }else{
+            $this -> assign('sql',$settings);
+            return $this -> fetch('./addon_setting');
+        }
     }
     
     
@@ -57,6 +67,9 @@ class Addon extends Common{
         
         if(request() -> isPost()){
             $post = input('post.');
+            $post['tag'] = [];
+            $post['setting'] = [];
+            
             $dir =  $this -> dir . $post['directory'];
             if(file_exists($dir)){
                 return $this -> error("目录[".$post['directory']."]已存在！");

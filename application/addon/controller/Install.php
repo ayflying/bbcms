@@ -14,7 +14,9 @@ class Install extends Common
     public function install($name){
         $dir = ADDON_PATH . $name;
         $data = include($dir.DS.'config.php');
-        $data['value'] = json_encode($data['value']);
+        if(!empty($data['setting'])){
+            $data['settings'] = json_encode($data['settings']);
+        }
         //进入安装
         $class = "addons\\{$name}\\Install";
         if(class_exists($class)){
@@ -23,6 +25,7 @@ class Install extends Common
                 $addon->install();
             }
         }
+        
         
         Db::name('addon') -> strict(false) -> insert($data);
         $this -> success("安装完成",null,null,1);

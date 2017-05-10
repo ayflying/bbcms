@@ -16,8 +16,8 @@
     <td>{$val.description}</td>
     <td>
     <a class="btn btn-primary" href="{:url('addon/start/start?id='.$val['id'])}" role="button">{$val['status']>0?"已启用":"已停用"}</a>
-    <a class="btn btn-primary" href="{:url('addon_edit?id='.$val['id'])}" role="button">编辑</a>
-    <a class="btn btn-danger" href="{:url('addon/install/uninstall?id='.$val['id'])}" role="button">卸载</a>
+    <a class="btn btn-primary" href="{:url('addon_setting?id='.$val['id'])}" role="button">设置</a>
+    <a class="btn btn-danger confirm" data-msg="卸载后该插件的设置将全部丢失！" data-href="{:url('addon/install/uninstall?id='.$val['id'])}" role="button">卸载</a>
     </td>
   </tr>
   
@@ -30,7 +30,7 @@
     <td>{$val.description|default=''}</td>
     <td>
     <a class="btn btn-primary" href="{:url('addon/install/install?name='.$val['dir'])}" role="button">安装</a>
-    <a class="btn btn-danger" href="{:url('addon_del?dir='.$val['dir'])}" role="button">删除</a>
+    <a class="btn btn-danger confirm" data-msg="确定要删除吗？该操作将删除插件文件！" data-href="{:url('addon_del?dir='.$val['dir'])}" role="button">删除</a>
     </td>
   </tr>
   
@@ -40,7 +40,16 @@
 </div>
 
 <script>
-
+$(function(){
+	$(".confirm").click(function(e) {
+		var msg = $(this).attr('data-msg');
+		var url = $(this).attr('data-href');
+        if(confirm(msg)){
+			window.location.href=url;
+		}
+    });
+	
+});
 </script>
 
 {include file="./footer" /}
