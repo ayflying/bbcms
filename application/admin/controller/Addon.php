@@ -15,16 +15,18 @@ class Addon extends Common{
         
         //$list = Db::name('addon') -> select();
         foreach($list2 as $key => $val){
-            foreach($list as $val2){
+            $list2[$key] = include($dir. DS. $val. DS. 'config.php');
+            $list2[$key]['dir'] = $val;
+            foreach($list as $key2 => $val2){
                 if($val == $val2['directory']){
+                    //检测新版
+                    if($val2['version'] < $list2[$key]['version']){
+                        $list[$key2]['new_version'] = $list2[$key]['version'];
+                    }
                     unset($list2[$key]);
                     break;
                 }
             }
-        }
-        foreach($list2 as $key => $val){
-            $list2[$key] = include($dir. DS. $val. DS. 'config.php');
-            $list2[$key]['dir'] = $val;
         }
         
 		$this -> assign('list',$list);

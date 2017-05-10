@@ -11,4 +11,4 @@ CREATE TABLE `bb_addon` (
   `settings` text,
   `status` smallint(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

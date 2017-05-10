@@ -15,10 +15,16 @@
     <br/>版权：{$val.copyright} 目录：{$val.directory}</td>
     <td>{$val.description}</td>
     <td>
+    
+    
     <a class="btn btn-primary" href="{:url('addon/start/start?id='.$val['id'])}" role="button">{$val['status']>0?"已启用":"已停用"}</a>
     {empty name="settings"}
     <a class="btn btn-primary" href="{:url('addon_setting?id='.$val['id'])}" role="button">设置</a>
     {/empty}
+    
+    {notempty name="$val.new_version"}
+    <a class="btn btn-info" href="{:url('addon/install/update?name='.$val['directory'])}" role="button">升级</a>
+    {/notempty}
     <a class="btn btn-danger confirm" data-msg="卸载后该插件的设置将全部丢失！" data-href="{:url('addon/install/uninstall?id='.$val['id'])}" role="button">卸载</a>
     </td>
   </tr>
