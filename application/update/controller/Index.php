@@ -14,11 +14,13 @@ class Index extends Controller
             //dump(Cache::get('updaelist'));
             
             foreach($file_list as $val){
-                $list[] = [
-                    'dir' => $val,
-                    'md5' => md5_file($val),
-                    'size' => filesize($val),
-                ];
+                if(is_file($val)){
+                    $list[] = [
+                        'dir' => $val,
+                        'md5' => md5_file($val),
+                        'size' => filesize($val),
+                    ];
+                }
             }
             
             Cache::set('updaelist',$list);

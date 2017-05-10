@@ -14,9 +14,9 @@ class Install extends Common
     public function install($name){
         $dir = ADDON_PATH . $name;
         $data = include($dir.DS.'config.php');
-        if(!empty($data['setting'])){
-            $data['settings'] = json_encode($data['settings']);
-        }
+        
+        empty($data['settings']) or $data['settings'] = json_encode($data['settings']);
+        
         //进入安装
         $class = "addons\\{$name}\\Install";
         if(class_exists($class)){

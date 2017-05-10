@@ -11,7 +11,7 @@ class Index
 	 * @param Mixed $params 传入的参数
 	 * @return void
 	 */
-    public function index($name,$tag='run',$params=NULL)
+    public function index($name,$tag='index',$params=NULL)
     {
         
         

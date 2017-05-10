@@ -42,8 +42,7 @@ class Addon extends Common{
     */
     public function addon_setting($id){
         $settings = Db::name('addon') -> where('id',$id) -> value('settings');
-        $settings = json_decode($settings,true);
-        
+        empty($settings) or $settings = json_decode($settings,true);
         if(request() -> isPost()){
             $post = input('post.');
             foreach($settings as $key => $val){
@@ -68,7 +67,8 @@ class Addon extends Common{
         if(request() -> isPost()){
             $post = input('post.');
             $post['tag'] = [];
-            $post['setting'] = [];
+            $post['settings'] = [];
+            $post['menu'] = [];
             
             $dir =  $this -> dir . $post['directory'];
             if(file_exists($dir)){

@@ -14,7 +14,7 @@
   <tr class="form-group">
     <td><label for="{$key}">{$val.name}({$key})</label></td>
     <td><input name="{$key}" type="text" class="form-control" value="{$val.value}" /></td>
-    <td>此插件的名称，中英文均可，最多 40 个字节</td>
+    <td>{$val.description|default=''}</td>
   </tr>
   {/foreach}
   
