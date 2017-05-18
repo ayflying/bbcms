@@ -294,17 +294,20 @@ CREATE TABLE `bb_portal_favorite` (
 DROP TABLE IF EXISTS `bb_portal_menu`;
 CREATE TABLE `bb_portal_menu` (
   `tid` int(11) NOT NULL AUTO_INCREMENT,
-  `weight` int(11) DEFAULT '0',
-  `pid` int(11) DEFAULT NULL,
+  `type` int(11) NOT NULL DEFAULT '1',
+  `weight` int(11) NOT NULL DEFAULT '0',
+  `pid` int(11) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `mod` int(11) NOT NULL,
   `jump` varchar(255) DEFAULT NULL,
-  `template` char(255) DEFAULT NULL,
-  `template2` char(255) DEFAULT NULL,
+  `template_article` char(50) DEFAULT NULL,
+  `template_list` char(50) DEFAULT NULL,
+  `template_add` char(50) DEFAULT NULL,
+  `template_edit` char(50) DEFAULT NULL,
   `keywords` varchar(255) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`tid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for bb_portal_mod

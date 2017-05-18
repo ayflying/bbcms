@@ -39,7 +39,7 @@ class Lists extends Common{
         $this -> _G['list'] = $list;
         
         
-		return $this-> fetch($this -> _G['menu']['template']);
+		return $this-> fetch($this -> _G['menu']['template_list']);
 	}
 	
 

@@ -17,8 +17,10 @@ class Menu extends Common{
 		
 		if(request()->isPost()){
 			$post = input('post.');
-			empty($post['template']) and $post['template'] = './Portal/list';
+			/*
+            empty($post['template']) and $post['template'] = './Portal/list';
 			empty($post['template2']) and $post['template2'] = './Portal/article';
+            */
 			Db::name('PortalMenu') -> insert($post);
 			$this -> success('添加成功');
 			
@@ -53,14 +55,12 @@ class Menu extends Common{
 			//print_r(input('post.'));
 			//$menu_db -> create();
 			$save = $post;
-			if(empty($post['template'])){
-				//$menu_db -> template = './Portal/list';
-				$save['template'] = './portal/list';
-			}
-			if(empty($post['template2'])){
-				//$menu_db -> template2 = './Portal/article';
-				$save['template2'] = './portal/article';
-			}
+            
+            
+            empty($post['template_article']) and $save['template_article'] = './portal/article';
+            empty($post['template_list']) and $save['template_list'] = './portal/list';
+            empty($post['template_add']) and $save['template_add'] = './portal/add';
+            empty($post['template_edit']) and $save['template_edit'] = './portal/edit';
 			//默认值
 			
 			$menu_db -> where('tid',$tid) -> update($save);

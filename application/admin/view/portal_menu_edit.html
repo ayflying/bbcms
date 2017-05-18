@@ -1,22 +1,33 @@
+<style type="text/css">
+label {
+	text-align: right;
+}
+</style>
 {include file="./header" title="菜单管理" /}
+<style>
+label{
+
+}
+</style>
 <div class="container-fluid">
 <form class="form-horizontal" action="" method="post" enctype="multipart/form-data">
-  <div class="form-group">
-  	<label for="name" class="col-sm-2 control-label">{:lang('标题')}：</label>
+
+  <div class="form-group row">
+  	<label for="name" class="col-sm-2 form-control-label">{:lang('标题')}：</label>
     <div class="col-sm-10">
     	<input name="name" type="text" class="form-control" id="name" value="{$sql.name|default=''}" />
     </div>
   </div>
   
-  <div class="form-group">
-    <label for="jump" class="col-sm-2 control-label">{:lang('跳转地址')}：</label>
+  <div class="form-group row">
+    <label for="jump" class="col-sm-2 form-control-label">{:lang('跳转地址')}：</label>
     <div class="col-sm-10">
       <input name="jump" type="text" class="form-control" id="jump" value="{$sql.jump|default=''}" placeholder="如果该栏目用于跳转，此处填写完整url，否则为空">
     </div>
   </div>
   
-  <div class="form-group">
-  	<label for="mod" class="col-sm-2 control-label">{:lang('模型')}：</label>
+  <div class="form-group row">
+  	<label for="mod" class="col-sm-2 form-control-label">{:lang('模型')}：</label>
     <div class="col-sm-10">
     	<select name="mod" id="mod" class="form-control">
         <option value="0">{:lang('普通文章')}</option>
@@ -27,8 +38,8 @@
     </div>
   </div>
   
-  <div class="form-group">
-  	<label for="pid" class="col-sm-2 control-label">{:lang('上级栏目')}：</label>
+  <div class="form-group row">
+  	<label for="pid" class="col-sm-2 form-control-label">{:lang('上级栏目')}：</label>
     <div class="col-sm-10">
     	<select name="pid" id="pid" class="form-control">
         <option value="0"  >{:lang('顶级栏目')}</option>
@@ -42,36 +53,51 @@
     </div>
   </div>
   
-  <div class="form-group">
-    <label for="template" class="col-sm-2 control-label">{:lang('列表模板')}：</label>
-    <div class="col-sm-10">
-      <input name="template" type="text" class="form-control" id="template" value="{$sql.template|default='./portal/list'}"　placeholder＝"使用默认模版请留空">
+  <div class="form-group row">
+    <label for="template_list" class="col-sm-2 form-control-label">{:lang('列表模板')}：</label>
+    <div class="col-sm-4">
+      <input name="template_list" type="text" class="form-control" value="{$sql.template_list|default='./portal/list'}"　placeholder＝"使用默认模版请留空">
+    </div>
+    
+    <label for="template_article" class="col-sm-2 form-control-label">{:lang('内容模板')}：</label>
+    <div class="col-sm-4">
+      <input name="template_article" type="text" class="form-control" value="{$sql.template_article|default='./portal/article'}"　placeholder＝"使用默认模版请留空">
     </div>
   </div>
   
-  <div class="form-group">
-    <label for="template2" class="col-sm-2 control-label">{:lang('文章模板')}：</label>
-    <div class="col-sm-10">
-      <input name="template2" type="text" class="form-control" id="template2" value="{$sql.template2|default='./portal/article'}"　placeholder＝"使用默认模版请留空">
+  
+  <div class="form-group row">
+    <label for="template_add" class="col-sm-2 form-control-label">{:lang('内容发布模板')}：</label>
+    <div class="col-sm-4">
+      <input name="template_add" type="text" class="form-control" value="{$sql.template_add|default='./portal/add'}"　placeholder＝"使用默认模版请留空">
+    </div>
+    
+    <label for="template_edit" class="col-sm-2 form-control-label">{:lang('内容编辑模板')}：</label>
+    <div class="col-sm-4">
+      <input name="template_edit" type="text" class="form-control" value="{$sql.template_edit|default='./portal/edit'}"　placeholder＝"使用默认模版请留空">
     </div>
   </div>
   
-  <div class="form-group">
-    <label for="keywords" class="col-sm-2 control-label">{:lang('关键字')}：</label>
+  <div class="form-group row">
+    
+  </div>
+  
+  <div class="form-group row">
+    <label for="keywords" class="col-sm-2 form-control-label">{:lang('关键字')}：</label>
     <div class="col-sm-10">
       <input name="keywords" type="text" class="form-control" id="keywords" value="{$sql.keywords|default=''}">
     </div>
   </div>
   
-  <div class="form-group">
-    <label for="description" class="col-sm-2 control-label">{:lang('描述')}：</label>
+  <div class="form-group row">
+    <label for="description" class="col-sm-2 form-control-label">{:lang('描述')}：</label>
     <div class="col-sm-10">
       <textarea name="description" rows="3" class="form-control" id="description">{$sql.description|default=''}</textarea>
     </div>
   </div>
   
-  <div class="form-group">
-    <label for="weight" class="col-sm-2 control-label">{:lang('权重')}：</label>
+  <div class="form-group row">
+    <label for="weight" class="col-sm-2 form-control-label">{:lang('权重')}：</label>
     <div class="col-sm-10">
       <input name="weight" type="text" class="form-control" id="weight" value="{$sql.weight|default='0'}">
     </div>

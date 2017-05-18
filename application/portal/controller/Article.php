@@ -38,7 +38,7 @@ class Article extends Common{
         $this -> _G['article'] = $sql;
 		//dump($this);
 		
-		return $this-> fetch($this -> _G['menu']['template2']);
+		return $this-> fetch($this -> _G['menu']['template_article']);
 	}
 
 }

@@ -156,7 +156,7 @@ class Post extends Common{
                 $this -> _G['mod'] = $mod_data;
             }
             $this -> _G['title'] = '发布 - '.$sql['name'];
-            return $this->fetch('/post/add');
+            return $this->fetch($sql['template_add']);
         }
     }
 	
@@ -232,8 +232,8 @@ class Post extends Common{
             
             $this -> _G['title'] = $article -> title;
             $this -> _G['article'] = $article;
-            
-            return $this->fetch('/post/edit');
+            $template_edit = Db::name('portal_menu') -> where('tid',$article['tid']) -> cache(true) -> value('template_edit');
+            return $this->fetch($template_edit);
         }
 		
 		
