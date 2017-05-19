@@ -1,4 +1,6 @@
 {include file="./header" title="在线升级" /}
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
 <div class="jumbotron">
     <p class="lead">{:lang('升级过程中请勿关闭该网页')}</p>
     <div class="file_list">
@@ -13,6 +15,7 @@ $(function(){
 
 
 function download(){
+	
 	$.getJSON('./update.php?action=file',function(data){
 		//alert(data.dir);
 		console.log(data);
