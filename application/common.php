@@ -1,10 +1,14 @@
 <?php
+/**
+ *   运行时间开始
+ */
+\think\Debug::remark('begin');
 
-/*
-* curl函数
-* @param str $url
-* @param array $post
-*/
+/**
+ * curl函数
+ * @param str $url
+ * @param array $post
+ */
 function curl($url,$post=NULL,$time=30,$type=null){
 	
 	$ch = curl_init();
@@ -32,9 +36,9 @@ function curl($url,$post=NULL,$time=30,$type=null){
 }
 
 /**
-* json升级版，中文不转义
-* @param array $arr
-*/
+ * json升级版，中文不转义
+ * @param array $arr
+ */
 function json_encode2($arr) {
 	$parts = array ();
 	$is_list = false;

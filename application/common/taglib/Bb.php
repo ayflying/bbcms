@@ -113,7 +113,7 @@ class Bb extends TagLib{
         }
         
         if(!empty($tid)){
-            $Str .= ' $where["tid"] = '.$tid.'; ';
+            $Str .= ' $where["tid"] = ["in",'.$tid.']; ';
         }
         
         $Str .= ' $db = model("portal/PortalArticle");

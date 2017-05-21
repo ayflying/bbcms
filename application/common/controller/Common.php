@@ -3,7 +3,6 @@ namespace app\common\controller;
 use think\Controller;
 use think\Cache;
 use think\Db;
-use think\Debug;
 use think\Hook;
 
 class Common extends Controller{
@@ -13,7 +12,6 @@ class Common extends Controller{
     public $_G;
 	
 	public function _initialize(){
-		Debug::remark('begin');
         //检测当前用户UID
 		$this -> uid = cookie_decode('uid') > 0 ? cookie_decode('uid') : 0;
 		$user = Db::name('member_user') ->cache('user_'.$this->uid) -> find($this -> uid);
@@ -22,6 +20,9 @@ class Common extends Controller{
 		if(!cache('settings')){
 			$list = db('system_settings') -> select();
 			foreach($list as $val){
+                if($val['name'] == 'statistics'){
+                    $val['value'] = htmlspecialchars_decode($val['value']);
+                }
 				$settings[$val['name']] = $val['value'];
 			}
 			Cache::set('settings',$settings);
