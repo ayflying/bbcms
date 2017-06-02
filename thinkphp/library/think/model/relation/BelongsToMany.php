@@ -162,7 +162,9 @@ class BelongsToMany extends Relation
     public function find($data = null)
     {
         $result = $this->buildQuery()->find($data);
-        $this->hydratePivot([$result]);
+        if ($result) {
+            $this->hydratePivot([$result]);
+        }
         return $result;
     }
 
@@ -376,7 +378,9 @@ class BelongsToMany extends Relation
         // 关联查询封装
         $tableName = $this->query->getTable();
         $table     = $this->pivot->getTable();
-        $query     = $this->query->field($tableName . '.*')
+        $fields    = $this->getQueryFields($tableName);
+
+        $query = $this->query->field($fields)
             ->field(true, false, $table, 'pivot', 'pivot__');
 
         if (empty($this->baseQuery)) {
