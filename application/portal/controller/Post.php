@@ -11,6 +11,18 @@ use app\portal\model\PortalArticle;
 
 class Post extends Common{
     
+   /**
+    *   初始化权限，验证是否登录
+    *
+    */
+    public function _initialize(){
+        parent::_initialize();
+        if(empty($this -> uid)){
+            cookie('from',request()->url());
+            $this -> error("正在跳转到登录","member/login/login");
+        }
+    }
+    
     /*      UEditor 编辑器插件   */
     public function UEditor(){
         config('app_trace',false);  //必须关闭调试
