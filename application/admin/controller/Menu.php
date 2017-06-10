@@ -59,8 +59,8 @@ class Menu extends Common{
             
             empty($post['template_article']) and $save['template_article'] = './portal/article';
             empty($post['template_list']) and $save['template_list'] = './portal/list';
-            empty($post['template_add']) and $save['template_add'] = './portal/add';
-            empty($post['template_edit']) and $save['template_edit'] = './portal/edit';
+            empty($post['template_add']) and $save['template_add'] = './post/add';
+            empty($post['template_edit']) and $save['template_edit'] = './post/edit';
 			//默认值
 			
 			$menu_db -> where('tid',$tid) -> update($save);
