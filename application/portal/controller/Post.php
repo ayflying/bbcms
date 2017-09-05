@@ -159,7 +159,7 @@ class Post extends Common{
             
             //修改附件为当前aid
             Db::name('portal_attachment') -> where('aid','null') ->  where('uid',$uid) -> setField('aid',$aid);
-            return $this -> success(lang('提交完成'),null,null,1);
+            return $this -> success(lang('提交完成'),"@portal/lists/index?tid=".$tid,null,1);
         }else{
             if($sql['mod'] > 0){
                 $mod = Db::name('portal_mod')-> field('table,data') -> find($sql['mod']);

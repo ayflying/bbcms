@@ -13,9 +13,15 @@ class Common extends Controller{
 	
 	public function _initialize(){
         //检测当前用户UID
+        $user = Db::name('member_user') -> where('guid',cookie('guid')) ->cache('user_'.$this->uid) -> find();
+        $this -> uid = $user['uid'] > 0 ? $user['uid'] : 0;
+        $this -> authority($user['guid']);      //权限检测
+        
+        /*
 		$this -> uid = cookie_decode('uid') > 0 ? cookie_decode('uid') : 0;
 		$user = Db::name('member_user') ->cache('user_'.$this->uid) -> find($this -> uid);
-        $this -> authority($user['gid']);      //权限检测
+        $this -> authority($user['uid']);      //权限检测
+        */
         
 		if(!cache('settings')){
 			$list = db('system_settings') -> select();

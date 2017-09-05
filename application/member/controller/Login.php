@@ -15,8 +15,8 @@ class Login extends Common{
 			if($sql = Db::name('MemberUser') -> where($where) -> find()){
 					//调用验证方法
 					$auto = new AdminLogin();
-					$uid = $auto -> authorization($sql['uid']);
-					cookie('uid',$uid,2592000);
+					$guid = $auto -> authorization($sql['uid']);
+					cookie('guid',$guid,2592000);
                     $from = cookie('from') ? cookie('from') : '/';
                     cookie('from',null);
 				return $this -> success("登录成功",$from,null,1);
