@@ -155,6 +155,8 @@ class Post extends Common{
                 $mod = Db::name('portal_mod_'.$sql['mod'])-> insert($mod_data);
             }
             
+            Cache::clear('list');   //更新缓存
+            
             //修改附件为当前aid
             Db::name('portal_attachment') -> where('aid','null') ->  where('uid',$uid) -> setField('aid',$aid);
             return $this -> success(lang('提交完成'),null,null,1);
@@ -174,6 +176,7 @@ class Post extends Common{
 	
 	public function edit($aid){
 		$uid = $this -> uid;
+        
         if(request() -> isAjax()){
             $post = input('post.');
             $article = PortalArticle::get($aid)->thumb;
@@ -218,6 +221,7 @@ class Post extends Common{
                 }
                 $mod = Db::name('portal_mod_'.$article -> mod) -> where('aid',$aid) -> update($mod_data);
             }
+            
             
             $this -> success(lang('编辑完成'),null,null,1);
             
