@@ -30,8 +30,8 @@ class Menu extends Common{
 			
 			$menu = Db::name('PortalMenu') -> where(["pid" => 0]) -> select();
 			$this -> assign('menu',$menu);
-			
-			$this -> assign('sql');
+			//dump($menu);
+			$this -> assign('sql',['mod' => null, 'pid' => null]);
 			return $this-> fetch('./portal_menu_edit');
 		}
 		
