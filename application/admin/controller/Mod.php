@@ -25,11 +25,14 @@ class Mod extends Common{
 				$this -> error($result);
 			}
 			//验证结束
-			
+			$post['data'] = json_encode([]);
 			$table_id = Db::name($table) -> insertGetId($post);
 			$sql = 'create table '.config('database')['prefix'].'portal_mod_'.$table_id.' (aid int(11) not null auto_increment primary key)';
 			Db::execute($sql);
-			return $this -> success(lang('添加完成'));
+            
+            //Db::name($table) -> where()
+            
+			return $this -> success(lang('添加完成'),'mod');
 			
 		}else{
 			return $this -> fetch('./mod_add');

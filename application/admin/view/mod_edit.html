@@ -51,17 +51,22 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="ziduanadd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="ziduanadd">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
+      
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">{:lang('添加字段')}</h4>
+        <h4 class="modal-title">{:lang('添加字段')}</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+          <span class="sr-only">Close</span>
+        </button>
       </div>
       
-      <div class="modal-body row">
-		<form action="{:url('?action=add&id='.input('id'))}" method="post" enctype="application/x-www-form-urlencoded" id="ziduan">
-            
+      
+      <div class="modal-body">
+		<form action="{:url('?action=add&id='.input('id'))}" class="" method="post" enctype="application/x-www-form-urlencoded" id="ziduan">
+            <div class="row">
 			<fieldset class="form-group col-sm-4">
     			<label for="name" class="sr-only">{:lang('名称')}</label>
 				<input name="name" type="text" class="form-control" id="name" placeholder="{:lang('名称')}">
@@ -82,11 +87,13 @@
                 <option value="radio">{:lang('单选')}</option>
 				</select>
 			</fieldset>
-            
-			<fieldset class="col-sm-12" style="margin-top:10px;">
+            </div>
+            <div class="row">
+			<fieldset class="form-group col-sm-12">
 				<label for="value" class="sr-only">数据</label>
 				<textarea name="value" rows="3" class="form-control" placeholder="{:lang('输入数据，如：汽车,火车,飞机')}" id="value"></textarea>
 			</fieldset>
+            </div>
 		</form>
       </div>
       
@@ -97,6 +104,9 @@
     </div>
   </div>
 </div>
+
+
+
 
 <script>
 $(document).ready(function(e) {
