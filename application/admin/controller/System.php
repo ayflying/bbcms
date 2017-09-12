@@ -97,7 +97,7 @@ class System extends Common{
 	public function cache(){
         
 		$this -> deldir(CACHE_PATH);		//CACHE_PATH 项目模板缓存目录（默认为 RUNTIME_PATH.'cache/'）
-		$this -> deldir(TEMP_PATH);		//TEMP_PATH 应用缓存目录（默认为 RUNTIME_PATH.'temp/'）
+		//$this -> deldir(TEMP_PATH);		//TEMP_PATH 应用缓存目录（默认为 RUNTIME_PATH.'temp/'）
 		Cache::clear(); 
 		return $this -> success(lang("更新缓存完成"),'index','',1);
 	}

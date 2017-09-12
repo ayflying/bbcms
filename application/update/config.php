@@ -38,16 +38,6 @@ return [
 	],
     
     
-	'cache' => [
-        //缓存前缀
-        'prefix' => 'update',
-        // 缓存类型为File
-        'type'   => 'File', 
-         // 缓存有效期为永久有效
-        'expire' => 600,
-         // 指定缓存目录
-        //'path'   => APP_PATH . 'update/data/',
-    ],
 	'app_trace' =>  false,  //关闭网页Trace功能
     
 ];

@@ -141,7 +141,7 @@ abstract class Paginator implements ArrayAccess, Countable, IteratorAggregate, J
      */
     public static function getCurrentPage($varPage = 'page', $default = 1)
     {
-        $page = (int) Request::instance()->request($varPage);
+        $page = (int) Request::instance()->param($varPage);
 
         if (filter_var($page, FILTER_VALIDATE_INT) !== false && $page >= 1) {
             return $page;
@@ -288,8 +288,11 @@ abstract class Paginator implements ArrayAccess, Countable, IteratorAggregate, J
     public function each(callable $callback)
     {
         foreach ($this->items as $key => $item) {
-            if ($callback($item, $key) === false) {
+            $result = $callback($item, $key);
+            if (false === $result) {
                 break;
+            } elseif (!is_object($item)) {
+                $this->items[$key] = $result;
             }
         }
 

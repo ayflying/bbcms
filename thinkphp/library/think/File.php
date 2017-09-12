@@ -230,7 +230,7 @@ class File extends SplFileObject
     {
         $extension = strtolower(pathinfo($this->getInfo('name'), PATHINFO_EXTENSION));
         /* 对图像文件进行严格检测 */
-        if (in_array($extension, ['gif', 'jpg', 'jpeg', 'bmp', 'png', 'swf']) && !in_array($this->getImageType($this->filename), [1, 2, 3, 4, 6])) {
+        if (in_array($extension, ['gif', 'jpg', 'jpeg', 'bmp', 'png', 'swf']) && !in_array($this->getImageType($this->filename), [1, 2, 3, 4, 6, 13])) {
             return false;
         }
         return true;
@@ -242,8 +242,12 @@ class File extends SplFileObject
         if (function_exists('exif_imagetype')) {
             return exif_imagetype($image);
         } else {
-            $info = getimagesize($image);
-            return $info[2];
+            try {
+                $info = getimagesize($image);
+                return $info ? $info[2] : false;
+            } catch (\Exception $e) {
+                return false;
+            }
         }
     }
 

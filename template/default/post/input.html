@@ -6,7 +6,7 @@
     <label for="mod[{$name}]">{$val.0}</label>
 	{foreach name="$val.2" item='val2'}
       <label class="checkbox-inline">
-      <input type="{$val.1}" class="{$name}" name="mod[{$name}]" value="{$val2}" {$val.value == $val2 ? 'checked' : ''} > {$val2}
+      <input type="{$val.1}" class="{$name}" name="mod[{$name}]" value="{$val2}" {$val.value|default='' == $val2 ? 'checked' : ''} > {$val2}
 	  </label>
     {/foreach}
 </div>
@@ -18,10 +18,10 @@
 	{foreach name="$val.2" item='val2'}
       <label class="checkbox-inline">
       <input type="{$val.1}" name="mod[{$name}][]" class="{$name}" value="{$val2}" 
-      {foreach name="$val.value" item='val3'}
+      {foreach name="$val.value|default=''" item='val3'}
       	{$val3 == $val2 ? 'checked' : ''}
       {/foreach}
-       > 			
+       />
       {$val2}
 	  </label>
     {/foreach}
@@ -32,8 +32,9 @@
 	<label for="mod[{$name}]">{$val.0}</label>
   	<select name="mod[{$name}]" class="{$name} form-control">
       {foreach name="$val.2" item='val2'}
-      <option {$val.value == $val2 ? 'selected' : ''}>{$val2}</option>
+      <option {$val.value|default='' == $val2 ? 'selected' : ''}>{$val2}</option>
       {/foreach}
+      
     </select>
   {/case}
   
