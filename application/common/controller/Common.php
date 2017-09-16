@@ -13,7 +13,7 @@ class Common extends Controller{
 	
 	public function _initialize(){
         //检测当前用户UID
-        $user = Db::name('member_user') -> where('guid',cookie('guid')) ->cache('user_'.$this->uid) -> find();
+        $user = Db::name('member_user') -> where('guid',cookie('guid')) ->cache(true) -> find();
         $this -> uid = $user['uid'] > 0 ? $user['uid'] : 0;
         $this -> authority($user['guid']);      //权限检测
         
@@ -24,8 +24,8 @@ class Common extends Controller{
         */
         
 		if(!cache('settings')){
-			$list = db('system_settings') -> select();
-			foreach($list as $val){
+			$list = Db::name('system_settings') -> select();
+            foreach($list as $val){
                 if($val['name'] == 'statistics'){
                     $val['value'] = htmlspecialchars_decode($val['value']);
                 }
@@ -36,7 +36,7 @@ class Common extends Controller{
         $this -> _G = [
             'system' => Cache::get('settings'),
         ];
-        
+        $user['uid'] > 0 && $this -> _G['user'] = $user;
 		//dump($this -> settings);
 		
 	}
