@@ -1,4 +1,15 @@
 ﻿# bbcms
+
+===============
+
+[![StyleCI](https://styleci.io/repos/48530411/shield?style=flat&branch=master)](https://styleci.io/repos/48530411)
+[![Build Status](https://travis-ci.org/top-think/framework.svg?branch=master)](https://travis-ci.org/top-think/framework)
+[![codecov.io](http://codecov.io/github/top-think/framework/coverage.svg?branch=master)](http://codecov.io/github/github/top-think/framework?branch=master)
+[![Total Downloads](https://poser.pugx.org/topthink/framework/downloads)](https://packagist.org/packages/topthink/framework)
+[![Latest Stable Version](https://poser.pugx.org/topthink/framework/v/stable)](https://packagist.org/packages/topthink/framework)
+[![Latest Unstable Version](https://poser.pugx.org/topthink/framework/v/unstable)](https://packagist.org/packages/topthink/framework)
+[![License](https://poser.pugx.org/topthink/framework/license)](https://packagist.org/packages/topthink/framework)
+
 BBCMS是基于Thinkphp5开发的一款内容管理系统。
 
 # 环境要求
@@ -10,10 +21,10 @@ BBCMS是基于Thinkphp5开发的一款内容管理系统。
 *   支持Mysql、MsSQL、PgSQL、Sqlite、Oracle、Ibase、Mongo以及PDO等多种数据库和连接
 
 ## PHP版本要求
-*   PHP5.4以上版本
+*   PHP5.6以上版本
 
 #   文件目录
-```
+~~~
 ├─ Addons               插件目录
 ├─ application          应用目录
 │├─ addon                   插件模块  
@@ -37,7 +48,7 @@ BBCMS是基于Thinkphp5开发的一款内容管理系统。
 ├─ .htaccess             伪静态规则
 ├─ index.php            入口文件
 ├─ robots.txt            搜索引擎定义
-```
+~~~
 
 # 版权所有
 湖北络易科技有限公司版权所有
