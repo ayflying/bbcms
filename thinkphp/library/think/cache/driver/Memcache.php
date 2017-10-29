@@ -25,7 +25,7 @@ class Memcache extends Driver
     ];
 
     /**
-     * 构造函数
+     * 架构函数
      * @param array $options 缓存参数
      * @access public
      * @throws \BadFunctionCallException
@@ -35,16 +35,21 @@ class Memcache extends Driver
         if (!extension_loaded('memcache')) {
             throw new \BadFunctionCallException('not support: memcache');
         }
+
         if (!empty($options)) {
             $this->options = array_merge($this->options, $options);
         }
+
         $this->handler = new \Memcache;
+
         // 支持集群
         $hosts = explode(',', $this->options['host']);
         $ports = explode(',', $this->options['port']);
+
         if (empty($ports[0])) {
             $ports[0] = 11211;
         }
+
         // 建立连接
         foreach ((array) $hosts as $i => $host) {
             $port = isset($ports[$i]) ? $ports[$i] : $ports[0];
@@ -63,6 +68,7 @@ class Memcache extends Driver
     public function has($name)
     {
         $key = $this->getCacheKey($name);
+
         return $this->handler->get($key) ? true : false;
     }
 
@@ -75,34 +81,44 @@ class Memcache extends Driver
      */
     public function get($name, $default = false)
     {
+        $this->readTimes++;
+
         $result = $this->handler->get($this->getCacheKey($name));
+
         return false !== $result ? $result : $default;
     }
 
     /**
      * 写入缓存
      * @access public
-     * @param string            $name 缓存变量名
-     * @param mixed             $value  存储数据
-     * @param integer|\DateTime $expire  有效时间（秒）
+     * @param string        $name 缓存变量名
+     * @param mixed         $value  存储数据
+     * @param int|DateTime  $expire  有效时间（秒）
      * @return bool
      */
     public function set($name, $value, $expire = null)
     {
+        $this->writeTimes++;
+
         if (is_null($expire)) {
             $expire = $this->options['expire'];
         }
+
         if ($expire instanceof \DateTime) {
             $expire = $expire->getTimestamp() - time();
         }
+
         if ($this->tag && !$this->has($name)) {
             $first = true;
         }
+
         $key = $this->getCacheKey($name);
+
         if ($this->handler->set($key, $value, 0, $expire)) {
             isset($first) && $this->setTagItem($key);
             return true;
         }
+
         return false;
     }
 
@@ -115,10 +131,13 @@ class Memcache extends Driver
      */
     public function inc($name, $step = 1)
     {
+        $this->writeTimes++;
+
         $key = $this->getCacheKey($name);
         if ($this->handler->get($key)) {
             return $this->handler->increment($key, $step);
         }
+
         return $this->handler->set($key, $step);
     }
 
@@ -131,9 +150,12 @@ class Memcache extends Driver
      */
     public function dec($name, $step = 1)
     {
+        $this->writeTimes++;
+
         $key   = $this->getCacheKey($name);
         $value = $this->handler->get($key) - $step;
         $res   = $this->handler->set($key, $value);
+
         if (!$res) {
             return false;
         } else {
@@ -149,7 +171,10 @@ class Memcache extends Driver
      */
     public function rm($name, $ttl = false)
     {
+        $this->writeTimes++;
+
         $key = $this->getCacheKey($name);
+
         return false === $ttl ?
         $this->handler->delete($key) :
         $this->handler->delete($key, $ttl);
@@ -169,9 +194,13 @@ class Memcache extends Driver
             foreach ($keys as $key) {
                 $this->handler->delete($key);
             }
+
             $this->rm('tag_' . md5($tag));
             return true;
         }
+
+        $this->writeTimes++;
+
         return $this->handler->flush();
     }
 }

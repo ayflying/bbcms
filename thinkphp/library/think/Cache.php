@@ -15,16 +15,20 @@ use think\cache\Driver;
 
 class Cache
 {
-    protected static $instance = [];
-    public static $readTimes   = 0;
-    public static $writeTimes  = 0;
+    protected $instance = [];
+    protected $app;
 
     /**
      * 操作句柄
      * @var object
      * @access protected
      */
-    protected static $handler;
+    protected $handler;
+
+    public function __construct(App $app)
+    {
+        $this->app = $app;
+    }
 
     /**
      * 连接缓存
@@ -33,25 +37,28 @@ class Cache
      * @param bool|string   $name 缓存连接标识 true 强制重新连接
      * @return Driver
      */
-    public static function connect(array $options = [], $name = false)
+    public function connect(array $options = [], $name = false)
     {
         $type = !empty($options['type']) ? $options['type'] : 'File';
+
         if (false === $name) {
             $name = md5(serialize($options));
         }
 
-        if (true === $name || !isset(self::$instance[$name])) {
+        if (true === $name || !isset($this->instance[$name])) {
             $class = false !== strpos($type, '\\') ? $type : '\\think\\cache\\driver\\' . ucwords($type);
 
             // 记录初始化信息
-            App::$debug && Log::record('[ CACHE ] INIT ' . $type, 'info');
+            $this->app->log('[ CACHE ] INIT ' . $type);
+
             if (true === $name) {
-                return new $class($options);
-            } else {
-                self::$instance[$name] = new $class($options);
+                $name = md5(serialize($options));
             }
+
+            $this->instance[$name] = new $class($options);
         }
-        return self::$instance[$name];
+
+        return $this->instance[$name];
     }
 
     /**
@@ -60,20 +67,22 @@ class Cache
      * @param array         $options  配置数组
      * @return Driver
      */
-    public static function init(array $options = [])
+    public function init(array $options = [])
     {
-        if (is_null(self::$handler)) {
+        if (is_null($this->handler)) {
             // 自动初始化缓存
             if (!empty($options)) {
-                $connect = self::connect($options);
-            } elseif ('complex' == Config::get('cache.type')) {
-                $connect = self::connect(Config::get('cache.default'));
+                $connect = $this->connect($options);
+            } elseif ('complex' == $this->app['config']->get('cache.type')) {
+                $connect = $this->connect($this->app['config']->get('cache.default'));
             } else {
-                $connect = self::connect(Config::get('cache'));
+                $connect = $this->connect($this->app['config']->pull('cache'));
             }
-            self::$handler = $connect;
+
+            $this->handler = $connect;
         }
-        return self::$handler;
+
+        return $this->handler;
     }
 
     /**
@@ -82,141 +91,18 @@ class Cache
      * @param string $name 缓存标识
      * @return Driver
      */
-    public static function store($name = '')
+    public function store($name = '')
     {
-        if ('' !== $name && 'complex' == Config::get('cache.type')) {
-            return self::connect(Config::get('cache.' . $name), strtolower($name));
+        if ('' !== $name && 'complex' == $this->app['config']->get('cache.type')) {
+            return $this->connect($this->app['config']->get('cache.' . $name), strtolower($name));
         }
-        return self::init();
+
+        return $this->init();
     }
 
-    /**
-     * 判断缓存是否存在
-     * @access public
-     * @param string $name 缓存变量名
-     * @return bool
-     */
-    public static function has($name)
+    public function __call($method, $args)
     {
-        self::$readTimes++;
-        return self::init()->has($name);
-    }
-
-    /**
-     * 读取缓存
-     * @access public
-     * @param string $name 缓存标识
-     * @param mixed  $default 默认值
-     * @return mixed
-     */
-    public static function get($name, $default = false)
-    {
-        self::$readTimes++;
-        return self::init()->get($name, $default);
-    }
-
-    /**
-     * 写入缓存
-     * @access public
-     * @param string        $name 缓存标识
-     * @param mixed         $value  存储数据
-     * @param int|null      $expire  有效时间 0为永久
-     * @return boolean
-     */
-    public static function set($name, $value, $expire = null)
-    {
-        self::$writeTimes++;
-        return self::init()->set($name, $value, $expire);
-    }
-
-    /**
-     * 自增缓存（针对数值缓存）
-     * @access public
-     * @param string    $name 缓存变量名
-     * @param int       $step 步长
-     * @return false|int
-     */
-    public static function inc($name, $step = 1)
-    {
-        self::$writeTimes++;
-        return self::init()->inc($name, $step);
-    }
-
-    /**
-     * 自减缓存（针对数值缓存）
-     * @access public
-     * @param string    $name 缓存变量名
-     * @param int       $step 步长
-     * @return false|int
-     */
-    public static function dec($name, $step = 1)
-    {
-        self::$writeTimes++;
-        return self::init()->dec($name, $step);
-    }
-
-    /**
-     * 删除缓存
-     * @access public
-     * @param string    $name 缓存标识
-     * @return boolean
-     */
-    public static function rm($name)
-    {
-        self::$writeTimes++;
-        return self::init()->rm($name);
-    }
-
-    /**
-     * 清除缓存
-     * @access public
-     * @param string $tag 标签名
-     * @return boolean
-     */
-    public static function clear($tag = null)
-    {
-        self::$writeTimes++;
-        return self::init()->clear($tag);
-    }
-
-    /**
-     * 读取缓存并删除
-     * @access public
-     * @param string $name 缓存变量名
-     * @return mixed
-     */
-    public static function pull($name)
-    {
-        self::$readTimes++;
-        self::$writeTimes++;
-        return self::init()->pull($name);
-    }
-
-    /**
-     * 如果不存在则写入缓存
-     * @access public
-     * @param string    $name 缓存变量名
-     * @param mixed     $value  存储数据
-     * @param int       $expire  有效时间 0为永久
-     * @return mixed
-     */
-    public static function remember($name, $value, $expire = null)
-    {
-        self::$readTimes++;
-        return self::init()->remember($name, $value, $expire);
-    }
-
-    /**
-     * 缓存标签
-     * @access public
-     * @param string        $name 标签名
-     * @param string|array  $keys 缓存标识
-     * @param bool          $overlay 是否覆盖
-     * @return Driver
-     */
-    public static function tag($name, $keys = null, $overlay = false)
-    {
-        return self::init()->tag($name, $keys, $overlay);
+        return call_user_func_array([$this->init(), $method], $args);
     }
 
 }

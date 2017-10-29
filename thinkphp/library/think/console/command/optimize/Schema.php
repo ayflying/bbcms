@@ -10,11 +10,11 @@
 // +----------------------------------------------------------------------
 namespace think\console\command\optimize;
 
-use think\App;
 use think\console\Command;
 use think\console\Input;
 use think\console\input\Option;
 use think\console\Output;
+use think\Container;
 use think\Db;
 
 class Schema extends Command
@@ -25,7 +25,6 @@ class Schema extends Command
     protected function configure()
     {
         $this->setName('optimize:schema')
-            ->addOption('config', null, Option::VALUE_REQUIRED, 'db config .')
             ->addOption('db', null, Option::VALUE_REQUIRED, 'db name .')
             ->addOption('table', null, Option::VALUE_REQUIRED, 'table name .')
             ->addOption('module', null, Option::VALUE_REQUIRED, 'module name .')
@@ -34,18 +33,15 @@ class Schema extends Command
 
     protected function execute(Input $input, Output $output)
     {
-        if (!is_dir(RUNTIME_PATH . 'schema')) {
-            @mkdir(RUNTIME_PATH . 'schema', 0755, true);
-        }
-        $config = [];
-        if ($input->hasOption('config')) {
-            $config = $input->getOption('config');
+        if (!is_dir(Container::get('app')->getRuntimePath() . 'schema')) {
+            @mkdir(Container::get('app')->getRuntimePath() . 'schema', 0755, true);
         }
         if ($input->hasOption('module')) {
             $module = $input->getOption('module');
             // 读取模型
-            $list = scandir(APP_PATH . $module . DS . 'model');
-            $app  = App::$namespace;
+            $list = scandir(Container::get('app')->getAppPath() . $module . DIRECTORY_SEPARATOR . 'model');
+            $app  = Container::get('app')->getNamespace();
+
             foreach ($list as $file) {
                 if (0 === strpos($file, '.')) {
                     continue;
@@ -53,20 +49,22 @@ class Schema extends Command
                 $class = '\\' . $app . '\\' . $module . '\\model\\' . pathinfo($file, PATHINFO_FILENAME);
                 $this->buildModelSchema($class);
             }
+
             $output->writeln('<info>Succeed!</info>');
             return;
         } elseif ($input->hasOption('table')) {
             $table = $input->getOption('table');
             if (!strpos($table, '.')) {
-                $dbName = Db::connect($config)->getConfig('database');
+                $dbName = Db::getConfig('database');
             }
+
             $tables[] = $table;
         } elseif ($input->hasOption('db')) {
             $dbName = $input->getOption('db');
-            $tables = Db::connect($config)->getTables($dbName);
-        } elseif (!\think\Config::get('app_multi_module')) {
-            $app  = App::$namespace;
-            $list = scandir(APP_PATH . 'model');
+            $tables = Db::getConnection()->getTables($dbName);
+        } elseif (!\think\facade\Config::get('app_multi_module')) {
+            $app  = Container::get('app')->getNamespace();
+            $list = scandir(Container::get('app')->getAppPath() . 'model');
             foreach ($list as $file) {
                 if (0 === strpos($file, '.')) {
                     continue;
@@ -77,11 +75,11 @@ class Schema extends Command
             $output->writeln('<info>Succeed!</info>');
             return;
         } else {
-            $tables = Db::connect($config)->getTables();
+            $tables = Db::getConnection()->getTables();
         }
 
         $db = isset($dbName) ? $dbName . '.' : '';
-        $this->buildDataBaseSchema($tables, $db, $config);
+        $this->buildDataBaseSchema($tables, $db);
 
         $output->writeln('<info>Succeed!</info>');
     }
@@ -95,22 +93,24 @@ class Schema extends Command
             $content = '<?php ' . PHP_EOL . 'return ';
             $info    = $class::getConnection()->getFields($table);
             $content .= var_export($info, true) . ';';
-            file_put_contents(RUNTIME_PATH . 'schema' . DS . $dbName . '.' . $table . EXT, $content);
+
+            file_put_contents(Container::get('app')->getRuntimePath() . 'schema/' . $dbName . '.' . $table . '.php', $content);
         }
     }
 
-    protected function buildDataBaseSchema($tables, $db, $config)
+    protected function buildDataBaseSchema($tables, $db)
     {
         if ('' == $db) {
-            $dbName = Db::connect($config)->getConfig('database') . '.';
+            $dbName = Db::getConfig('database') . '.';
         } else {
             $dbName = $db;
         }
+
         foreach ($tables as $table) {
             $content = '<?php ' . PHP_EOL . 'return ';
-            $info    = Db::connect($config)->getFields($db . $table);
+            $info    = Db::getConnection()->getFields($db . $table);
             $content .= var_export($info, true) . ';';
-            file_put_contents(RUNTIME_PATH . 'schema' . DS . $dbName . $table . EXT, $content);
+            file_put_contents(Container::get('app')->getRuntimePath() . 'schema' . DIRECTORY_SEPARATOR . $dbName . $table . '.php', $content);
         }
     }
 }

@@ -47,23 +47,13 @@ abstract class Relation
     }
 
     /**
-     * 获取当前的关联模型类
+     * 获取当前的关联模型类的实例
      * @access public
-     * @return string
+     * @return Model
      */
     public function getModel()
     {
-        return $this->model;
-    }
-
-    /**
-     * 获取关联的查询对象
-     * @access public
-     * @return Query
-     */
-    public function getQuery()
-    {
-        return $this->query;
+        return $this->query->getModel();
     }
 
     /**
@@ -103,6 +93,16 @@ abstract class Relation
         return $fields;
     }
 
+    protected function getQueryWhere(&$where, $relation)
+    {
+        foreach ($where as $key => $val) {
+            if (is_string($key)) {
+                $where[] = [false === strpos($key, '.') ? $relation . '.' . $key : $key, '=', $val];
+                unset($where[$key]);
+            }
+        }
+    }
+
     /**
      * 执行基础查询（仅执行一次）
      * @access protected
@@ -117,13 +117,9 @@ abstract class Relation
             // 执行基础查询
             $this->baseQuery();
 
-            $result = call_user_func_array([$this->query, $method], $args);
-            if ($result instanceof Query) {
-                return $this;
-            } else {
-                $this->baseQuery = false;
-                return $result;
-            }
+            $result = call_user_func_array([$this->query->getModel(), $method], $args);
+
+            return $result === $this->query ? $this : $result;
         } else {
             throw new Exception('method not exists:' . __CLASS__ . '->' . $method);
         }

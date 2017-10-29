@@ -11,13 +11,17 @@
 
 namespace think\cache;
 
+use think\Container;
+
 /**
  * 缓存基础类
  */
 abstract class Driver
 {
-    protected $handler = null;
-    protected $options = [];
+    protected $handler    = null;
+    protected $readTimes  = 0;
+    protected $writeTimes = 0;
+    protected $options    = [];
     protected $tag;
 
     /**
@@ -120,26 +124,37 @@ abstract class Driver
     public function remember($name, $value, $expire = null)
     {
         if (!$this->has($name)) {
-            while ($this->has($name . '_lock')) {
+            $time = time();
+            while ($time + 5 > time() && $this->has($name . '_lock')) {
                 // 存在锁定则等待
+                usleep(200000);
             }
 
             try {
                 // 锁定
                 $this->set($name . '_lock', true);
+
                 if ($value instanceof \Closure) {
-                    $value = call_user_func($value);
+                    // 获取缓存数据
+                    $value = Container::getInstance()->invokeFunction($value);
                 }
+
+                // 缓存数据
                 $this->set($name, $value, $expire);
+
                 // 解锁
                 $this->rm($name . '_lock');
             } catch (\Exception $e) {
-                // 解锁
                 $this->rm($name . '_lock');
+                throw $e;
+            } catch (\throwable $e) {
+                $this->rm($name . '_lock');
+                throw $e;
             }
         } else {
             $value = $this->get($name);
         }
+
         return $value;
     }
 
@@ -159,17 +174,22 @@ abstract class Driver
             $this->tag = $name;
         } else {
             $key = 'tag_' . md5($name);
+
             if (is_string($keys)) {
                 $keys = explode(',', $keys);
             }
+
             $keys = array_map([$this, 'getCacheKey'], $keys);
+
             if ($overlay) {
                 $value = $keys;
             } else {
                 $value = array_unique(array_merge($this->getTagItem($name), $keys));
             }
+
             $this->set($key, implode(',', $value), 0);
         }
+
         return $this;
     }
 
@@ -221,5 +241,15 @@ abstract class Driver
     public function handler()
     {
         return $this->handler;
+    }
+
+    public function getReadTimes()
+    {
+        return $this->readTimes;
+    }
+
+    public function getWriteTimes()
+    {
+        return $this->writeTimes;
     }
 }

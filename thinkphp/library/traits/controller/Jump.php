@@ -2,7 +2,6 @@
 
 /**
  * 用法：
- * load_trait('controller/Jump');
  * class index
  * {
  *     use \traits\controller\Jump;
@@ -14,13 +13,10 @@
  */
 namespace traits\controller;
 
-use think\Config;
+use think\Container;
 use think\exception\HttpResponseException;
-use think\Request;
 use think\Response;
 use think\response\Redirect;
-use think\Url;
-use think\View as ViewTemplate;
 
 trait Jump
 {
@@ -36,11 +32,12 @@ trait Jump
      */
     protected function success($msg = '', $url = null, $data = '', $wait = 3, array $header = [])
     {
-        if (is_null($url) && !is_null(Request::instance()->server('HTTP_REFERER'))) {
-            $url = Request::instance()->server('HTTP_REFERER');
+        if (is_null($url) && isset($_SERVER["HTTP_REFERER"])) {
+            $url = $_SERVER["HTTP_REFERER"];
         } elseif ('' !== $url) {
-            $url = (strpos($url, '://') || 0 === strpos($url, '/')) ? $url : Url::build($url);
+            $url = (strpos($url, '://') || 0 === strpos($url, '/')) ? $url : Container::get('url')->build($url);
         }
+
         $result = [
             'code' => 1,
             'msg'  => $msg,
@@ -50,11 +47,13 @@ trait Jump
         ];
 
         $type = $this->getResponseType();
+        // 把跳转模板的渲染下沉，这样在 response_send 行为里通过getData()获得的数据是一致性的格式
         if ('html' == strtolower($type)) {
-            $result = ViewTemplate::instance(Config::get('template'), Config::get('view_replace_str'))
-                ->fetch(Config::get('dispatch_success_tmpl'), $result);
+            $type = 'jump';
         }
+
         $response = Response::create($result, $type)->header($header);
+
         throw new HttpResponseException($response);
     }
 
@@ -71,10 +70,11 @@ trait Jump
     protected function error($msg = '', $url = null, $data = '', $wait = 3, array $header = [])
     {
         if (is_null($url)) {
-            $url = Request::instance()->isAjax() ? '' : 'javascript:history.back(-1);';
+            $url = Container::get('request')->isAjax() ? '' : 'javascript:history.back(-1);';
         } elseif ('' !== $url) {
-            $url = (strpos($url, '://') || 0 === strpos($url, '/')) ? $url : Url::build($url);
+            $url = (strpos($url, '://') || 0 === strpos($url, '/')) ? $url : Container::get('url')->build($url);
         }
+
         $result = [
             'code' => 0,
             'msg'  => $msg,
@@ -85,10 +85,11 @@ trait Jump
 
         $type = $this->getResponseType();
         if ('html' == strtolower($type)) {
-            $result = ViewTemplate::instance(Config::get('template'), Config::get('view_replace_str'))
-                ->fetch(Config::get('dispatch_error_tmpl'), $result);
+            $type = 'jump';
         }
+
         $response = Response::create($result, $type)->header($header);
+
         throw new HttpResponseException($response);
     }
 
@@ -107,11 +108,13 @@ trait Jump
         $result = [
             'code' => $code,
             'msg'  => $msg,
-            'time' => Request::instance()->server('REQUEST_TIME'),
+            'time' => time(),
             'data' => $data,
         ];
+
         $type     = $type ?: $this->getResponseType();
         $response = Response::create($result, $type)->header($header);
+
         throw new HttpResponseException($response);
     }
 
@@ -127,11 +130,14 @@ trait Jump
     protected function redirect($url, $params = [], $code = 302, $with = [])
     {
         $response = new Redirect($url);
+
         if (is_integer($params)) {
             $code   = $params;
             $params = [];
         }
+
         $response->code($code)->params($params)->with($with);
+
         throw new HttpResponseException($response);
     }
 
@@ -142,7 +148,11 @@ trait Jump
      */
     protected function getResponseType()
     {
-        $isAjax = Request::instance()->isAjax();
-        return $isAjax ? Config::get('default_ajax_return') : Config::get('default_return_type');
+        $isAjax = Container::get('request')->isAjax();
+        $config = Container::get('config');
+
+        return $isAjax
+        ? $config->get('default_ajax_return')
+        : $config->get('default_return_type');
     }
 }

@@ -11,14 +11,11 @@
 
 namespace think;
 
-use think\response\Json as JsonResponse;
-use think\response\Jsonp as JsonpResponse;
 use think\response\Redirect as RedirectResponse;
-use think\response\View as ViewResponse;
-use think\response\Xml as XmlResponse;
 
 class Response
 {
+
     // 原始数据
     protected $data;
 
@@ -39,7 +36,7 @@ class Response
     protected $content = null;
 
     /**
-     * 构造函数
+     * 架构函数
      * @access   public
      * @param mixed $data    输出数据
      * @param int   $code
@@ -49,12 +46,15 @@ class Response
     public function __construct($data = '', $code = 200, array $header = [], $options = [])
     {
         $this->data($data);
+
         if (!empty($options)) {
             $this->options = array_merge($this->options, $options);
         }
+
         $this->contentType($this->contentType, $this->charset);
-        $this->header = array_merge($this->header, $header);
+
         $this->code   = $code;
+        $this->header = array_merge($this->header, $header);
     }
 
     /**
@@ -72,41 +72,41 @@ class Response
         $type = empty($type) ? 'null' : strtolower($type);
 
         $class = false !== strpos($type, '\\') ? $type : '\\think\\response\\' . ucfirst($type);
-        if (class_exists($class)) {
-            $response = new $class($data, $code, $header, $options);
-        } else {
-            $response = new static($data, $code, $header, $options);
-        }
 
-        return $response;
+        if (class_exists($class)) {
+            return new $class($data, $code, $header, $options);
+        } else {
+            return new static($data, $code, $header, $options);
+        }
     }
 
     /**
      * 发送数据到客户端
      * @access public
-     * @return mixed
+     * @return void
      * @throws \InvalidArgumentException
      */
     public function send()
     {
         // 监听response_send
-        Hook::listen('response_send', $this);
+        Container::get('hook')->listen('response_send', $this);
 
         // 处理输出数据
         $data = $this->getContent();
 
         // Trace调试注入
-        if (Env::get('app_trace', Config::get('app_trace'))) {
-            Debug::inject($this, $data);
+        if (Container::get('env')->get('app_trace', Container::get('app')->config('app.app_trace'))) {
+            Container::get('debug')->inject($this, $data);
         }
 
         if (200 == $this->code) {
-            $cache = Request::instance()->getCache();
+            $cache = Container::get('request')->getCache();
             if ($cache) {
                 $this->header['Cache-Control'] = 'max-age=' . $cache[1] . ',must-revalidate';
                 $this->header['Last-Modified'] = gmdate('D, d M Y H:i:s') . ' GMT';
                 $this->header['Expires']       = gmdate('D, d M Y H:i:s', $_SERVER['REQUEST_TIME'] + $cache[1]) . ' GMT';
-                Cache::tag($cache[2])->set($cache[0], [$data, $this->header], $cache[1]);
+
+                Container::get('cache')->tag($cache[2])->set($cache[0], [$data, $this->header], $cache[1]);
             }
         }
 
@@ -115,11 +115,7 @@ class Response
             http_response_code($this->code);
             // 发送头部信息
             foreach ($this->header as $name => $val) {
-                if (is_null($val)) {
-                    header($name);
-                } else {
-                    header($name . ':' . $val);
-                }
+                header($name . (!is_null($val) ? ':' . $val : ''));
             }
         }
 
@@ -131,11 +127,11 @@ class Response
         }
 
         // 监听response_end
-        Hook::listen('response_end', $this);
+        Container::get('hook')->listen('response_end', $this);
 
         // 清空当次请求有效的数据
         if (!($this instanceof RedirectResponse)) {
-            Session::flush();
+            Container::get('session')->flush();
         }
     }
 
@@ -159,6 +155,7 @@ class Response
     public function options($options = [])
     {
         $this->options = array_merge($this->options, $options);
+
         return $this;
     }
 
@@ -171,6 +168,7 @@ class Response
     public function data($data)
     {
         $this->data = $data;
+
         return $this;
     }
 
@@ -188,12 +186,13 @@ class Response
         } else {
             $this->header[$name] = $value;
         }
+
         return $this;
     }
 
     /**
      * 设置页面输出内容
-     * @param $content
+     * @param mixed $content
      * @return $this
      */
     public function content($content)
@@ -219,6 +218,7 @@ class Response
     public function code($code)
     {
         $this->code = $code;
+
         return $this;
     }
 
@@ -230,6 +230,7 @@ class Response
     public function lastModified($time)
     {
         $this->header['Last-Modified'] = $time;
+
         return $this;
     }
 
@@ -241,6 +242,7 @@ class Response
     public function expires($time)
     {
         $this->header['Expires'] = $time;
+
         return $this;
     }
 
@@ -252,6 +254,7 @@ class Response
     public function eTag($eTag)
     {
         $this->header['ETag'] = $eTag;
+
         return $this;
     }
 
@@ -263,6 +266,7 @@ class Response
     public function cacheControl($cache)
     {
         $this->header['Cache-control'] = $cache;
+
         return $this;
     }
 
@@ -275,6 +279,7 @@ class Response
     public function contentType($contentType, $charset = 'utf-8')
     {
         $this->header['Content-Type'] = $contentType . '; charset=' . $charset;
+
         return $this;
     }
 
@@ -320,6 +325,7 @@ class Response
 
             $this->content = (string) $content;
         }
+
         return $this->content;
     }
 

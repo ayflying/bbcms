@@ -25,14 +25,14 @@ class HasManyThrough extends Relation
     protected $through;
 
     /**
-     * 构造函数
+     * 架构函数
      * @access   public
      * @param Model  $parent     上级模型对象
      * @param string $model      模型名
      * @param string $through    中间模型名
      * @param string $foreignKey 关联外键
      * @param string $throughKey 关联外键
-     * @param string $localKey   关联主键
+     * @param string $localKey   当前主键
      */
     public function __construct(Model $parent, $model, $through, $foreignKey, $throughKey, $localKey)
     {
@@ -49,15 +49,17 @@ class HasManyThrough extends Relation
      * 延迟获取关联数据
      * @param string   $subRelation 子关联名
      * @param \Closure $closure     闭包查询条件
-     * @return false|\PDOStatement|string|\think\Collection
+     * @return \think\Collection
      */
     public function getRelation($subRelation = '', $closure = null)
     {
         if ($closure) {
-            call_user_func_array($closure, [ & $this->query]);
+            $closure($this->query);
         }
 
-        return $this->relation($subRelation)->select();
+        $this->baseQuery();
+
+        return $this->query->relation($subRelation)->select();
     }
 
     /**
@@ -77,10 +79,11 @@ class HasManyThrough extends Relation
     /**
      * 根据关联条件查询当前模型
      * @access public
-     * @param mixed $where 查询条件（数组或者闭包）
+     * @param mixed     $where 查询条件（数组或者闭包）
+     * @param mixed     $fields 字段
      * @return Query
      */
-    public function hasWhere($where = [])
+    public function hasWhere($where = [], $fields = null)
     {
         throw new Exception('relation not support: hasWhere');
     }
@@ -92,10 +95,9 @@ class HasManyThrough extends Relation
      * @param string   $relation    当前关联名
      * @param string   $subRelation 子关联名
      * @param \Closure $closure     闭包
-     * @param string   $class       数据集对象名 为空表示数组
      * @return void
      */
-    public function eagerlyResultSet(&$resultSet, $relation, $subRelation, $closure, $class)
+    public function eagerlyResultSet(&$resultSet, $relation, $subRelation, $closure)
     {}
 
     /**
@@ -105,10 +107,9 @@ class HasManyThrough extends Relation
      * @param string   $relation    当前关联名
      * @param string   $subRelation 子关联名
      * @param \Closure $closure     闭包
-     * @param string   $class       数据集对象名 为空表示数组
      * @return void
      */
-    public function eagerlyResult(&$result, $relation, $subRelation, $closure, $class)
+    public function eagerlyResult(&$result, $relation, $subRelation, $closure)
     {}
 
     /**
@@ -122,7 +123,7 @@ class HasManyThrough extends Relation
     {}
 
     /**
-     * 执行基础查询（进执行一次）
+     * 执行基础查询（仅执行一次）
      * @access protected
      * @return void
      */
@@ -135,10 +136,15 @@ class HasManyThrough extends Relation
             $pk           = (new $through)->getPk();
             $throughKey   = $this->throughKey;
             $modelTable   = $this->parent->getTable();
-            $this->query->field($alias . '.*')->alias($alias)
+            $fields       = $this->getQueryFields($alias);
+
+            $this->query
+                ->field($fields)
+                ->alias($alias)
                 ->join($throughTable, $throughTable . '.' . $pk . '=' . $alias . '.' . $throughKey)
                 ->join($modelTable, $modelTable . '.' . $this->localKey . '=' . $throughTable . '.' . $this->foreignKey)
                 ->where($throughTable . '.' . $this->foreignKey, $this->parent->{$this->localKey});
+
             $this->baseQuery = true;
         }
     }

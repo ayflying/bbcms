@@ -27,7 +27,7 @@ class Memcached extends Driver
     ];
 
     /**
-     * 构造函数
+     * 架构函数
      * @param array $options 缓存参数
      * @access public
      */
@@ -36,29 +36,37 @@ class Memcached extends Driver
         if (!extension_loaded('memcached')) {
             throw new \BadFunctionCallException('not support: memcached');
         }
+
         if (!empty($options)) {
             $this->options = array_merge($this->options, $options);
         }
+
         $this->handler = new \Memcached;
+
         if (!empty($this->options['option'])) {
             $this->handler->setOptions($this->options['option']);
         }
+
         // 设置连接超时时间（单位：毫秒）
         if ($this->options['timeout'] > 0) {
             $this->handler->setOption(\Memcached::OPT_CONNECT_TIMEOUT, $this->options['timeout']);
         }
+
         // 支持集群
         $hosts = explode(',', $this->options['host']);
         $ports = explode(',', $this->options['port']);
         if (empty($ports[0])) {
             $ports[0] = 11211;
         }
+
         // 建立连接
         $servers = [];
         foreach ((array) $hosts as $i => $host) {
             $servers[] = [$host, (isset($ports[$i]) ? $ports[$i] : $ports[0]), 1];
         }
+
         $this->handler->addServers($servers);
+
         if ('' != $this->options['username']) {
             $this->handler->setOption(\Memcached::OPT_BINARY_PROTOCOL, true);
             $this->handler->setSaslAuthData($this->options['username'], $this->options['password']);
@@ -74,6 +82,7 @@ class Memcached extends Driver
     public function has($name)
     {
         $key = $this->getCacheKey($name);
+
         return $this->handler->get($key) ? true : false;
     }
 
@@ -86,7 +95,10 @@ class Memcached extends Driver
      */
     public function get($name, $default = false)
     {
+        $this->readTimes++;
+
         $result = $this->handler->get($this->getCacheKey($name));
+
         return false !== $result ? $result : $default;
     }
 
@@ -100,21 +112,27 @@ class Memcached extends Driver
      */
     public function set($name, $value, $expire = null)
     {
+        $this->writeTimes++;
+
         if (is_null($expire)) {
             $expire = $this->options['expire'];
         }
+
         if ($expire instanceof \DateTime) {
             $expire = $expire->getTimestamp() - time();
         }
+
         if ($this->tag && !$this->has($name)) {
             $first = true;
         }
-        $key    = $this->getCacheKey($name);
-        $expire = 0 == $expire ? 0 : $_SERVER['REQUEST_TIME'] + $expire;
+
+        $key = $this->getCacheKey($name);
+
         if ($this->handler->set($key, $value, $expire)) {
             isset($first) && $this->setTagItem($key);
             return true;
         }
+
         return false;
     }
 
@@ -127,10 +145,14 @@ class Memcached extends Driver
      */
     public function inc($name, $step = 1)
     {
+        $this->writeTimes++;
+
         $key = $this->getCacheKey($name);
+
         if ($this->handler->get($key)) {
             return $this->handler->increment($key, $step);
         }
+
         return $this->handler->set($key, $step);
     }
 
@@ -143,9 +165,12 @@ class Memcached extends Driver
      */
     public function dec($name, $step = 1)
     {
+        $this->writeTimes++;
+
         $key   = $this->getCacheKey($name);
         $value = $this->handler->get($key) - $step;
         $res   = $this->handler->set($key, $value);
+
         if (!$res) {
             return false;
         } else {
@@ -161,7 +186,10 @@ class Memcached extends Driver
      */
     public function rm($name, $ttl = false)
     {
+        $this->writeTimes++;
+
         $key = $this->getCacheKey($name);
+
         return false === $ttl ?
         $this->handler->delete($key) :
         $this->handler->delete($key, $ttl);
@@ -178,10 +206,15 @@ class Memcached extends Driver
         if ($tag) {
             // 指定标签清除
             $keys = $this->getTagItem($tag);
+
             $this->handler->deleteMulti($keys);
             $this->rm('tag_' . md5($tag));
+
             return true;
         }
+
+        $this->writeTimes++;
+
         return $this->handler->flush();
     }
 }

@@ -25,7 +25,7 @@ class Xcache extends Driver
     ];
 
     /**
-     * 构造函数
+     * 架构函数
      * @param array $options 缓存参数
      * @access public
      * @throws \BadFunctionCallException
@@ -35,6 +35,7 @@ class Xcache extends Driver
         if (!function_exists('xcache_info')) {
             throw new \BadFunctionCallException('not support: Xcache');
         }
+
         if (!empty($options)) {
             $this->options = array_merge($this->options, $options);
         }
@@ -49,6 +50,7 @@ class Xcache extends Driver
     public function has($name)
     {
         $key = $this->getCacheKey($name);
+
         return xcache_isset($key);
     }
 
@@ -61,7 +63,10 @@ class Xcache extends Driver
      */
     public function get($name, $default = false)
     {
+        $this->readTimes++;
+
         $key = $this->getCacheKey($name);
+
         return xcache_isset($key) ? xcache_get($key) : $default;
     }
 
@@ -75,20 +80,27 @@ class Xcache extends Driver
      */
     public function set($name, $value, $expire = null)
     {
+        $this->writeTimes++;
+
         if (is_null($expire)) {
             $expire = $this->options['expire'];
         }
+
         if ($expire instanceof \DateTime) {
             $expire = $expire->getTimestamp() - time();
         }
+
         if ($this->tag && !$this->has($name)) {
             $first = true;
         }
+
         $key = $this->getCacheKey($name);
+
         if (xcache_set($key, $value, $expire)) {
             isset($first) && $this->setTagItem($key);
             return true;
         }
+
         return false;
     }
 
@@ -101,7 +113,10 @@ class Xcache extends Driver
      */
     public function inc($name, $step = 1)
     {
+        $this->writeTimes++;
+
         $key = $this->getCacheKey($name);
+
         return xcache_inc($key, $step);
     }
 
@@ -114,7 +129,10 @@ class Xcache extends Driver
      */
     public function dec($name, $step = 1)
     {
+        $this->writeTimes++;
+
         $key = $this->getCacheKey($name);
+
         return xcache_dec($key, $step);
     }
 
@@ -126,6 +144,8 @@ class Xcache extends Driver
      */
     public function rm($name)
     {
+        $this->writeTimes++;
+
         return xcache_unset($this->getCacheKey($name));
     }
 
@@ -146,6 +166,9 @@ class Xcache extends Driver
             $this->rm('tag_' . md5($tag));
             return true;
         }
+
+        $this->writeTimes++;
+
         if (function_exists('xcache_unset_by_prefix')) {
             return xcache_unset_by_prefix($this->options['prefix']);
         } else {
