@@ -1,23 +1,24 @@
 <?php
 namespace app\portal\controller;
 use think\Db;
-use think\Cache;
+use think\facade\Cache;
 use app\portal\model\PortalArticle;
 use app\common\controller\Common;
 
 
 class Article extends Common{
-	
+
 	public function index($aid){
-		
         if(empty(Cache::get('article_'.$aid))){
-            $sql = PortalArticle::get($aid);
+            //$sql = PortalArticle::get($aid);
+            $sql = PortalArticle::where('aid',$aid) -> find();
             $sql -> addonarticle;
             $sql -> attachment;
+
             //dump($sql -> toArray());
             if($sql['mod']>0){
-                $mod = Db::name('portal_mod') -> cache(true) -> find($sql['mod']);
-                $mod_list = Db::name('portal_mod_'.$sql['mod']) -> cache(true) -> find($aid);
+                $mod = Db::name('portal_mod') -> cache(true) -> where('id',$sql['mod']) -> find();
+                $mod_list = Db::name('portal_mod_'.$sql['mod']) -> where('aid',$aid) -> cache(true) -> find();
                 $mod = json_decode($mod['data'],true);
                 foreach($mod as $key => $val){
                     //dump($mod);
@@ -34,11 +35,11 @@ class Article extends Common{
             Cache::set('article_'.$aid,$sql->toArray());
         }
         $sql = Cache::get('article_'.$aid);
-        $this -> _G['menu'] = Db::name('portal_menu') -> cache('menu_'.$sql['tid']) -> find($sql['tid']);
-        $this -> _G['user'] = Db::name('member_user') -> cache('user_'.$sql['uid']) -> find($sql['uid']);
+        $this -> _G['menu'] = Db::name('portal_menu') -> cache('menu_'.$sql['tid']) -> where('tid',$sql['tid']) -> find();
+        $this -> _G['user'] = Db::name('member_user') -> cache('user_'.$sql['uid']) -> where('uid',$sql['uid']) -> find();
         $this -> _G['article'] = $sql;
 		//dump($this);
-		
+
 		return $this-> fetch($this -> _G['menu']['template_article']);
 	}
 
