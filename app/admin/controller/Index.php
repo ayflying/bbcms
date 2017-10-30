@@ -1,6 +1,7 @@
 <?php
 namespace app\admin\controller;
-use think\Config;
+use think\facade\Config;
+use think\facade\App;
 use think\Db;
 
 class Index extends Common{
@@ -12,7 +13,7 @@ class Index extends Common{
 			"当前主机名:端口" => $_SERVER['SERVER_NAME'].":".$_SERVER['SERVER_PORT'], //当前主机名
 			"当前时间" => date("Y-m-d H:i:s"),
             '系统与数据版本' =>  Config::get('version') .' - '. Db::name('system_settings') -> where('name','version') -> value('value'),
-			"框架版本" => THINK_VERSION,
+			"框架版本" => App::version(),
 			"语言" => $_SERVER['HTTP_ACCEPT_LANGUAGE'],
 			"PHP版本" => PHP_VERSION,
 			'Zend版本' => Zend_Version(),
@@ -41,12 +42,11 @@ class Index extends Common{
 	}
 	
 	private function article(){
-		$db = Db::name('PortalArticle');
-		$sql['num'] = $db ->  count();
-		$sql['today'] = $db -> whereTime('create_time', 'today') -> count();
-        $sql['yesterday'] = $db -> whereTime('create_time', 'yesterday') -> count();
-        $sql['week'] = $db -> whereTime('create_time', 'week') -> count();
-        $sql['month'] = $db -> whereTime('create_time', 'month') -> count();
+		$sql['num'] = Db::name('PortalArticle') ->  count();
+		$sql['today'] = Db::name('PortalArticle') -> whereTime('create_time', 'today') -> count();
+        $sql['yesterday'] = Db::name('PortalArticle') -> whereTime('create_time', 'yesterday') -> count();
+        $sql['week'] = Db::name('PortalArticle') -> whereTime('create_time', 'week') -> count();
+        $sql['month'] = Db::name('PortalArticle') -> whereTime('create_time', 'month') -> count();
 		return $sql;
 	}
 	
@@ -56,12 +56,11 @@ class Index extends Common{
 	}
 	
 	private function user(){
-		$db = Db::name('member_user');
-		$sql['num'] = $db ->  count();
-		$sql['today'] = $db -> whereTime('create_time', 'today') -> count();
-        $sql['yesterday'] = $db -> whereTime('create_time', 'yesterday') -> count();
-        $sql['week'] = $db -> whereTime('create_time', 'week') -> count();
-        $sql['month'] = $db -> whereTime('create_time', 'month') -> count();
+		$sql['num'] = Db::name('member_user') ->  count();
+		$sql['today'] = Db::name('member_user') -> whereTime('create_time', 'today') -> count();
+        $sql['yesterday'] = Db::name('member_user') -> whereTime('create_time', 'yesterday') -> count();
+        $sql['week'] = Db::name('member_user') -> whereTime('create_time', 'week') -> count();
+        $sql['month'] = Db::name('member_user') -> whereTime('create_time', 'month') -> count();
 		return $sql;
 	}
 	
@@ -72,7 +71,7 @@ class Index extends Common{
         return $version[0]['ver'];
     }
 	private function _mysql_db_size(){
-        $database = config('database');
+        $database = config::pull('database');
 		$sql = "SHOW TABLE STATUS FROM ".$database['database'];
 		$tblPrefix = $database['prefix'];
 		if($tblPrefix != null) {

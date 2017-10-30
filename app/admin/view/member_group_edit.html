@@ -9,8 +9,8 @@
     <td>说明</td>
   </tr>
   </thead>
-  
-  
+
+
   <tr class="form-group">
     <td><label for="name">用户组名称</label></td>
     <td><input name="name" type="text" class="form-control" id="name" value="{$sql.name|default=''}" /></td>
@@ -43,12 +43,17 @@
   <tr class="form-group">
     <td><label for="status">状态</label></td>
     <td>
-        <input type="radio" name="status" value="1" {$sql['status']==1?'checked="checked"':''}>开启
-        <input type="radio" name="status" value="0" {$sql['status']==0?'checked="checked"':''}>关闭
+        {empty name='sql.status'}
+            <input type="radio" name="status" value="1" checked="checked">开启
+            <input type="radio" name="status" value="0">关闭
+        {else/}
+            <input type="radio" name="status" value="1" {$sql.status==1?'checked="checked"':''}>开启
+            <input type="radio" name="status" value="0" {$sql.status==0?'checked="checked"':''}>关闭
+        {/empty}
     </td>
     <td>&nbsp;</td>
   </tr>
-  
+
   <tr class="form-group">
     <td>
     <input type="submit" name=""  class="btn btn-primary" id="button" value="提交" />
@@ -62,25 +67,25 @@
 </div>
 <script>
 $(function(){
-	
+
 	//初始化已选
 	var value = "{$sql.value|default=''}";
 	var arr	= value.split(',');
 	for(val in arr){
 	  $("#"+arr[val]).prop('checked', true);
 	}
-	
-	
+
+
 	$(".top input").click(function(e) {
-         if(this.checked){   
+         if(this.checked){
 			$(this).parents('tr').find('input').prop("checked", true);
 			//$("#list :checkbox").prop("checked", true);
 		}else{
 			$(this).parents('tr').find('input').prop("checked", false);
 			//$("#list :checkbox").prop("checked", false);
-		}   
+		}
     });
-	
+
 });
 </script>
 {include file="./footer" /}

@@ -4,13 +4,13 @@ $(document).ready(function(e){
 	$("#all").click(function(e) {
     	$(".del").attr('checked',true);
     });
-    
+
 });
 </script>
 <div class="container-fluid">
 <div class="btn-group">
         <button type="button" id="all" class="btn btn-primary">{:lang('全选')}</button>
-        
+
 </div>
 <br /><br />
 
@@ -26,7 +26,7 @@ $(document).ready(function(e){
         </tr>
     </thead>
     <tbody>
-    
+
     {foreach name="list" item="val"}
 		<tr>
        	  <td class="table-check">
@@ -36,7 +36,7 @@ $(document).ready(function(e){
           </td>
             <td>{$val.aid}</td>
             <td><a href="{:url('/aid/'.$val['aid'])}" target="_blank" >{$val.title}</a></td>
-            <td class="hidden-xs">{$val.create_time|date="Y-m-d H:i:s",###}</td>
+            <td class="hidden-xs">{$val.create_time|date="Y-m-d H:i:s"}</td>
             <td>
             <div class="btn-group">
 			  <a href="{:url('recover?action=1&aid='.$val['aid'])}" class="btn btn-primary btn-primary">{:lang('恢复')}</a>

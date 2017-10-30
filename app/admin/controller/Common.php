@@ -6,7 +6,7 @@ use think\Db;
 class Common extends Controller{
     public $uid;
 	
-	public function _initialize()
+	public function initialize()
     {
 		//$uid = cookie_decode('uid');
         $guid = cookie('guid');

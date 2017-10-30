@@ -28,7 +28,7 @@
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-        {php}$system_menu = config('menu');{/php}
+        {php}$system_menu = config('menu.');{/php}
 		{foreach name="system_menu" item="val"}
         <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="javascript:;" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{$key|lang}</a>

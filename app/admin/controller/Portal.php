@@ -1,24 +1,25 @@
 <?php
 namespace app\admin\controller;
-use think\Config;
+use think\facade\Config;
 use think\Db;
 
 class Portal extends Common{
-	
+
 	/*内容列表*/
 	public function article_list($tid=null,$order='update_time desc'){
-		
+
 		if(request()->isPost()){
-			
+
 		}else{
 			$where = [
-                'status' => 1,
+                ['status' ,'=' , 1],
             ];
             if(!empty($tid)){
-                $where['tid'] = $tid;
+                //$where['tid'] = $tid;
+                $where[] = ['tid','=',$tid];
             }
-            //$page_num = cookie('page_num') > 0 ? cookie('page_num') : PAGE_NUM;
-			$list = Db::name('PortalArticle') -> where($where)-> order($order) -> paginate(PAGE_NUM);
+            //$Config::get('bbcms.page_num') = cookie('Config::get('bbcms.page_num')') > 0 ? cookie('Config::get('bbcms.page_num')') : Config::get('bbcms.page_num');
+			$list = Db::name('PortalArticle') -> where($where)-> order($order) -> paginate(Config::get('bbcms.page_num'));
             // 获取分页显示
 			$page = $list->render();
 			//dump($list);
@@ -27,9 +28,9 @@ class Portal extends Common{
 			return $this-> fetch('./portal_article_list');
 		}
 	}
-	
+
 	/*内容软删除*/
-	function remove($aid){			
+	function remove($aid){
 		if(is_array($aid)){
 			foreach($aid as $val){
 				Db::name('portal_article') -> where('aid',$val) -> setField('status',-1);
@@ -39,18 +40,18 @@ class Portal extends Common{
 		}
 		$this -> success('删除成功',$_SERVER['HTTP_REFERER'],'',1);
 	}
-	
-	
+
+
 	function recycle(){//回收站
-		//$page_num = cookie('page_num') > 0 ? cookie('page_num') : PAGE_NUM;
-		$list = Db::name('portal_article') -> order('aid desc') ->where('status',-1) -> paginate(PAGE_NUM);
-		
+		//$Config::get('bbcms.page_num') = cookie('Config::get('bbcms.page_num')') > 0 ? cookie('Config::get('bbcms.page_num')') : Config::get('bbcms.page_num');
+		$list = Db::name('portal_article') -> order('aid desc') ->where('status',-1) -> paginate(Config::get('bbcms.page_num'));
+
 		$page = $list->render();
 		$this->assign('page', $page);
 		$this -> assign('list',$list);
 		return $this -> fetch('./portal_article_recycle');
 	}
-	
+
 	/*
 		文章回收站指令
 		get.action = 1 为恢复
@@ -83,14 +84,14 @@ class Portal extends Common{
 		}
 		$this -> success($action.'完成');
 	}
-	
+
 	/*物理删除文章*/
 	public function delete($aid){
          //设置为永久执行不超时
          set_time_limit(3600);
-         
+
 		$article = Db::name('portal_article') -> find($aid);
-		
+
 		/*
 		//删除缩略图
 		if($article['litpic']){
@@ -103,7 +104,7 @@ class Portal extends Common{
 			//echo "删除：".$f."<br/>";
 			file_exists($val['url']) && unlink($val['url']);
 		}
-		
+
 		//删除模型表
 		if($article['mod'] > 0){
 			Db::name('portal_mod_'.$article['mod']) -> delete($aid);
@@ -111,8 +112,8 @@ class Portal extends Common{
 		Db::name('portal_article') -> delete($aid);
 		Db::name('PortalAddonarticle') -> delete($aid);
 		Db::name('PortalAttachment') -> where('aid',$aid) -> delete();
-		
+
 		return $article['title'];
 	}
-	
+
 }
