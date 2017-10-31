@@ -28,16 +28,9 @@ class PortalArticle extends Model
         return $this->belongsTo('PortalMenu','tid');
 	}
 
-    static public function lists($tid){
-        $list = $this -> where('tid',$tid) -> select();
 
-        return $list;
-    }
-
-    static public function info(){
+    static public function info($aid){
         $sql = $this -> where('aid',$aid) -> find();
-
-
         return $sql;
     }
 

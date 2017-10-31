@@ -7,6 +7,7 @@ use app\common\controller\Common;
 
 class Lists extends Common{
 	public function index($tid=0,$search=null,$order='portal_article.update_time desc'){
+
 		$sql = Db::name('portal_menu')-> cache("menu_".$tid) -> find($tid);
         if(!empty($sql['jump'])){
             header('Location: '.$sql['jump']);

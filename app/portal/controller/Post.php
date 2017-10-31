@@ -1,8 +1,8 @@
 <?php
 namespace app\portal\controller;
 use think\Db;
-use think\Cache;
-use think\Request;
+use think\facade\Cache;
+use think\facade\Request;
 use think\Image;
 use think\Config;
 
@@ -10,19 +10,19 @@ use app\common\controller\Common;
 use app\portal\model\PortalArticle;
 
 class Post extends Common{
-    
+
    /**
     *   初始化权限，验证是否登录
     *
     */
-    public function _initialize(){
-        parent::_initialize();
+    public function initialize(){
+        parent::initialize();
         if(empty($this -> uid)){
             cookie('from',request()->url());
             $this -> error("正在跳转到登录","member/login/login");
         }
     }
-    
+
     /*      UEditor 编辑器插件   */
     public function UEditor(){
         config('app_trace',false);  //必须关闭调试
@@ -30,13 +30,13 @@ class Post extends Common{
         //$type = $_REQUEST['type'];
         //$noCache = input('noCache');
         $action=input('action');
-        
+
         switch ($action){
         case 'config':  //基本配置
             $config = Config::get('ueditor');
             return $result =  json_encode($config);
             break;
-            
+
         case Config::get('ueditor.imageActionName'):    //图片上传
             $file = request()->file(Config::get('ueditor.imageFieldName'));
             $url = './uploads/portal';
@@ -45,7 +45,7 @@ class Post extends Common{
                 $thumb = $this -> thumb($info->getPathname());
             }
             break;
-            
+
         case 'listimage':   //图片列表
             $sql = Db::name('portal_attachment') -> where('uid',$this->uid) -> where('type',in('jpg,png,bmp,gif')) -> select();
             //dump($list);
@@ -66,8 +66,8 @@ class Post extends Common{
         default:
             break;
         }
-        
-    
+
+
         if(isset($info)){
             $url = str_replace('\\','/',$info->getPathname());
             $arr =[
@@ -79,7 +79,7 @@ class Post extends Common{
                 "type" => $info-> getExtension(),
                 "state" => 'SUCCESS',
             ];
-            
+
             $data = [
                 'uid' => $this -> uid,
                 'original' => $arr['originalName'],
@@ -95,7 +95,7 @@ class Post extends Common{
             $att -> save($data);
             */
         }else if(isset($file)){
-            
+
             $arr = [
                 'state' => $file->getError(),
             ];
@@ -107,8 +107,8 @@ class Post extends Common{
             return json_encode($arr);
         }
     }
-    
-    
+
+
     /*
         内容添加
     */
@@ -116,34 +116,34 @@ class Post extends Common{
         $uid = $this -> uid;
         $sql = Db::name('portal_menu') -> find($tid);
         //$this -> assign('title',$sql['name'].'发布 - ');
-        
-        
-        
+
+
+
         if (request()->isPost()){
             $post = input('post.');
-            
+
             if(isset($post['mod'])){
                 $mod_data = $post['mod'];
                 unset($post['mod']);
             }
-            
+
             $add = new PortalArticle;
             $add -> uid = $uid;
             $add -> tid = $tid;
             $add -> mod = $sql['mod'];
             //$add -> title = $post['title'];
-            
+
             //焦点图
             $thumb = $this -> thumb_upload('thumb');
             $add -> litpic =  isset($thumb) ? $litpic = reset($thumb) : null;
             //isset($thumb) && $add -> thumb = json_encode($thumb);
             $add -> thumb = $thumb;
-            
+
             //创建主键写入数据库
             $add -> allowField(true) -> save($post);
             $aid = $add -> aid;
             $add -> addonarticle() ->save(['content'=>$post['content']]);
-            
+
             //检测当前内容模型
             if($sql['mod'] > 0){
                 foreach($mod_data as $key => $val){
@@ -154,9 +154,9 @@ class Post extends Common{
                 $mod_data['aid'] = $aid;
                 $mod = Db::name('portal_mod_'.$sql['mod'])-> insert($mod_data);
             }
-            
+
             Cache::clear('list');   //更新缓存
-            
+
             //修改附件为当前aid
             Db::name('portal_attachment') -> where('aid','null') ->  where('uid',$uid) -> setField('aid',$aid);
             return $this -> success(lang('提交完成'),"@portal/lists/index?tid=".$tid,null,1);
@@ -173,10 +173,10 @@ class Post extends Common{
             return $this->fetch($sql['template_add']);
         }
     }
-	
+
 	public function edit($aid){
 		$uid = $this -> uid;
-        
+
         if(request() -> isAjax()){
             $post = input('post.');
             $article = PortalArticle::get($aid)->thumb;
@@ -196,12 +196,12 @@ class Post extends Common{
             }
             $this -> success("success");
         }
-        
-        
+
+
 		if (request()->isPost()){
             Cache::rm('article_'.$aid);
-            $cache = Cache::pull('article_'.$aid); 
-            
+            $cache = Cache::pull('article_'.$aid);
+
             $post = input('post.');
             if(isset($post['mod'])){
                 $mod_data = $post['mod'];
@@ -211,7 +211,7 @@ class Post extends Common{
             $article = PortalArticle::get($aid);
             $article -> allowField(true) -> save($post);
             $article -> addonarticle -> save(['content' => $post['content']]);
-            
+
             //检测模型层是否修改
             if($article->mod > 0 && isset($mod_data)){
                 foreach($mod_data as $key => $val){
@@ -221,10 +221,10 @@ class Post extends Common{
                 }
                 $mod = Db::name('portal_mod_'.$article -> mod) -> where('aid',$aid) -> update($mod_data);
             }
-            
-            
+
+
             $this -> success(lang('编辑完成'),null,null,1);
-            
+
         }else{
             $article = PortalArticle::get($aid);
             $article -> addonarticle;
@@ -234,27 +234,27 @@ class Post extends Common{
                 $mod_data = json_decode($mod['data'],true);
                 $mod_value = Db::name('portal_mod_'.$article->mod) -> find($aid);
                 foreach($mod_data as $key => $val){
-                    
+
                     $mod_data[$key][2] = explode(',',$val[2]);
                     $value = explode(',',$mod_value[$key]);
                     if(isset($value[2])){
                         $mod_data[$key]['value'] = $value;
                     }else{
                         $mod_data[$key]['value'] = $mod_value[$key];
-                    } 
+                    }
                 }
                 $this -> _G['mod'] = $mod_data;
             }
-            
+
             $this -> _G['title'] = $article -> title;
             $this -> _G['article'] = $article;
             $template_edit = Db::name('portal_menu') -> where('tid',$article['tid']) -> cache(true) -> value('template_edit');
             return $this->fetch($template_edit);
         }
-		
-		
+
+
 	}
-    
+
     /*
         缩略图上传类
     */
@@ -281,10 +281,10 @@ class Post extends Common{
         }
         return $thumb;
     }
-    
+
     //写入附件数据库
     public function attachment($info,$aid=null,$original=null){
-        
+
         $data = [
                 'uid' => $this -> uid,
                 'aid' => $aid,
@@ -298,10 +298,10 @@ class Post extends Common{
         $id = Db::name("portal_attachment") -> insert($data);
         return $data;
     }
-    
+
     /*图片压缩*/
     public function thumb($file,$x=1280,$y=9999,$dir=null){
-        
+
         $image = \think\Image::open($file);
         if($image->width() > $x || $image->height() > $y){
         // 按照原图的比例生成一个最大为150*150的缩略图并保存为thumb.png
@@ -316,5 +316,5 @@ class Post extends Common{
         }
         return $image;
     }
-    
+
 }
