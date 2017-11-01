@@ -28,7 +28,7 @@ return [
     // 注册的根命名空间
     'root_namespace'         => [
         'addons' => 'addons',
-		'lib' => '../application/common/library',
+		'lib' => '../app/common/library',
     ],
     // 默认输出类型
     'default_return_type'    => 'html',
