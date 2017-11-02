@@ -10,13 +10,13 @@
     <meta name="description" content="[description],{$_G.system.description}" />
 
     <!-- Bootstrap -->
-    <link rel="stylesheet" href="./template/default/css/bootstrap.min.css">
-    <link rel="stylesheet" href="./template/default/css/bb.css">
-    <script type="text/javascript" src="./public/cloud/script/jquery-3.1.1.min.js"></script>
-  	<script type="text/javascript" src="./template/default/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="./template/default/js/jquery.SuperSlide.2.1.1.js"></script>
-    {load href="__PUBLIC__/cloud/script/jquery.lazyload.min.js" /}
-    {load href="./template/default/js/bb.js"}
+    <link rel="stylesheet" href="__Tpl__/css/bootstrap.min.css">
+    <link rel="stylesheet" href="__Tpl__/css/bb.css">
+    <script type="text/javascript" src="/public/cloud/script/jquery-3.1.1.min.js"></script>
+  	<script type="text/javascript" src="__Tpl__/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="__Tpl__/js/jquery.SuperSlide.2.1.1.js"></script>
+    {load href="/public/cloud/script/jquery.lazyload.min.js" /}
+    {load href="__Tpl__/js/bb.js"}
   </head>
   <body>
   	<header>
@@ -29,7 +29,7 @@
 
         <div class="container-fluid hidden-xs">
         	<div class="logo" style="margin:10px 0;">
-            	<a href="{:url('/')}"><img src="{$_G.system.logo|default='./template/default/images/logo.png'}" height="60" /></a>
+            	<a href="{:url('/')}"><img src="{$_G.system.logo|default='.__Tpl__/images/logo.png'}" height="60" /></a>
             </div>
         </div>
         <!--导航开始-->

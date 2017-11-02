@@ -8,6 +8,7 @@ use think\Config;
 
 use app\common\controller\Common;
 use app\portal\model\PortalArticle;
+use app\portal\model\PortalAttachment;
 
 class Post extends Common{
 
@@ -39,7 +40,7 @@ class Post extends Common{
 
         case Config::get('ueditor.imageActionName'):    //图片上传
             $file = request()->file(Config::get('ueditor.imageFieldName'));
-            $url = './uploads/portal';
+            $url = '/uploads/portal';
             if(isset($file)){
                 $info = $file->validate(['ext' => 'bmp,jpg,jpeg,png,gif','size' => Config::get('ueditor.imageMaxSize')]) -> move($url);
                 $thumb = $this -> thumb($info->getPathname());
@@ -135,7 +136,8 @@ class Post extends Common{
 
             //焦点图
             $thumb = $this -> thumb_upload('thumb');
-            $add -> litpic =  isset($thumb) ? $litpic = reset($thumb) : null;
+            dump($thumb);
+            $add -> litpic =  isset($thumb) ? reset($thumb) : null;
             //isset($thumb) && $add -> thumb = json_encode($thumb);
             $add -> thumb = $thumb;
 
@@ -160,6 +162,7 @@ class Post extends Common{
             //修改附件为当前aid
             Db::name('portal_attachment') -> where('aid','null') ->  where('uid',$uid) -> setField('aid',$aid);
             return $this -> success(lang('提交完成'),"@portal/lists/index?tid=".$tid,null,1);
+            
         }else{
             if($sql['mod'] > 0){
                 $mod = Db::name('portal_mod')-> field('table,data') -> find($sql['mod']);
@@ -263,15 +266,15 @@ class Post extends Common{
         if(empty($files)){
             return;
         }
-        $url = './uploads/thumb/';
+        $url = './uploads/thumb';
         foreach($files as $file){
             $info = $file->validate(['ext' => 'bmp,jpg,jpeg,png,gif'])  -> move($url);
             $this -> thumb($info->getPathname());   //压缩
             $data = [
                 'uid' => $this -> uid,
-                'original' => $file-> getInfo()['name'],
+                'original' => $file -> getInfo()['name'],
                 'name' => $info->getFilename(),
-                'url' => $info->getPathname(),
+                'url' => str_replace('\\','/',$info->getPathname()),
                 'size' => filesize($info->getPathname()),   //获取实际大小
                 'type' => $info-> getExtension(),
                 'create_time' => time(),
@@ -293,7 +296,7 @@ class Post extends Common{
                 'url' => $info->getPathname(),
                 'size' => filesize($info->getPathname()),   //获取实际大小
                 'type' => $info-> getExtension(),
-                'create_time' => time(),
+                //'create_time' => time(),
             ];
         $id = Db::name("portal_attachment") -> insert($data);
         return $data;

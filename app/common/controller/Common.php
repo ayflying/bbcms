@@ -2,6 +2,7 @@
 namespace app\common\controller;
 use think\Controller;
 use think\facade\Cache;
+use think\facade\Config;
 use think\Db;
 use think\facade\Hook;
 
@@ -83,6 +84,11 @@ class Common extends Controller{
 	*/
     
     protected function fetch($file = '', $vars = [],$replace = [], $config = []){
+        //$view_path = Config::get('bbcms.view_path');
+        $replace = [
+            '__Tpl__' => Config::get('bbcms.view_path'),
+        ];
+        /*
         $config = array_merge(config('template.'),$config);
 		//$config['view_suffix'] = 'abc';
 		$dir = $config['view_path'] . DIRECTORY_SEPARATOR . $file.'.html';
@@ -90,6 +96,7 @@ class Common extends Controller{
 			 $config['view_path'] = ROOT_PATH .'template'. DIRECTORY_SEPARATOR .'default'. DIRECTORY_SEPARATOR;
              $this -> view -> engine($config);
 		}
+        */
 		$this -> assign('_G',$this -> _G);
         return $this -> view -> fetch($file,$vars,$replace,$config);
 	}

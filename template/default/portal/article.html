@@ -9,14 +9,14 @@
       	<li><a href="{:url('/tid/'.$_G.article.tid)}">{$_G.menu.name}</a></li>
       	<div class="pull-right"><a href="{:url('@portal/post/edit?aid='.$_G.article.aid)}">编辑</a></div>
       </ol>
-  	
+
   	  <article class="panel-body">
     	<div class="jdt" style="width:auto;">
           <ul class="hd list-unstyled">
             {foreach name="$_G.article.thumb" item="val"}
               <li>{$key+1}</li>
             {/foreach}
-            
+
           </ul>
           <ul class="bd list-unstyled">
             {foreach name="$_G.article.thumb" item="val"}
@@ -24,9 +24,9 @@
             {/foreach}
           </ul>
         </div>
-        
+
         <h2 class="text-center">{$_G.article.title}</h2>
-        <section class="content">{$_G.article.addonarticle.content|htmlspecialchars_decode}</section>
+        <section class="content">{$_G.article.addonarticle.content|raw}</section>
       </article>
     </div>
   </div>
