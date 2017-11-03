@@ -4,7 +4,7 @@ use think\Db;
 use think\facade\Cache;
 use think\facade\Request;
 use think\Image;
-use think\Config;
+use think\facade\Config;
 
 use app\common\controller\Common;
 use app\portal\model\PortalArticle;
@@ -26,21 +26,22 @@ class Post extends Common{
 
     /*      UEditor 编辑器插件   */
     public function UEditor(){
-        config('app_trace',false);  //必须关闭调试
+        Config::set('app_trace',false);  //必须关闭调试
         header("Content-Type:text/html;charset=utf-8");
         //$type = $_REQUEST['type'];
         //$noCache = input('noCache');
         $action=input('action');
-
+        
         switch ($action){
         case 'config':  //基本配置
-            $config = Config::get('ueditor');
+            //$config = Config::pull('ueditor');
+            $config = include APP_PATH."/portal/config/ueditor.php";
             return $result =  json_encode($config);
             break;
 
         case Config::get('ueditor.imageActionName'):    //图片上传
             $file = request()->file(Config::get('ueditor.imageFieldName'));
-            $url = '/uploads/portal';
+            $url = './uploads/portal';
             if(isset($file)){
                 $info = $file->validate(['ext' => 'bmp,jpg,jpeg,png,gif','size' => Config::get('ueditor.imageMaxSize')]) -> move($url);
                 $thumb = $this -> thumb($info->getPathname());
@@ -48,7 +49,11 @@ class Post extends Common{
             break;
 
         case 'listimage':   //图片列表
-            $sql = Db::name('portal_attachment') -> where('uid',$this->uid) -> where('type',in('jpg,png,bmp,gif')) -> select();
+            $where = [
+                ['uid','=',$this -> uid],
+                ['type','in','jpg,png,bmp,gif'],
+            ];
+            $sql = Db::name('portal_attachment') -> where($where) -> select();
             //dump($list);
             foreach($sql as $val){
                 $list[] = [
@@ -102,7 +107,8 @@ class Post extends Common{
             ];
             //exit($file->getError());
         }else{
-            $arr = ['state' => lang('错误').$file['error'].lang('文件上传失败')];
+            //$arr = ['state' => lang('错误').$file['error'].lang('文件上传失败')];
+            $arr = ['state' => lang('错误').lang('文件上传失败')];
         }
         if(isset($arr)){
             return json_encode($arr);
@@ -232,6 +238,7 @@ class Post extends Common{
             $article = PortalArticle::get($aid);
             $article -> addonarticle;
             //dump($article -> toArray());
+            dump($article);
             if($article -> mod > 0){
                 $mod = Db::name('portal_mod')-> field('table,data') -> find($article -> mod);
                 $mod_data = json_decode($mod['data'],true);

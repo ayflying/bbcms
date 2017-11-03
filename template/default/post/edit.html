@@ -49,27 +49,27 @@
    	  <label for="title">焦点图</label>
       <ul class="row list-unstyled">
       	<li class="col-md-2">
-          <img class="img-thumbnail" src="{$_G.article.thumb.0|default='./public/cloud/images/image.png'}" width="100%" />
+          <img class="img-thumbnail" src="{$_G.article.thumb.0|default='/public/cloud/images/image.png'}" width="100%" />
           <input name="thumb[]" thumb_id="0" type="file" accept="image/*" />
         </li>
         <li class="col-md-2">
-          <img class="img-thumbnail" src="{$_G.article.thumb.1|default='./public/cloud/images/image.png'}" width="100%" />
+          <img class="img-thumbnail" src="{$_G.article.thumb.1|default='/public/cloud/images/image.png'}" width="100%" />
           <input name="thumb[]" thumb_id="1" type="file" accept="image/*" />
         </li>
         <li class="col-md-2">
-          <img class="img-thumbnail" src="{$_G.article.thumb.2|default='./public/cloud/images/image.png'}" width="100%" />
+          <img class="img-thumbnail" src="{$_G.article.thumb.2|default='/public/cloud/images/image.png'}" width="100%" />
           <input name="thumb[]" thumb_id="2" type="file" accept="image/*" />
         </li>
         <li class="col-md-2">
-          <img class="img-thumbnail" src="{$_G.article.thumb.3|default='./public/cloud/images/image.png'}" width="100%" />
+          <img class="img-thumbnail" src="{$_G.article.thumb.3|default='/public/cloud/images/image.png'}" width="100%" />
           <input name="thumb[]" thumb_id="3" type="file" accept="image/*" />
         </li>
         <li class="col-md-2">
-          <img class="img-thumbnail" src="{$_G.article.thumb.4|default='./public/cloud/images/image.png'}" width="100%" />
+          <img class="img-thumbnail" src="{$_G.article.thumb.4|default='/public/cloud/images/image.png'}" width="100%" />
           <input name="thumb[]" thumb_id="4" type="file" accept="image/*" />
         </li>
         <li class="col-md-2">
-          <img class="img-thumbnail" src="{$_G.article.thumb.5|default='./public/cloud/images/image.png'}" width="100%" />
+          <img class="img-thumbnail" src="{$_G.article.thumb.5|default='/public/cloud/images/image.png'}" width="100%" />
           <input name="thumb[]" thumb_id="5" type="file" accept="image/*" />
         </li>
       </ul>
@@ -86,7 +86,7 @@
     
     <div class="form-group">
    	  <label for="content">内容</label>
-      {include file="../default/common/editor" name="content" value="$_G.article.addonarticle.content" /}
+      {include file="/common/editor" name="content" value="$_G.article.addonarticle.content" /}
 	</div>
     
 	

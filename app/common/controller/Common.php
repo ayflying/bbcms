@@ -87,6 +87,7 @@ class Common extends Controller{
         //$view_path = Config::get('bbcms.view_path');
         $replace = [
             '__Tpl__' => Config::get('bbcms.view_path'),
+            '__PUBLIC__' => '/public',
         ];
         /*
         $config = array_merge(config('template.'),$config);

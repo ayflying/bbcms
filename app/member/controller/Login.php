@@ -10,8 +10,10 @@ class Login extends Common{
 	public function login(){
 		if (request()->isPost()){
 			$post = input('post.');
-			$where['username|email|mobile'] = $post['username'];
-			$where['password'] = md5($post['password']);
+			$where = [
+                ['username|email|mobile','like',$post['username']],
+                ['password','like',md5($post['password'])],
+            ];
 			if($sql = Db::name('MemberUser') -> where($where) -> find()){
 					//调用验证方法
 					$auto = new AdminLogin();
