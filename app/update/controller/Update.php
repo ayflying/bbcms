@@ -1,8 +1,8 @@
 <?php
 namespace app\update\controller;
-use think\Cache;
-use think\Config;
-use think\Request;
+use think\facade\Cache;
+use think\facade\Config;
+use think\facade\Request;
 use think\Controller;
 
 class Update extends Controller

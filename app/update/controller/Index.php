@@ -1,8 +1,8 @@
 <?php
 namespace app\update\controller;
-use think\Cache;
-use think\Config;
-use think\Request;
+use think\facade\Cache;
+use think\facade\Config;
+use think\facade\Request;
 use think\Controller;
 
 class Index extends Controller
@@ -10,7 +10,7 @@ class Index extends Controller
     
     public function index(){
         if(!Cache::get('updaelist')){
-            $file_list = array_merge(Config::get('file'), files(Config::get('dir')));
+            $file_list = array_merge(Config::pull('file'), files(Config::pull('dir')));
             //dump(Cache::get('updaelist'));
             
             foreach($file_list as $val){
