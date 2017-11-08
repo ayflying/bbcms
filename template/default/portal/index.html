@@ -27,9 +27,8 @@
             <p>{$bb.description}...[<a href="{$bb.url}">详情</a>]</p>
             {/bb:article}
             <ul class="list-unstyled">
-                {bb:article row='2,4' order='click desc'}
-
-                <li><a href="{$bb.turl}">[{$bb.menu.name}]</a> <a href="{$bb.url}" title="{$bb.title}">{$bb.title|mb_substr=0,24}</a><time class="pull-right hidden-xs">{$bb.create_time}</time></li>
+                {bb:article row='4' order='click desc'}
+				<li><a href="{$bb.turl}">[{//$bb.menu.name}]</a> <a href="{$bb.url}" title="{$bb.title}">{$bb.title|mb_substr=0,24}</a><time class="pull-right hidden-xs">{$bb.create_time|date='Y-m-d H:i:s'}</time></li>
                 {/bb:article}
 
 
@@ -100,4 +99,6 @@ $(function(){
 	jQuery(".jdt").slide({mainCell:".bd",autoPlay:true});
 });
 </script>
+
+
 {include file="common/footer"}

@@ -28,31 +28,70 @@ use think\Paginator;
 
 class Query
 {
-    // 数据库Connection对象
+    /**
+     * 数据库连接对象列表
+     * @var array
+     */
     protected static $connections = [];
-    // 当前数据库Connection对象
+
+    /**
+     * 当前数据库连接对象
+     * @var Connection
+     */
     protected $connection;
-    // 当前模型对象
+
+    /**
+     * 当前模型对象
+     * @var Model
+     */
     protected $model;
-    // 当前数据表名称（不含前缀）
+
+    /**
+     * 当前数据表名称（不含前缀）
+     * @var string
+     */
     protected $name = '';
-    // 当前数据表主键
+
+    /**
+     * 当前数据表主键
+     * @var string|array
+     */
     protected $pk;
-    // 当前数据表前缀
+
+    /**
+     * 当前数据表前缀
+     * @var string
+     */
     protected $prefix = '';
-    // 查询参数
+
+    /**
+     * 当前查询参数
+     * @var array
+     */
     protected $options = [];
-    // 参数绑定
+
+    /**
+     * 当前参数绑定
+     * @var array
+     */
     protected $bind = [];
 
-    // 回调事件
+    /**
+     * 事件回调
+     * @var array
+     */
     private static $event = [];
-    // 扩展查询方法
+
+    /**
+     * 扩展查询方法
+     * @var array
+     */
     private static $extend = [];
 
-    // 日期查询快捷方式
-    protected $timeExp = ['d' => 'today', 'w' => 'week', 'm' => 'month', 'y' => 'year'];
-    // 日期查询表达式
+    /**
+     * 日期查询表达式
+     * @var array
+     */
     protected $timeRule = [
         'today'      => ['today', 'tomorrow'],
         'yesterday'  => ['yesterday', 'today'],
@@ -63,6 +102,12 @@ class Query
         'year'       => ['this year 1/1', 'next year 1/1'],
         'last year'  => ['last year 1/1', 'this year 1/1'],
     ];
+
+    /**
+     * 日期查询快捷定义
+     * @var array
+     */
+    protected $timeExp = ['d' => 'today', 'w' => 'week', 'm' => 'month', 'y' => 'year'];
 
     /**
      * 架构函数
@@ -203,6 +248,16 @@ class Query
     {
         $this->name = $name;
         return $this;
+    }
+
+    /**
+     * 获取当前的数据表名称
+     * @access public
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name ?: $this->model->getName();
     }
 
     /**
@@ -825,6 +880,17 @@ class Query
         $this->options['field'] = array_unique($field);
 
         return $this;
+    }
+
+    /**
+     * 设置数据排除字段
+     * @access public
+     * @param mixed $field 字段名或者数据
+     * @return $this
+     */
+    public function hidden($field)
+    {
+        return $this->field($field, true);
     }
 
     /**

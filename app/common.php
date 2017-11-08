@@ -38,6 +38,7 @@ function curl($url,$post=NULL,$time=30,$type=null){
 /**
  * json升级版，中文不转义
  * @param array $arr
+ * @param string  输出json格式
  */
 function json_encode2($arr) {
 	$parts = array ();
@@ -88,8 +89,8 @@ function json_encode2($arr) {
  * 格式化字节大小
  * @param  number $size      字节数
  * @param  string $delimiter 数字和单位分隔符
- * @return string            格式化后的带单位的大小
- * @author 麦当苗儿 <zuojiazi@vip.qq.com>
+ * @return  string            格式化后的带单位的大小
+ * @author
  */
 function format_bytes($size, $delimiter = '') {
 	$units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
@@ -107,6 +108,32 @@ function hook($hook,$params=array()){
     //\Think\Hook::listen($hook,$params);
     \think\facade\Hook::listen($hook,$params);
 }
+
+/**
+ *遍历删除所有缓存文件
+ *@param string $dir    需要删除的目录
+ *@return boolean  输出是否成功
+ */
+function deldir($dir){
+    $dh = opendir($dir);
+    while ($file = readdir($dh)){
+        if ($file != "." && $file != ".."){
+            $fullpath = $dir . "/" . $file;
+            if (!is_dir($fullpath)){
+                unlink($fullpath);
+            }else{
+                deldir($fullpath);
+            }
+        }
+    }
+    closedir($dh);
+    if (rmdir($dir)){
+        return true;
+    }else{
+        return false;
+    }
+}
+
 
 /**
  * 用户cooke解密与加密

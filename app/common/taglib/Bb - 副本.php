@@ -4,8 +4,6 @@ use think\template\TagLib;
 use think\Db;
 use think\facade\Url;
 
-use app\portal\model\PortalArticle;
-
 /**
  * 自定义标签库demo
  * 因为composer的原因，本demo放在目前位置，也可以放在\think\template\taglib目录下，区别请在配置文件中参考
@@ -76,6 +74,7 @@ class Bb extends TagLib{
         $Str .= '
             $tag_sql = Db::name("portal_menu") -> where($where) -> order("weight desc") -> limit("'.$row.'") -> cache(true) -> select();
             foreach($tag_sql as $key => $'.$item.'):
+            //input("tid") and $'.$item.'["action"] = "click";
             $'.$item.'["url"] = Url::build("@portal/lists/index?tid=".$'.$item.'["tid"]);
         ?>';
         $Str  .=   $content;
@@ -121,9 +120,7 @@ class Bb extends TagLib{
             $Str .= ' $where[] = ["tid","in",'.$tid.']; ';
         }
 
-        $Str .= ' 
-            $db = model("portal/PortalArticle");
-            //$db = new PortalArticle;
+        $Str .= ' $db = model("portal/PortalArticle");
             $relation = ["attachment","menu"];
         ';
 
@@ -138,12 +135,8 @@ class Bb extends TagLib{
             ';
             */
             
-            $Str .= '
-                $tag_sql = $db -> where($where) -> limit('.$row.') -> order("'.$order.'") -> cache(true) -> select();
-                //$db -> addonarticle -> content;
-            ';
-            
-            
+            $Str .= '$tag_sql = $db -> where($where) -> limit('.$row.') -> order("'.$order.'") -> cache(true) -> select();';
+
         }
 
 
@@ -155,7 +148,7 @@ class Bb extends TagLib{
             }
             $'.$item.'["url"] = Url::build("@portal/Article/index?aid=".$'.$item.'["aid"]);
             $'.$item.'["turl"] = Url::build("@portal/Lists/index?tid=".$'.$item.'["tid"]);
-        ?>';
+            ?>';
 
         $Str .= $content;
         $Str .=   '<?php endforeach; ?>';
@@ -184,7 +177,7 @@ class Bb extends TagLib{
 
 
 		$Str = '<?php ';
-		$Str .= '$tag_sql = Db::name("'.$table.'") -> where("'.$where.'") -> limit("'.$row.'") -> order("'.$order.'") -> select(); ';
+		$Str .= '$tag_sql = db("'.$table.'") -> where("'.$where.'") -> limit("'.$row.'") -> order("'.$order.'") -> select(); ';
 		$Str .=   ' foreach($tag_sql as $'.$item.'): ';
 		$Str .= '?>';
 		$Str .= $content;
@@ -205,7 +198,7 @@ class Bb extends TagLib{
 		$id = $tag['id'];
 		//$where = $tag['where'];
 		$Str = '<?php ';
-		$Str .= ' $tag_sql = Db::name("operate_ad") -> cache(true) -> find('.$id.'); ';
+		$Str .= ' $tag_sql = db("operate_ad") -> cache(true) -> find('.$id.'); ';
 		$Str .= ' if($tag_sql["status"] != 0 || $tag_sql["end_time"] > time()): ';
 		$Str .= ' echo htmlspecialchars_decode($tag_sql["value"]); ';
 		$Str .= ' endif; ';
@@ -231,7 +224,7 @@ class Bb extends TagLib{
 
 		//$where = $tag['where'];
 		$Str = '<?php ';
-		$Str .= ' $tag_sql = Db::name("operate_flink") -> limit('.$row.') -> cache(true) -> select(); ';
+		$Str .= ' $tag_sql = db("operate_flink") -> limit('.$row.') -> cache(true) -> select(); ';
 		$Str .=   ' foreach($tag_sql as $bb): ';
 		$Str .= '?>';
 		//$Str .= $this->tpl->parse($content);
