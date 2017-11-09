@@ -84,11 +84,13 @@ class Common extends Controller{
 	*/
     
     protected function fetch($file = '', $vars = [],$replace = [], $config = []){
-        //$view_path = Config::get('bbcms.view_path');
         $replace = [
             '__Tpl__' => Config::get('bbcms.view_path'),
             '__PUBLIC__' => '/public',
         ];
+        
+        
+        //exit;
         /*
         $config = array_merge(config('template.'),$config);
 		//$config['view_suffix'] = 'abc';

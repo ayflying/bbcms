@@ -151,7 +151,7 @@ class Bb extends TagLib{
         $Str .= ' foreach($tag_sql as $key => $'.$item.'):
             if($'.$item.'["mod"] > 0){
                 $mod_table = "portal_mod_".$'.$item.'["mod"];
-                $'.$item.'["mod"] = Db::name($mod_table)-> cache(true) -> where("id",$'.$item.'["aid"]) -> find();
+                $'.$item.'["mod"] = Db::name($mod_table)-> cache(true) -> where("aid",$'.$item.'["aid"]) -> find();
             }
             $'.$item.'["url"] = Url::build("@portal/Article/index?aid=".$'.$item.'["aid"]);
             $'.$item.'["turl"] = Url::build("@portal/Lists/index?tid=".$'.$item.'["tid"]);

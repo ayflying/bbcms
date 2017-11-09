@@ -68,12 +68,22 @@ class System extends Common{
 		
 		if(isset($dir)){
 			//$dir = input('get.dir');
-			Db::name('system_settings') -> where(['name' => 'theme']) -> update(['value' => $dir]);
+			Db::name('system_settings') -> where('name','theme') -> update(['value' => $dir]);
 			//修改首页配置文件
-			$config = file_get_contents('./config.php');
-			//$config = strtr($config,VIEW_PATH,'/template/'.$dir.'/');
-			$config = str_replace(VIEW_PATH,'./template/'.$dir.'/',$config);
-			file_put_contents('./config.php',$config);
+            $file = "./config/bbcms.php";
+			$config = file_get_contents($file);
+			$config = str_replace(Config::get('bbcms.view_path'),'/template/'.$dir,$config);
+			file_put_contents($file,$config);
+            
+            
+            
+            $file = "./config/template.php";
+            $config = file_get_contents($file);
+            $template = include($file);
+            $config = str_replace($template['view_path'],'./template/'.$dir.'/',$config);
+			file_put_contents($file,$config);
+            
+            
 			return $this -> success(lang('切换模板').' ['.$dir.']');
 			
 		}else{
