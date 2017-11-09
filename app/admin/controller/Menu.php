@@ -1,7 +1,8 @@
 <?php
 namespace app\admin\controller;
-use think\Config;
+use think\facade\Config;
 use think\Db;
+Use app\portal\model\PortalMenu;
 
 class Menu extends Common{
 	
@@ -39,19 +40,21 @@ class Menu extends Common{
 	
 	function menu_edit($tid){
 		
-		$type_db = Db::name('PortalMod');
-		$type = $type_db -> select();
+		$type = Db::name('PortalMod') -> select();
 		$this -> assign('type',$type);
-		
+		/*
 		$menu_db = Db::name('PortalMenu');
 		$menu = $menu_db -> where(["pid" => 0]) -> select();
+        */
+        $menu =  PortalMenu::where('pid',0)-> select();
 		$this -> assign('menu',$menu);
 		
-		$sql = $menu_db -> find($tid);
+		$sql = PortalMenu::find($tid);
 		$this -> assign('sql',$sql);
 		
 		if(request()->isPost()){
 			$post = input('post.');
+            
 			//print_r(input('post.'));
 			//$menu_db -> create();
 			$save = $post;
@@ -63,12 +66,12 @@ class Menu extends Common{
             empty($post['template_edit']) and $save['template_edit'] = './post/edit';
 			//默认值
 			
-			$menu_db -> where('tid',$tid) -> update($save);
+            PortalMenu::where('tid',$tid) -> update($save);
 			if($post['pid'] > 0){
-				$menu_db -> where('pid',$tid) -> setField('pid',$post['pid']);	//修改下级栏目
+				PortalMenu::where('pid',$tid) -> update(['pid' => $post['pid']]);	//修改下级栏目
 			}
 			
-			return $this -> success('编辑成功');
+            return $this -> success('编辑成功',null,null,1);
 			
 		}else{
 			return $this-> fetch('./portal_menu_edit');

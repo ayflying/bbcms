@@ -40,8 +40,8 @@ class Lists extends Common{
         $this -> _G['menu'] = $sql;
         $this -> _G['page'] = $page;
         $this -> _G['list'] = $list;
-
-
+        
+        dump($list);
 		return $this-> fetch($this -> _G['menu']['template_list']);
 	}
 
