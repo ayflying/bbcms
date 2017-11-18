@@ -20,6 +20,7 @@ class File
 {
     protected $config = [
         'time_format' => ' c ',
+        'single'      => false,
         'file_size'   => 2097152,
         'path'        => '',
         'apart_level' => [],
@@ -47,8 +48,12 @@ class File
      */
     public function save(array $log = [])
     {
-        $cli         = PHP_SAPI == 'cli' ? '_cli' : '';
-        $destination = $this->config['path'] . date('Ym') . '/' . date('d') . $cli . '.log';
+        if ($this->config['single']) {
+            $destination = $this->config['path'] . 'single.log';
+        } else {
+            $cli         = PHP_SAPI == 'cli' ? '_cli' : '';
+            $destination = $this->config['path'] . date('Ym') . '/' . date('d') . $cli . '.log';
+        }
 
         $path = dirname($destination);
         !is_dir($path) && mkdir($path, 0755, true);
@@ -65,7 +70,11 @@ class File
 
             if (in_array($type, $this->config['apart_level'])) {
                 // 独立记录的日志级别
-                $filename = $path . '/' . date('d') . '_' . $type . $cli . '.log';
+                if ($this->config['single']) {
+                    $filename = $path . '/' . $type . '.log';
+                } else {
+                    $filename = $path . '/' . date('d') . '_' . $type . $cli . '.log';
+                }
 
                 $this->write($level, $filename, true);
             } else {
@@ -110,11 +119,10 @@ class File
             }
 
             $now     = date($this->config['time_format']);
-            $server  = isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : '0.0.0.0';
-            $remote  = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
+            $ip      = Container::get('request')->ip();
             $method  = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'CLI';
             $uri     = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
-            $message = "---------------------------------------------------------------\r\n[{$now}] {$server} {$remote} {$method} {$uri}\r\n" . $message;
+            $message = "---------------------------------------------------------------\r\n[{$now}] {$ip} {$method} {$uri}\r\n" . $message;
 
             $this->writed[$destination] = true;
         }

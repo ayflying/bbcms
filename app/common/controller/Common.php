@@ -11,7 +11,9 @@ class Common extends Controller{
 	public $uid;
 	//public $settings;
     public $_G;
+    
 	
+    
 	public function initialize(){
         //检测当前用户UID
         $user = Db::name('member_user') -> where('guid',cookie('guid')) ->cache(true) -> find();

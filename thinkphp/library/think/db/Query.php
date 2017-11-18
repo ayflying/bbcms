@@ -158,6 +158,10 @@ class Query
             // 根据某个字段获取记录的某个值
             $name = Loader::parseName(substr($method, 10));
             return $this->where($name, '=', $args[0])->value($args[1]);
+        } elseif (strtolower(substr($method, 0, 7)) == 'whereor') {
+            $name = Loader::parseName(substr($method, 7));
+            array_unshift($args, $name);
+            return call_user_func_array([$this, 'whereOr'], $args);
         } elseif (strtolower(substr($method, 0, 5)) == 'where') {
             $name = Loader::parseName(substr($method, 5));
             array_unshift($args, $name);
@@ -496,7 +500,9 @@ class Query
 
         if (!empty($this->options['fetch_sql'])) {
             return $result;
-        } elseif ($force) {
+        }
+
+        if ($force) {
             $result += 0;
         }
 
@@ -1297,14 +1303,19 @@ class Query
             }
         } elseif (is_null($op) && is_null($condition)) {
             if (is_array($field)) {
-                $where = $field;
+                if (key($field) !== 0) {
+                    $where = [];
+                    foreach ($field as $key => $val) {
+                        $where[$key] = is_array($val) && $val[0] == $key ?
+                        $val : [$key, '=', $val];
+                    }
+                } else {
+                    // 数组批量查询
+                    $where = $field;
+                }
 
                 if (!empty($where)) {
-                    if (isset($this->options['where'][$logic])) {
-                        $this->options['where'][$logic] = array_merge($this->options['where'][$logic], $where);
-                    } else {
-                        $this->options['where'][$logic] = $where;
-                    }
+                    $this->options['where'][$logic] = isset($this->options['where'][$logic]) ? array_merge($this->options['where'][$logic], $where) : $where;
                 }
 
                 return;
@@ -1330,12 +1341,12 @@ class Query
             }
         }
 
-        if (!empty($where)) {
-            if (isset($this->options['where'][$logic][$field])) {
-                $this->options['where'][$logic][] = $where;
-            } else {
-                $this->options['where'][$logic][$field] = $where;
-            }
+        if (empty($where)) {
+        }
+        if (isset($this->options['where'][$logic][$field])) {
+            $this->options['where'][$logic][] = $where;
+        } else {
+            $this->options['where'][$logic][$field] = $where;
         }
     }
 
@@ -2190,9 +2201,17 @@ class Query
      * @param integer   $limit   每次写入数据限制
      * @return integer|string
      */
-    public function insertAll(array $dataSet, $replace = false, $limit = null)
+    public function insertAll(array $dataSet = [], $replace = false, $limit = null)
     {
         $this->parseOptions();
+
+        if (empty($dataSet)) {
+            $dataSet = $this->options['data'];
+        }
+
+        if (empty($limit) && !empty($this->options['limit'])) {
+            $limit = $this->options['limit'];
+        }
 
         return $this->connection->insertAll($this, $dataSet, $replace, $limit);
     }
