@@ -2,14 +2,6 @@
 
 ===============
 
-[![StyleCI](https://styleci.io/repos/48530411/shield?style=flat&branch=master)](https://styleci.io/repos/48530411)
-[![Build Status](https://travis-ci.org/top-think/framework.svg?branch=master)](https://travis-ci.org/top-think/framework)
-[![codecov.io](http://codecov.io/github/top-think/framework/coverage.svg?branch=master)](http://codecov.io/github/github/top-think/framework?branch=master)
-[![Total Downloads](https://poser.pugx.org/topthink/framework/downloads)](https://packagist.org/packages/topthink/framework)
-[![Latest Stable Version](https://poser.pugx.org/topthink/framework/v/stable)](https://packagist.org/packages/topthink/framework)
-[![Latest Unstable Version](https://poser.pugx.org/topthink/framework/v/unstable)](https://packagist.org/packages/topthink/framework)
-[![License](https://poser.pugx.org/topthink/framework/license)](https://packagist.org/packages/topthink/framework)
-
 BBCMS是基于Thinkphp5开发的一款内容管理系统。
 
 # 环境要求
@@ -25,13 +17,27 @@ BBCMS是基于Thinkphp5开发的一款内容管理系统。
 
 #   文件目录
 ~~~
-├─ Addons               插件目录
-├─ application          应用目录
+├─ addons                     插件目录
+├─ config                      配置目录
+│├─ app.php
+│├─ bbcms.php               系统配置
+│├─ cache.php               
+│├─ cookie.php              
+│├─ database.php
+│├─ log.php
+│├─ session.php
+│├─ template.php
+│├─ trace.php
+├─ app                      应用目录
 │├─ addon                   插件模块  
 │├─ admin                   管理模块
 ││├─ controller                 后台功能目录
 ││├─ view                        后台模板目录
-│├─ common                公共模块    
+││├─ config                 应用配置目录
+│├─ common                公共模块
+││├─ controller             公共控制器    
+││├─ library                 公共拓展
+││├─ taglib                  自定义标签
 │├─ member                用户模块    
 │├─ portal                    内容模块
 │├─ config.php             网站全局配置
@@ -39,15 +45,17 @@ BBCMS是基于Thinkphp5开发的一款内容管理系统。
 │├─ database.php         数据库配置
 │├─ helper.php             助手函数配置
 │├─ route.php              路由配置
-├─ public                 公共资源目录
-├─ runtime              缓存与日志模块
-├─ template             模板目录
-│├─ default                     默认模板
-├─ thinkphp             框架目录
-├─ uploads               上传附件目录
-├─ .htaccess             伪静态规则
-├─ index.php            入口文件
-├─ robots.txt            搜索引擎定义
+├─ public                   公共资源目录
+├─ runtime                 缓存与日志模块
+├─ template               模板目录
+│├─ default                默认模板
+├─ thinkphp               框架目录
+├─ uploads                上传附件目录
+├─ vendor                 扩展目录
+├─ .htaccess              伪静态规则
+├─ index.php             入口文件
+├─ robots.txt             搜索引擎定义
+├─ update.php           在线升级接口
 ~~~
 
 # 版权所有
