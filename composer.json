@@ -2,7 +2,7 @@
     "name": "ayflying/bbcms",
     "description": "基于thinkphp5.0的内容管理系统",
     "type": "project",
-    "keywords": ['php',"cms","thinkphp","ORM"],
+    "keywords": ["php","cms","thinkphp","ORM"],
     "homepage": "http://blog.7cuu.com/",
     "license": "Apache-2.0",
     "authors": [
