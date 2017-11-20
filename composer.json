@@ -1,5 +1,19 @@
 {
+    "name": "ayflying/bbcms",
+    "description": "基于thinkphp5.0的内容管理系统",
+    "type": "project",
+    "keywords": ['php',"cms","thinkphp","ORM"],
+    "homepage": "http://blog.7cuu.com/",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "ayflying",
+            "email": "ay@7cuu.com"
+        }
+    ],
+    
     "require": {
+        "php": ">=5.4.0",
         "topthink/think-worker": "^1.0",
         "workerman/workerman-for-win": "^3.4",
         "topthink/think-captcha": "^1.0",
