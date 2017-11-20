@@ -1,18 +1,14 @@
 {
-    "name": "topthink/think",
-    "description": "the new thinkphp framework",
+    "name": "ayflying/bbcms",
+    "description": "基于thinkphp5.1的内容管理系统",
     "type": "project",
-    "keywords": [
-        "framework",
-        "thinkphp",
-        "ORM"
-    ],
-    "homepage": "http://thinkphp.cn/",
+    "keywords": ['php',"cms","thinkphp","ORM"],
+    "homepage": "http://blog.7cuu.com/",
     "license": "Apache-2.0",
     "authors": [
         {
-            "name": "liu21st",
-            "email": "liu21st@gmail.com"
+            "name": "ayflying",
+            "email": "ay@7cuu.com"
         }
     ],
     "require": {
