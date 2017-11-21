@@ -114,6 +114,31 @@ class Post extends Common{
             return json_encode($arr);
         }
     }
+    
+    //webupload模块
+    public function webuploader(){
+        $file = request()->file('file');
+        $info = $file->move( './uploads/thumb/');
+        if($info){
+            $url = str_replace('\\','/',$info->getPathName());
+            $data =[
+                "uid" => $this -> uid,
+                "original" => $file-> getInfo()['name'],
+                "name" => $info->getFilename(),
+                "url" => $url,
+                "size" => $info->getSize(),
+                "type" => $info-> getExtension(),
+                
+            ];
+            PortalAttachment::create($data);
+            //thumb缓存
+            $arr = Cache::get("webuploader_".$this->uid);
+            $arr[] = $data['url'];
+            Cache::set("webuploader_".$this->uid,$arr,7200);
+            print_r($arr);
+        }
+        
+    }
 
 
     /*
@@ -140,13 +165,20 @@ class Post extends Common{
             $add -> mod = $sql['mod'];
             //$add -> title = $post['title'];
 
+            
             //焦点图
+            /*
             $thumb = $this -> thumb_upload('thumb');
-            dump($thumb);
             $add -> litpic =  isset($thumb) ? reset($thumb) : null;
-            //isset($thumb) && $add -> thumb = json_encode($thumb);
             $add -> thumb = $thumb;
-
+            */
+            $thumb = Cache::pull("webuploader_".$this->uid);
+            if($thumb){
+                
+                $add -> litpic =  isset($thumb) ? reset($thumb) : null;
+                $add -> thumb = $thumb;
+            }
+            
             //创建主键写入数据库
             $add -> allowField(true) -> save($post);
             $aid = $add -> aid;
