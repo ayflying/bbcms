@@ -43,10 +43,11 @@ class Url
 
     /**
      * URL生成 支持路由反射
-     * @param string            $url 路由地址
-     * @param string|array      $vars 参数（支持数组和字符串）a=val&b=val2... ['a'=>'val1', 'b'=>'val2']
-     * @param string|bool       $suffix 伪静态后缀，默认为true表示获取配置值
-     * @param boolean|string    $domain 是否显示域名 或者直接传入域名
+     * @access public
+     * @param  string            $url 路由地址
+     * @param  string|array      $vars 参数（支持数组和字符串）a=val&b=val2... ['a'=>'val1', 'b'=>'val2']
+     * @param  string|bool       $suffix 伪静态后缀，默认为true表示获取配置值
+     * @param  boolean|string    $domain 是否显示域名 或者直接传入域名
      * @return string
      */
     public function build($url = '', $vars = '', $suffix = true, $domain = false)
@@ -139,7 +140,7 @@ class Url
 
             if (!$matchAlias) {
                 // 路由标识不存在 直接解析
-                $url = $this->parseUrl($url, $domain);
+                $url = $this->parseUrl($url);
             }
 
             if (isset($info['query'])) {
@@ -205,7 +206,7 @@ class Url
     }
 
     // 直接解析URL地址
-    protected function parseUrl($url, &$domain)
+    protected function parseUrl($url)
     {
         $request = $this->app['request'];
 

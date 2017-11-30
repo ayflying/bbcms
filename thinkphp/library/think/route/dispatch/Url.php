@@ -29,7 +29,7 @@ class Url extends Dispatch
     /**
      * 解析URL地址
      * @access protected
-     * @param string    $url URL
+     * @param  string    $url URL
      * @return array
      */
     protected function parseUrl($url)
@@ -72,6 +72,12 @@ class Url extends Dispatch
             }
         }
 
+        $panDomain = $this->app['request']->panDomain();
+        if ($panDomain && $key = array_search('*', $var)) {
+            // 泛域名赋值
+            $var[$key] = $panDomain;
+        }
+
         // 设置当前请求的参数
         $this->app['request']->route($var);
 
@@ -88,8 +94,8 @@ class Url extends Dispatch
     /**
      * 检查URL是否已经定义过路由
      * @access protected
-     * @param string    $route  路由信息
-     * @param string    $bind   绑定信息
+     * @param  string    $route  路由信息
+     * @param  string    $bind   绑定信息
      * @return bool
      */
     protected function hasDefinedRoute($route, $bind)
@@ -117,8 +123,8 @@ class Url extends Dispatch
     /**
      * 自动定位控制器类
      * @access protected
-     * @param string    $module 模块名
-     * @param array     $path   URL
+     * @param  string    $module 模块名
+     * @param  array     $path   URL
      * @return string
      */
     protected function autoFindController($module, &$path)
@@ -154,7 +160,7 @@ class Url extends Dispatch
     /**
      * 解析URL的pathinfo参数和变量
      * @access private
-     * @param string    $url URL地址
+     * @param  string    $url URL地址
      * @return array
      */
     private function parseUrlPath($url)
