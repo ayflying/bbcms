@@ -9,12 +9,12 @@ use app\common\controller\Common;
 class Article extends Common{
 
 	public function index($aid){
+        Db::name('portal_article') ->where('aid', $aid) ->setInc('click');
         if(empty(Cache::get('article_'.$aid))){
             //$sql = PortalArticle::get($aid);
             $sql = PortalArticle::where('aid',$aid) -> find();
             $sql -> addonarticle;
             $sql -> attachment;
-
             //dump($sql -> toArray());
             if($sql['mod']>0){
                 $mod = Db::name('portal_mod') -> cache(true) -> where('id',$sql['mod']) -> find();
@@ -39,7 +39,9 @@ class Article extends Common{
         $this -> _G['user'] = Db::name('member_user') -> cache('user_'.$sql['uid']) -> where('uid',$sql['uid']) -> find();
         $this -> _G['article'] = $sql;
 		//dump($this);
-
+        
+        
+    
 		return $this-> fetch($this -> _G['menu']['template_article']);
 	}
 
