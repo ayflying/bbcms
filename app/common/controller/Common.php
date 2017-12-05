@@ -80,28 +80,37 @@ class Common extends Controller{
         
     }
     
+    
+    /**
+    * 创建静态页面
+    * @access protected
+    * @htmlfile 生成的静态文件名称
+    * @htmlpath 生成的静态文件路径
+    * @param string $templateFile 指定要调用的模板文件
+    * 默认为空 由系统自动定位模板文件
+    * @return string
+    */
+    protected function buildHtml($htmlfile = '', $htmlpath = '', $templateFile = '')
+    {
+        $content = $this->fetch($templateFile);
+        $htmlpath = !empty($htmlpath) ? $htmlpath : './html/';
+        $htmlfile = $htmlpath . $htmlfile . '.'.config('url_html_suffix');
+        $File = new \think\template\driver\File();
+        $File->write($htmlfile, $content);
+        return $content;
+    }
+
+    
    /**
      *  重写系统fetch方法
      *  该方法会自动检测当前主题的模板是否存在
 	*/
-    
-    protected function fetch($file = '', $vars = [],$replace = [], $config = []){
+    protected function fetch($file = '', $vars = [],$replace = [], $config = [])
+    {
         $replace = [
             '__Tpl__' => Config::get('bbcms.view_path'),
             '__PUBLIC__' => '/public',
         ];
-        
-        
-        //exit;
-        /*
-        $config = array_merge(config('template.'),$config);
-		//$config['view_suffix'] = 'abc';
-		$dir = $config['view_path'] . DIRECTORY_SEPARATOR . $file.'.html';
-		if(!file_exists($dir)){
-			 $config['view_path'] = ROOT_PATH .'template'. DIRECTORY_SEPARATOR .'default'. DIRECTORY_SEPARATOR;
-             $this -> view -> engine($config);
-		}
-        */
 		$this -> assign('_G',$this -> _G);
         return $this -> view -> fetch($file,$vars,$replace,$config);
 	}
