@@ -118,7 +118,7 @@ class Bb extends TagLib{
         }
 
         if(!empty($tid)){
-            $Str .= ' $where[] = ["tid","in",'.$tid.']; ';
+            $Str .= ' $where[] = ["tid","in",['.$tid.']]; ';
         }
 
         $Str .= ' 
@@ -128,21 +128,23 @@ class Bb extends TagLib{
         ';
 
         if(!empty($aid)){
-            $Str .= ' $tag_sql = $db -> all("'.$aid.'",$relation); ';
+            $Str .= ' $tag_sql = $db -> all("'.$aid.'",$relation);
+            ';
         }else{
-            /*
+            
             $Str .='
                 $tag_sql = $db -> all(function($query) use ($where){
                     $query -> where($where)  -> limit('.$row.') -> order("'.$order.'") -> cache(true);
                 },$relation);
             ';
-            */
             
+            /*
             $Str .= '
                 $tag_sql = $db -> where($where) -> limit('.$row.') -> order("'.$order.'") -> cache(true) -> select();
-                //$db -> addonarticle -> content;
+                echo "456".time();
+                $db -> addonarticle -> content;
             ';
-            
+            */
             
         }
 
