@@ -4,9 +4,9 @@
     <table class="table table-hover">
   <thead>
   <tr>
-    <td>名称</td>
-    <td>编辑</td>
-    <td>说明</td>
+    <th>名称</th>
+    <th>编辑</th>
+    <th>说明</th>
   </tr>
   </thead>
   
@@ -19,7 +19,7 @@
   {present name="$sql.id"}
   <tr class="form-group">
     <td><label for="tab">前台标签</label></td>
-    <td>{bb:ad id='{$sql.id}'/}</td>
+    <td>{literal}{bb:ad id='{$sql.id}'/}{/literal}</td>
     <td>获取前台使用的标签</td>
   </tr>
   {/present}
@@ -31,12 +31,12 @@
   </tr>
   <tr>
   	<td>广告预览</td>
-  	<td colspan="2">{$sql.value|default=""|htmlspecialchars_decode}</td>
+  	<td colspan="2">{$sql.value|default=""}</td>
     </tr>
   <tr class="form-group">
     <td><label for="start_time">开始时间</label></td>
     <td>
-    <input name="start_time" type="date" class="form-control" id="start_time" value="{$sql['start_time']?date('Y-m-d',$sql['start_time']):''}" > 
+    <input name="start_time" type="date" class="form-control" id="start_time" value="{$sql['start_time']?date('Y-m-d',$sql['start_time']):date('Y-m-d')}" > 
     </td>
     <td>开始时间</td>
   </tr>
@@ -44,7 +44,7 @@
   <tr class="form-group">
     <td><label for="end_time">结束时间</label></td>
     <td>
-    <input name="end_time" type="date" class="form-control" id="end_time" value="{$sql['end_time']?date('Y-m-d',$sql['end_time']):''}" > 
+    <input name="end_time" type="date" class="form-control" id="end_time" value="{$sql['end_time']?date('Y-m-d',$sql['end_time']):date('Y-m-d',time()+2592000)}" > 
     </td>
     <td>结束时间</td>
   </tr>
@@ -53,8 +53,8 @@
   <tr class="form-group">
     <td><label for="status">状态</label></td>
     <td>
-        <input type="radio" name="status" value="1" {$sql['status']==1?'checked="checked"':''}>开启
-        <input type="radio" name="status" value="0" {:isset($sql.status) && $sql['status']==0?'checked="checked"':''}>关闭
+        <input type="radio" name="status" value="1" {:empty($sql['status'])?'':'checked="checked"'}>开启
+        <input type="radio" name="status" value="0" {:empty($sql['status'])?'checked="checked"':''}>关闭
     </td>
     <td>&nbsp;</td>
   </tr>

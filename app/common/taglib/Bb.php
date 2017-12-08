@@ -207,7 +207,7 @@ class Bb extends TagLib{
 		$id = $tag['id'];
 		//$where = $tag['where'];
 		$Str = '<?php ';
-		$Str .= ' $tag_sql = Db::name("operate_ad") -> cache(true) -> find('.$id.'); ';
+		$Str .= ' $tag_sql = Db::name("operate_ad") -> where("id",'.$id.') -> cache(true) -> find(); ';
 		$Str .= ' if($tag_sql["status"] != 0 || $tag_sql["end_time"] > time()): ';
 		$Str .= ' echo htmlspecialchars_decode($tag_sql["value"]); ';
 		$Str .= ' endif; ';
