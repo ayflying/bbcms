@@ -6,8 +6,8 @@ use app\portal\model\PortalArticle;
 use app\common\controller\Common;
 
 class Lists extends Common{
-	public function index($tid=0,$search=null,$order='portal_article.update_time desc'){
-
+	public function index($tid=0,$search=null,$order='portal_article.update_time desc',$mod=null){
+        
 		$sql = Db::name('portal_menu')-> cache("menu_".$tid) -> find($tid);
         if(!empty($sql['jump'])){
             header('Location: '.$sql['jump']);
@@ -21,8 +21,17 @@ class Lists extends Common{
 			$type[] = (int)$tid;
 			$where[] = ['tid','in',$type];
 		}
-		//isset($search) and $where['title'] = ['like' , '%'.$search.'%'];
-
+		isset($search) and $where[] = ['title','like' , '%'.$search.'%'];
+        
+        //mod筛选 ，格式为?mod=a,1|b,2|c,3
+        if(isset($mod)){
+            $mod_arr = explode('|',$mod);
+            foreach($mod_arr as $val){
+                $mod_arr = explode(',',$val);
+                $where[] = [current($mod_arr),'=',next($mod_arr)];
+            }
+        }
+            
 		if($sql['mod']>0){
 			$table_mod = 'portal_mod_'.$sql['mod'];
             //$list = Db::view(['portal_article'=>'a'],'*')

@@ -9,6 +9,7 @@ use think\facade\Config;
 use app\common\controller\Common;
 use app\portal\model\PortalArticle;
 use app\portal\model\PortalAttachment;
+use app\portal\model\PortalMod;
 
 class Post extends Common{
 
@@ -120,6 +121,7 @@ class Post extends Common{
         $file = request()->file('file');
         $info = $file->move( './uploads/thumb/');
         if($info){
+            $this -> thumb($info->getPathName(),300,300);
             $url = str_replace('\\','/',$info->getPathName());
             $data =[
                 "uid" => $this -> uid,
@@ -130,6 +132,7 @@ class Post extends Common{
                 "type" => $info-> getExtension(),
                 
             ];
+            
             PortalAttachment::create($data);
             //thumb缓存
             $arr = Cache::get("webuploader_".$this->uid);
@@ -148,7 +151,7 @@ class Post extends Common{
         $uid = $this -> uid;
         $sql = Db::name('portal_menu') -> find($tid);
         //$this -> assign('title',$sql['name'].'发布 - ');
-
+        
 
 
         if (request()->isPost()){
@@ -182,7 +185,7 @@ class Post extends Common{
             //创建主键写入数据库
             $add -> allowField(true) -> save($post);
             $aid = $add -> aid;
-            $add -> addonarticle() ->save(['content'=>$post['content']]);
+            $add -> addonarticle() ->save(['content'=>htmlspecialchars($post['content'])]);
 
             //检测当前内容模型
             if($sql['mod'] > 0){
@@ -202,13 +205,16 @@ class Post extends Common{
             return $this -> success(lang('提交完成'),"@portal/lists/index?tid=".$tid,null,1);
             
         }else{
+            Cache::rm("webuploader_".$this->uid);
             if($sql['mod'] > 0){
-                $mod = Db::name('portal_mod')-> field('table,data') -> find($sql['mod']);
-                $mod_data = json_decode($mod['data'],true);
+                //$mod = Db::name('portal_mod')-> field('table,data') -> find($sql['mod']);
+                $mod = PortalMod::where('id',$sql['mod']) -> field('data') -> find();
+                $mod_data = $mod['data'];
+                
                 foreach($mod_data as $key => $val){
                     $mod_data[$key][2] = explode(',',$val[2]);
                 }
-                $this -> _G['mod'] = $mod_data;
+                $this -> _G['mod'] = $mod;
             }
             $this -> _G['title'] = '发布 - '.$sql['name'];
             return $this->fetch($sql['template_add']);
@@ -269,8 +275,8 @@ class Post extends Common{
         }else{
             $article = PortalArticle::get($aid);
             $article -> addonarticle;
+            Cache::set("webuploader_".$this->uid,$article['thumb'],7200);
             //dump($article -> toArray());
-            dump($article);
             if($article -> mod > 0){
                 $mod = Db::name('portal_mod')-> field('table,data') -> find($article -> mod);
                 $mod_data = json_decode($mod['data'],true);
@@ -288,7 +294,7 @@ class Post extends Common{
                 $this -> _G['mod'] = $mod_data;
             }
 
-            $this -> _G['title'] = $article -> title;
+            //$this -> _G['title'] = $article -> title;
             $this -> _G['article'] = $article;
             $template_edit = Db::name('portal_menu') -> where('tid',$article['tid']) -> cache(true) -> value('template_edit');
             return $this->fetch($template_edit);
@@ -344,7 +350,7 @@ class Post extends Common{
     /*图片压缩*/
     public function thumb($file,$x=1280,$y=9999,$dir=null){
 
-        $image = \think\Image::open($file);
+        $image = Image::open($file);
         if($image->width() > $x || $image->height() > $y){
         // 按照原图的比例生成一个最大为150*150的缩略图并保存为thumb.png
             $image->thumb($x,$y);

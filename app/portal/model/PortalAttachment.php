@@ -10,4 +10,5 @@ class PortalAttachment extends Model{
     // 是否开启写入update_time字段
     protected $autoWriteTimestamp = true;
 	protected $updateTime = false;
+    
 }

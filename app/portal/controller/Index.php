@@ -11,5 +11,11 @@ class Index extends Common{
 		return $this-> fetch('portal/index');
 
     }
-
+    
+    
+    public function html(){
+        $this->buildHtml('index','./html/','portal/index');
+    }
+    
+    
 }

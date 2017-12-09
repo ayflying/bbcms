@@ -1,6 +1,7 @@
 <?php
 namespace app\portal\model;
 use think\Model;
+use app\member\model\MemberUser;
 
 class PortalArticle extends Model
 {
@@ -27,6 +28,12 @@ class PortalArticle extends Model
 		//return $this->hasOne('PortalMenu','tid','tid');
         return $this->belongsTo('PortalMenu','tid');
 	}
+    /*
+    public function user(){
+		//return $this->hasOne('PortalMenu','tid','tid');
+        return $this->belongsTo('MemberUser','tid');
+	}
+    */
 
 
     static public function info($aid){
