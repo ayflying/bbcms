@@ -28,6 +28,12 @@ class Article extends Common{
                         'param' => $val[2],
                         'value' => $mod_list[$key],
                     ];
+                    if($val[1] == 'select' || $val[1]== 'radio'){
+                        $mod[$key]['param'] = explode(',',$mod[$key]['param']);
+                    }else if($val[1] == 'checkbox'){
+                        $mod[$key]['param'] = explode(',',$mod[$key]['param']);
+                        $mod[$key]['value'] = explode(',',$mod[$key]['value']);
+                    }
                 }
                 //$this -> assign('mod',$mod);
                 $sql['mod'] = $mod;
@@ -40,8 +46,6 @@ class Article extends Common{
         $this -> _G['article'] = $sql;
 		//dump($this);
         
-        
-    
 		return $this-> fetch($this -> _G['menu']['template_article']);
 	}
 

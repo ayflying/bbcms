@@ -156,7 +156,6 @@ class Post extends Common{
 
         if (request()->isPost()){
             $post = input('post.');
-
             if(isset($post['mod'])){
                 $mod_data = $post['mod'];
                 unset($post['mod']);
@@ -207,16 +206,15 @@ class Post extends Common{
         }else{
             Cache::rm("webuploader_".$this->uid);
             if($sql['mod'] > 0){
-                //$mod = Db::name('portal_mod')-> field('table,data') -> find($sql['mod']);
                 $mod = PortalMod::where('id',$sql['mod']) -> field('data') -> find();
                 $mod_data = $mod['data'];
-                
                 foreach($mod_data as $key => $val){
-                    $mod_data[$key][2] = explode(',',$val[2]);
+                    $mod_data[$key]['param'] = explode(',',$val[2]);
                 }
-                $this -> _G['mod'] = $mod;
+                $this -> _G['mod'] = $mod_data;
             }
-            $this -> _G['title'] = '发布 - '.$sql['name'];
+            //$this -> _G['title'] = '发布 - '.$sql['name'];
+            $this -> _G['menu'] = $sql;
             return $this->fetch($sql['template_add']);
         }
     }
