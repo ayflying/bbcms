@@ -11,7 +11,7 @@ class Member extends Common{
 	}
 
 	public function user(){
-		$list = User::paginate(Config::get('bbcms.page_num'));
+		$list = User::order("create_time desc") -> paginate(Config::get('bbcms.page_num'));
 		$page = $list->render();
 		$this->assign('page', $page);
 		$this -> assign('list',$list);
