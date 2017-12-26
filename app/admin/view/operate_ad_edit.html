@@ -19,7 +19,7 @@
   {present name="$sql.id"}
   <tr class="form-group">
     <td><label for="tab">前台标签</label></td>
-    <td>{literal}{bb:ad id='{$sql.id}'/}{/literal}</td>
+    <td>{literal}{bb:ad id='{/literal}{$sql.id}{literal}'/}{/literal}</td>
     <td>获取前台使用的标签</td>
   </tr>
   {/present}
@@ -31,7 +31,7 @@
   </tr>
   <tr>
   	<td>广告预览</td>
-  	<td colspan="2">{$sql.value|default=""}</td>
+  	<td colspan="2">{$sql.value|default=""|raw}</td>
     </tr>
   <tr class="form-group">
     <td><label for="start_time">开始时间</label></td>

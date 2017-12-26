@@ -7,20 +7,14 @@
     <title>{:lang("[title]")} - by bbcms.luoe.cn</title>
     
     <!-- Bootstrap -->
-    
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css">
     <link rel="stylesheet" href="__Tpl__/css/luoe.css">
-    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-	<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
-    
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
   </head>
   <body>
   
-  
-  
 <header class="main">
-  
-  
-	
   <nav class="navbar navbar-toggleable-md  navbar-inverse  bg-inverse">
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -53,43 +47,7 @@
   </div>
 </nav>
   
-  <!--
-  <nav class="navbar navbar-dark bg-inverse">
- 	<button class="navbar-toggler hidden-sm-up pull-right" type="button" data-toggle="collapse" data-target="#nav_main"></button>
-	<div class="collapse navbar-toggleable-xs" id="nav_main">
-        <ul class="nav navbar-nav">
-        {php}$system_menu = config('menu');{/php}
-		{foreach name="system_menu" item="val"}
-        <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{$key|lang}</a>
-        	<div class="dropdown-menu">
-            	{foreach name="val" key='key2' item="val2"}
-                	<a href="{:url($val2)}" class="dropdown-item">{:lang($key2)}</a>
-                {/foreach}
-            </div>
-        </li>
-        {/foreach}
-        <li class="nav-item dropdown">
-         <a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">插件</a>
-        	<div class="dropdown-menu">
-
-                <a href="#"  class="dropdown-item">123</a>
-
-            </div>
-        </li>
-        
-        </ul>
-        <ul class="nav navbar-nav pull-right" style="float:right;">
-          <li class="nav-item">
-            <a href="{:url('/')}" target="_blank" class="nav-link">{:lang('首页')} </a>
-          </li>
-          <li class="nav-item">
-            <a href="{:url('Login/out')}" class="nav-link">{:lang('注销')} </a>
-          </li>
-        </ul>
-    </div>
-  </nav>
-  -->
+  
   
   <div class="container-fluid" style="margin:10px 0;">
 	<h1>{:lang("[title]")}</h1>

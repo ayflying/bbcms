@@ -12,7 +12,7 @@
   {foreach name="list" item="val"}
   <tr>
     <td>{$val.name}</td>
-    <td>{literal}{bb:ad id='{$val.id}'/}{/literal}</td>
+    <td>{literal}{bb:ad id='{/literal}{$val.id}{literal}'/}{/literal}</td>
     <td>
     <a class="btn btn-primary" href="{:url('ad_edit?id='.$val['id'])}" role="button">编辑</a>
     <a class="btn btn-primary" href="{:url('ad_del?id='.$val['id'])}" role="button">删除</a>
