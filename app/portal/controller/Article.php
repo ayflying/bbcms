@@ -10,6 +10,11 @@ class Article extends Common{
 
 	public function index($aid){
         Db::name('portal_article') ->where('aid', $aid) ->setInc('click');
+        $status = Db::name('portal_article') -> where('aid',$aid) -> value('status');
+        if(empty($status) || $status < 1){
+            $this -> error("该文章未通过审核或不存在");
+        }
+            
         if(empty(Cache::get('article_'.$aid))){
             //$sql = PortalArticle::get($aid);
             $sql = PortalArticle::where('aid',$aid) -> find();

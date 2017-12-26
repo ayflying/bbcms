@@ -121,7 +121,7 @@ class Post extends Common{
         $file = request()->file('file');
         $info = $file->move( './uploads/thumb/');
         if($info){
-            $this -> thumb($info->getPathName(),300,300);
+            $this -> thumb($info->getPathName(),800,600);
             $url = str_replace('\\','/',$info->getPathName());
             $data =[
                 "uid" => $this -> uid,
