@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2018 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -352,7 +352,7 @@ abstract class Connection
         if (!isset(self::$info[$schema])) {
             // 读取缓存
             $cacheFile = Container::get('app')->getRuntimePath() . 'schema/' . $schema . '.php';
-            if (is_file($cacheFile)) {
+            if (!$this->config['debug'] && is_file($cacheFile)) {
                 $info = include $cacheFile;
             } else {
                 $info = $this->getFields($tableName);
@@ -394,19 +394,41 @@ abstract class Connection
         return $this->getTableInfo($tableName, 'pk');
     }
 
-    // 获取当前数据表字段信息
+    /**
+     * 获取数据表字段信息
+     * @access public
+     * @param  string $tableName 数据表名
+     * @return array
+     */
     public function getTableFields($tableName)
     {
         return $this->getTableInfo($tableName, 'fields');
     }
 
-    // 获取当前数据表字段类型
-    public function getFieldsType($tableName)
+    /**
+     * 获取数据表字段类型
+     * @access public
+     * @param  string $tableName 数据表名
+     * @param  string $field    字段名
+     * @return array|string
+     */
+    public function getFieldsType($tableName, $field = null)
     {
-        return $this->getTableInfo($tableName, 'type');
+        $result = $this->getTableInfo($tableName, 'type');
+
+        if ($field && isset($result[$field])) {
+            return $result[$field];
+        }
+
+        return $result;
     }
 
-    // 获取当前数据表绑定信息
+    /**
+     * 获取数据表绑定信息
+     * @access public
+     * @param  string $tableName 数据表名
+     * @return array
+     */
     public function getFieldsBind($tableName)
     {
         return $this->getTableInfo($tableName, 'bind');
@@ -596,6 +618,7 @@ abstract class Connection
      * @throws BindParamException
      * @throws \PDOException
      * @throws \Exception
+     * @throws \Throwable
      */
     public function query($sql, $bind = [], $master = false, $pdo = false)
     {
@@ -610,16 +633,16 @@ abstract class Connection
 
         $this->bind = $bind;
 
-        // 释放前次的查询结果
-        if (!empty($this->PDOStatement)) {
-            $this->free();
-        }
-
         Db::$queryTimes++;
 
         try {
             // 调试开始
             $this->debug(true);
+
+            // 释放前次的查询结果
+            if (!empty($this->PDOStatement)) {
+                $this->free();
+            }
 
             // 预处理
             if (empty($this->PDOStatement)) {
@@ -650,6 +673,12 @@ abstract class Connection
             }
 
             throw new PDOException($e, $this->config, $this->getLastsql());
+        } catch (\Throwable $e) {
+            if ($this->isBreak($e)) {
+                return $this->close()->query($sql, $bind, $master, $pdo);
+            }
+
+            throw $e;
         } catch (\Exception $e) {
             if ($this->isBreak($e)) {
                 return $this->close()->query($sql, $bind, $master, $pdo);
@@ -668,6 +697,7 @@ abstract class Connection
      * @throws BindParamException
      * @throws \PDOException
      * @throws \Exception
+     * @throws \Throwable
      */
     public function execute($sql, $bind = [])
     {
@@ -682,15 +712,15 @@ abstract class Connection
 
         $this->bind = $bind;
 
-        //释放前次的查询结果
-        if (!empty($this->PDOStatement) && $this->PDOStatement->queryString != $sql) {
-            $this->free();
-        }
-
         Db::$executeTimes++;
         try {
             // 调试开始
             $this->debug(true);
+
+            //释放前次的查询结果
+            if (!empty($this->PDOStatement) && $this->PDOStatement->queryString != $sql) {
+                $this->free();
+            }
 
             // 预处理
             if (empty($this->PDOStatement)) {
@@ -722,6 +752,12 @@ abstract class Connection
             }
 
             throw new PDOException($e, $this->config, $this->getLastsql());
+        } catch (\Throwable $e) {
+            if ($this->isBreak($e)) {
+                return $this->close()->execute($sql, $bind);
+            }
+
+            throw $e;
         } catch (\Exception $e) {
             if ($this->isBreak($e)) {
                 return $this->close()->execute($sql, $bind);
@@ -1986,6 +2022,8 @@ abstract class Connection
     {
         if (is_scalar($value)) {
             $data = $value;
+        } elseif (is_array($value) && isset($value[1], $value[2]) && in_array($value[1], ['=', 'eq'])) {
+            $data = $value[2];
         }
 
         if (isset($data)) {

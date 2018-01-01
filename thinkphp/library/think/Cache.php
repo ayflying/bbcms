@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2018 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -79,15 +79,16 @@ class Cache
     {
         if (is_null($this->handler)) {
             // 自动初始化缓存
-            if (!empty($options)) {
-                $connect = $this->connect($options);
-            } elseif ('complex' == $this->app['config']->get('cache.type')) {
-                $connect = $this->connect($this->app['config']->get('cache.default'));
-            } else {
-                $connect = $this->connect($this->app['config']->pull('cache'));
+            $config = $this->app['config'];
+
+            if (empty($options) && 'complex' == $config->get('cache.type')) {
+                $default = $config->get('cache.default');
+                $options = $config->get('cache.' . $default['type']) ?: $default;
+            } elseif (empty($options)) {
+                $options = $config->pull('cache');
             }
 
-            $this->handler = $connect;
+            $this->handler = $this->connect($options);
         }
 
         return $this->handler;

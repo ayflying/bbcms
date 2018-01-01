@@ -86,23 +86,23 @@
     },
     {
         "name": "topthink/think-captcha",
-        "version": "v2.0.1",
-        "version_normalized": "2.0.1.0",
+        "version": "v2.0.2",
+        "version_normalized": "2.0.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/top-think/think-captcha.git",
-            "reference": "6a1c3b0a0b28cbdf711794c3d776f0e83f5c9b4b"
+            "reference": "54c8a51552f99ff9ea89ea9c272383a8f738ceee"
         },
         "dist": {
             "type": "zip",
-            "url": "https://files.phpcomposer.com/files/top-think/think-captcha/6a1c3b0a0b28cbdf711794c3d776f0e83f5c9b4b.zip",
-            "reference": "6a1c3b0a0b28cbdf711794c3d776f0e83f5c9b4b",
+            "url": "https://files.phpcomposer.com/files/top-think/think-captcha/54c8a51552f99ff9ea89ea9c272383a8f738ceee.zip",
+            "reference": "54c8a51552f99ff9ea89ea9c272383a8f738ceee",
             "shasum": ""
         },
         "require": {
-            "topthink/framework": "5.1.x-dev"
+            "topthink/framework": "5.1.*"
         },
-        "time": "2017-10-16T10:37:27+00:00",
+        "time": "2017-12-31T16:37:49+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -132,12 +132,12 @@
         "source": {
             "type": "git",
             "url": "https://github.com/top-think/framework.git",
-            "reference": "3a94f6e4bf130512adc3906c514a5ac7918c7f1d"
+            "reference": "0742917f5b216f2b49fcfbf3ea4deff1d7eddddb"
         },
         "dist": {
             "type": "zip",
-            "url": "https://files.phpcomposer.com/files/top-think/framework/3a94f6e4bf130512adc3906c514a5ac7918c7f1d.zip",
-            "reference": "3a94f6e4bf130512adc3906c514a5ac7918c7f1d",
+            "url": "https://files.phpcomposer.com/files/top-think/framework/0742917f5b216f2b49fcfbf3ea4deff1d7eddddb.zip",
+            "reference": "0742917f5b216f2b49fcfbf3ea4deff1d7eddddb",
             "shasum": ""
         },
         "require": {
@@ -153,7 +153,7 @@
             "sebastian/phpcpd": "2.*",
             "squizlabs/php_codesniffer": "2.*"
         },
-        "time": "2017-11-17T08:56:40+00:00",
+        "time": "2017-12-31T15:48:41+00:00",
         "type": "think-framework",
         "installation-source": "dist",
         "notification-url": "https://packagist.org/downloads/",

@@ -101,18 +101,29 @@ class Common extends Controller{
     }
 
     
-   /**
+    /**
+     * 解析和获取模板内容 用于输出
      *  重写系统fetch方法
      *  该方法会自动检测当前主题的模板是否存在
-	*/
-    protected function fetch($file = '', $vars = [],$replace = [], $config = [])
+     * @access public
+     * @param  string    $template 模板文件名或者内容
+     * @param  array     $vars     模板输出变量
+     * @param  array     $config     模板参数
+     * @param  bool      $renderContent     是否渲染内容
+     * @return string
+     * @throws \Exception
+     */
+    
+    protected function fetch($template = '', $vars = [], $config = [], $renderContent = false)
     {
-        $replace = [
+        $config = array_merge($config,Config::pull('template'));
+        $config['tpl_replace_string'] = [
             '__Tpl__' => Config::get('bbcms.view_path'),
             '__PUBLIC__' => '/public',
         ];
+        
 		$this -> assign('_G',$this -> _G);
-        return $this -> view -> fetch($file,$vars,$replace,$config);
+        return $this -> view -> fetch($template,$vars,$config,$renderContent);
 	}
     
 

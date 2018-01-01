@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2018 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -945,7 +945,9 @@ class Route
         if (false === $item) {
             // 检测当前完整域名
             $item = $this->domains[$this->host];
-        } elseif (is_string($item)) {
+        }
+
+        if (is_string($item)) {
             $item = $this->domains[$item];
         }
 

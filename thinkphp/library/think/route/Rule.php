@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2018 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -81,7 +81,7 @@ abstract class Rule
      */
     public function name($name)
     {
-        $this->name = trim($name, '/');
+        $this->name = '/' != $name ? trim($name, '/') : '/';
 
         return $this;
     }
@@ -232,12 +232,34 @@ abstract class Rule
     /**
      * 绑定Response对象
      * @access public
-     * @param  array|string     $response
+     * @param  mixed     $response
      * @return $this
      */
     public function response($response)
     {
         return $this->option('response', $response);
+    }
+
+    /**
+     * 设置Response Header信息
+     * @access public
+     * @param  string|array $name  参数名
+     * @param  string       $value 参数值
+     * @return $this
+     */
+    public function header($header, $value = null)
+    {
+        if (empty($this->option['header'])) {
+            $this->option['header'] = [];
+        }
+
+        if (is_array($header)) {
+            $this->option['header'] = array_merge($this->option['header'], $header);
+        } else {
+            $this->option['header'][$header] = $value;
+        }
+
+        return $this;
     }
 
     /**
@@ -330,14 +352,23 @@ abstract class Rule
     }
 
     /**
-     * 设置是否允许OPTIONS嗅探
+     * 设置是否允许跨域
      * @access public
      * @param  bool     $allow
+     * @param  array    $header
      * @return $this
      */
-    public function allowOptions($allow = true)
+    public function allowCrossDomain($allow = true, $header = [])
     {
-        return $this->option('allow_options', $allow);
+        if (!empty($header)) {
+            $this->header($header);
+        }
+
+        if ($allow && $this->parent) {
+            $this->parent->addRule($this, 'options');
+        }
+
+        return $this->option('cross_domain', $allow);
     }
 
     /**
@@ -346,11 +377,25 @@ abstract class Rule
      * @param  Request     $request
      * @return Dispatch|void
      */
-    protected function checkAllowOptions($request)
+    protected function checkCrossDomain($request)
     {
-        if (!empty($this->option['allow_options']) && $request->method(true) == 'OPTIONS') {
-            // 允许OPTIONS嗅探
-            return new ResponseDispatch(Response::create()->code(200));
+        if (!empty($this->option['cross_domain'])) {
+
+            if ($request->method(true) == 'OPTIONS') {
+                return new ResponseDispatch(Response::create()->code(204));
+            }
+
+            $header = [
+                'Access-Control-Allow-Origin'  => '*',
+                'Access-Control-Allow-Methods' => 'GET, POST, PATCH, PUT, DELETE',
+                'Access-Control-Allow-Headers' => 'Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, X-Requested-With',
+            ];
+
+            if (!empty($this->option['header'])) {
+                $header = array_merge($header, $this->option['header']);
+            }
+
+            $this->option['header'] = $header;
         }
     }
 
@@ -489,6 +534,14 @@ abstract class Rule
             $this->createBindModel($option['model'], $matches);
         }
 
+        // 指定Header数据
+        if (!empty($option['header'])) {
+            $header = $option['header'];
+            Container::get('hook')->add('response_send', function ($response) use ($header) {
+                $response->header($header);
+            });
+        }
+
         // 指定Response响应数据
         if (!empty($option['response'])) {
             Container::get('hook')->add('response_send', $option['response']);
@@ -571,7 +624,6 @@ abstract class Rule
      */
     protected function checkBefore($before)
     {
-
         $hook = Container::get('hook');
 
         foreach ((array) $before as $behavior) {
@@ -581,7 +633,6 @@ abstract class Rule
                 return false;
             }
         }
-
     }
 
     /**

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2018 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -83,8 +83,8 @@ class RuleGroup extends Rule
      */
     public function check($request, $url, $depr = '/', $completeMatch = false)
     {
-        if ($dispatch = $this->checkAllowOptions($request)) {
-            // 允许OPTIONS嗅探
+        if ($dispatch = $this->checkCrossDomain($request)) {
+            // 允许跨域
             return $dispatch;
         }
 
@@ -199,11 +199,7 @@ class RuleGroup extends Rule
             $rule->name($this->name . '/' . $name);
         }
 
-        if ($name) {
-            $this->rules[$method][$name] = $rule;
-        } else {
-            $this->rules[$method][] = $rule;
-        }
+        $this->rules[$method][] = $rule;
 
         if ($rule instanceof RuleItem) {
             if ($rule->isMiss()) {

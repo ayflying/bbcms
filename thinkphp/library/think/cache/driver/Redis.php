@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2018 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -31,6 +31,7 @@ class Redis extends Driver
         'expire'     => 0,
         'persistent' => false,
         'prefix'     => '',
+        'serialize'  => true,
     ];
 
     /**
@@ -48,10 +49,13 @@ class Redis extends Driver
             $this->options = array_merge($this->options, $options);
         }
 
-        $func = $this->options['persistent'] ? 'pconnect' : 'connect';
-
         $this->handler = new \Redis;
-        $this->handler->$func($this->options['host'], $this->options['port'], $this->options['timeout']);
+
+        if ($this->options['persistent']) {
+            $this->handler->pconnect($this->options['host'], $this->options['port'], $this->options['timeout'], 'persistent_id_' . $this->options['select']);
+        } else {
+            $this->handler->connect($this->options['host'], $this->options['port'], $this->options['timeout']);
+        }
 
         if ('' != $this->options['password']) {
             $this->handler->auth($this->options['password']);
@@ -118,7 +122,7 @@ class Redis extends Driver
 
         $value = $this->serialize($value);
 
-        if (is_int($expire) && $expire) {
+        if ($expire) {
             $result = $this->handler->setex($key, $expire, $value);
         } else {
             $result = $this->handler->set($key, $value);

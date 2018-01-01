@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2018 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -20,7 +20,7 @@ use think\route\Dispatch;
  */
 class App implements \ArrayAccess
 {
-    const VERSION = '5.1.0RC3';
+    const VERSION = '5.1.0';
 
     /**
      * 当前模块路径
@@ -274,6 +274,8 @@ class App implements \ArrayAccess
                 $this->container->bind(include $path . 'provider.php');
             }
         }
+
+        $this->request->filter($this->config('app.default_filter'));
     }
 
     /**
@@ -298,8 +300,6 @@ class App implements \ArrayAccess
                     $this->route->bind($name);
                 }
             }
-
-            $this->request->filter($this->config('app.default_filter'));
 
             // 读取默认语言
             $this->lang->range($this->config('app.default_lang'));
@@ -427,6 +427,19 @@ class App implements \ArrayAccess
                 if (is_array($rules)) {
                     $this->route->import($rules);
                 }
+            }
+        }
+
+        if ($this->config('app.route_annotation')) {
+            // 自动生成路由定义
+            if ($this->debug) {
+                $this->build->buildRoute($this->config('app.controller_suffix'));
+            }
+
+            $filename = $this->runtimePath . 'build_route.php';
+
+            if (is_file($filename)) {
+                include $filename;
             }
         }
 

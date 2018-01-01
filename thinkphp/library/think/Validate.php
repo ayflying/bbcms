@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2018 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -423,7 +423,6 @@ class Validate
 
             // 字段验证
             if ($rule instanceof \Closure) {
-                // 匿名函数验证 支持传入当前字段和所有字段两个数据
                 $result = call_user_func_array($rule, [$value, $data]);
             } elseif ($rule instanceof ValidateRule) {
                 //  验证因子
@@ -449,6 +448,43 @@ class Validate
         }
 
         return !empty($this->error) ? false : true;
+    }
+
+    /**
+     * 根据验证规则验证数据
+     * @access public
+     * @param  mixed     $value 字段值
+     * @param  mixed     $rules 验证规则
+     * @return bool
+     */
+    public function checkRule($value, $rules)
+    {
+        if ($rules instanceof \Closure) {
+            return call_user_func_array($rules, [$value]);
+        } elseif ($rules instanceof ValidateRule) {
+            $rules = $rules->getRule();
+        } elseif (is_string($rules)) {
+            $rules = explode('|', $rules);
+        }
+
+        foreach ($rules as $key => $rule) {
+            if ($rule instanceof \Closure) {
+                $result = call_user_func_array($rule, [$value]);
+            } else {
+                // 判断验证类型
+                list($type, $rule) = $this->getValidateType($key, $rule);
+
+                $callback = isset(self::$type[$type]) ? self::$type[$type] : [$this, $type];
+
+                $result = call_user_func_array($callback, [$value, $rule]);
+            }
+
+            if (true !== $result) {
+                return $result;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -486,25 +522,7 @@ class Validate
                 $info   = is_numeric($key) ? '' : $key;
             } else {
                 // 判断验证类型
-                if (is_numeric($key)) {
-                    if (strpos($rule, ':')) {
-                        list($type, $rule) = explode(':', $rule, 2);
-                        if (isset($this->alias[$type])) {
-                            // 判断别名
-                            $type = $this->alias[$type];
-                        }
-                        $info = $type;
-                    } elseif (method_exists($this, $rule)) {
-                        $type = $rule;
-                        $info = $rule;
-                        $rule = '';
-                    } else {
-                        $type = 'is';
-                        $info = $rule;
-                    }
-                } else {
-                    $info = $type = $key;
-                }
+                list($type, $rule, $info) = $this->getValidateType($key, $rule);
 
                 if (isset($this->append[$field]) && in_array($info, $this->append[$field])) {
 
@@ -513,8 +531,6 @@ class Validate
                     $i++;
                     continue;
                 }
-
-                // 如果不是require 有数据才会行验证
 
                 if ('must' == $info || 0 === strpos($info, 'require') || (!is_null($value) && '' !== $value)) {
                     // 验证类型
@@ -536,6 +552,7 @@ class Validate
                 } else {
                     $message = $this->getRuleMsg($field, $title, $info, $rule);
                 }
+
                 return $message;
             } elseif (true !== $result) {
                 // 返回自定义错误信息
@@ -552,6 +569,39 @@ class Validate
         }
 
         return $result;
+    }
+
+    /**
+     * 获取当前验证类型及规则
+     * @access public
+     * @param  mixed     $key
+     * @param  mixed     $rule
+     * @return array
+     */
+    protected function getValidateType($key, $rule)
+    {
+        // 判断验证类型
+        if (!is_numeric($key)) {
+            return [$key, $rule, $key];
+        }
+
+        if (strpos($rule, ':')) {
+            list($type, $rule) = explode(':', $rule, 2);
+            if (isset($this->alias[$type])) {
+                // 判断别名
+                $type = $this->alias[$type];
+            }
+            $info = $type;
+        } elseif (method_exists($this, $rule)) {
+            $type = $rule;
+            $info = $rule;
+            $rule = '';
+        } else {
+            $type = 'is';
+            $info = $rule;
+        }
+
+        return [$type, $rule, $info];
     }
 
     /**
@@ -947,7 +997,7 @@ class Validate
             $map[] = [$key, '=', $data[$field]];
         }
 
-        $pk = strval(!empty($rule[3]) ? $rule[3] : $db->getPk());
+        $pk = !empty($rule[3]) ? $rule[3] : $db->getPk();
 
         if (is_string($pk)) {
             if (isset($rule[2])) {

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2018 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -286,13 +286,19 @@ class Query
      * @access public
      * @param  mixed         $config 连接配置
      * @param  bool|string   $name 连接标识 true 强制重新连接
-     * @return $this
+     * @return $this|object
      * @throws Exception
      */
     public function connect($config = [], $name = false)
     {
         $this->connection = Connection::instance($config, $name);
-        $this->prefix     = $this->connection->getConfig('prefix');
+        $query            = $this->connection->getConfig('query');
+
+        if (__CLASS__ != trim($query, '\\')) {
+            return new $query($this->connection);
+        }
+
+        $this->prefix = $this->connection->getConfig('prefix');
 
         return $this;
     }
@@ -426,6 +432,29 @@ class Query
     }
 
     /**
+     * 获取数据表字段信息
+     * @access public
+     * @param  string $tableName 数据表名
+     * @return array
+     */
+    public function getTableFields($tableName)
+    {
+        return $this->connection->getTableFields($tableName);
+    }
+
+    /**
+     * 获取数据表字段类型
+     * @access public
+     * @param  string $tableName 数据表名
+     * @param  string $field    字段名
+     * @return array|string
+     */
+    public function getFieldsType($tableName, $field = null)
+    {
+        return $this->connection->getFieldsType($tableName, $field);
+    }
+
+    /**
      * 得到分表的的数据表名
      * @access public
      * @param  array  $data  操作的数据
@@ -534,7 +563,7 @@ class Query
         if (isset($this->options['group'])) {
             // 支持GROUP
             $options = $this->getOptions();
-            $subSql  = $this->options($options)->field('count(' . $field . ')')->bind($this->bind)->buildSql();
+            $subSql  = $this->options($options)->field('count(' . $field . ') AS think_count')->bind($this->bind)->buildSql();
 
             $query = $this->newQuery()->table([$subSql => '_group_count_']);
 
@@ -563,22 +592,24 @@ class Query
      * MIN查询
      * @access public
      * @param  string $field 字段名
+     * @param  bool   $force   强制转为数字类型
      * @return mixed
      */
-    public function min($field)
+    public function min($field, $force = true)
     {
-        return $this->value('MIN(' . $field . ') AS tp_min', 0, true);
+        return $this->value('MIN(' . $field . ') AS tp_min', 0, $force);
     }
 
     /**
      * MAX查询
      * @access public
      * @param  string $field 字段名
+     * @param  bool   $force   强制转为数字类型
      * @return mixed
      */
-    public function max($field)
+    public function max($field, $force = true)
     {
-        return $this->value('MAX(' . $field . ') AS tp_max', 0, true);
+        return $this->value('MAX(' . $field . ') AS tp_max', 0, $force);
     }
 
     /**
@@ -641,7 +672,7 @@ class Query
             }
         }
 
-        return $this->setField($field, ['exp', $field . '+' . $step]);
+        return $this->setField($field, ['inc', $field, $step]);
     }
 
     /**
@@ -672,9 +703,13 @@ class Query
                 $this->options = [];
                 return true;
             }
+
+            $value = ['inc', $field, $step];
+        } else {
+            $value = ['dec', $field, $step];
         }
 
-        return $this->setField($field, ['exp', $field . '-' . $step]);
+        return $this->setField($field, $value);
     }
 
     /**
@@ -783,7 +818,8 @@ class Query
     {
         // 传入的表名为数组
         if (is_array($join)) {
-            list($table, $alias) = each($join);
+            $table = key($join);
+            $alias = current($join);
         } else {
             $join = trim($join);
 
@@ -808,10 +844,13 @@ class Query
             }
         }
 
-        if (isset($alias)) {
+        if (isset($alias) && $table != $alias) {
             if (isset($this->options['alias'][$table])) {
                 $table = $table . '@think' . uniqid();
+            } elseif ($this->gettable() == $table) {
+                $table = $table . '@think' . uniqid();
             }
+
             $table = [$table => $alias];
             $this->alias($table);
         }
@@ -840,6 +879,17 @@ class Query
     }
 
     /**
+     * 查询SQL组装 union all
+     * @access public
+     * @param  mixed   $union
+     * @return $this
+     */
+    public function unionAll($union)
+    {
+        return $this->union($union, true);
+    }
+
+    /**
      * 指定查询字段 支持字段排除和指定数据表
      * @access public
      * @param  mixed   $field
@@ -861,11 +911,11 @@ class Query
 
         if (true === $field) {
             // 获取全部字段
-            $fields = $this->connection->getTableFields($tableName ?: (isset($this->options['table']) ? $this->options['table'] : $this->getTable()));
+            $fields = $this->getTableFields($tableName ?: (isset($this->options['table']) ? $this->options['table'] : $this->getTable()));
             $field  = $fields ?: ['*'];
         } elseif ($except) {
             // 字段排除
-            $fields = $this->connection->getTableFields($tableName ?: (isset($this->options['table']) ? $this->options['table'] : $this->getTable()));
+            $fields = $this->getTableFields($tableName ?: (isset($this->options['table']) ? $this->options['table'] : $this->getTable()));
             $field  = $fields ? array_diff($fields, $field) : $field;
         }
 
@@ -930,7 +980,7 @@ class Query
         $fields = is_string($field) ? explode(',', $field) : $field;
 
         foreach ($fields as $field) {
-            $this->data($field, ['exp', $field . '+' . $step]);
+            $this->data($field, ['inc', $field, $step]);
         }
 
         return $this;
@@ -948,7 +998,7 @@ class Query
         $fields = is_string($field) ? explode(',', $field) : $field;
 
         foreach ($fields as $field) {
-            $this->data($field, ['exp', $field . '-' . $step]);
+            $this->data($field, ['dec', $field, $step]);
         }
 
         return $this;
@@ -1307,8 +1357,7 @@ class Query
                 if (key($field) !== 0) {
                     $where = [];
                     foreach ($field as $key => $val) {
-                        $where[$key] = is_array($val) && $val[0] == $key ?
-                        $val : [$key, '=', $val];
+                        $where[$key] = !is_scalar($val) ? $val : [$key, '=', $val];
                     }
                 } else {
                     // 数组批量查询
@@ -2081,17 +2130,20 @@ class Query
 
     /**
      * 关联统计
-     * @access public
+     * @access protected
      * @param  string|array $relation 关联方法名
+     * @param  string       $aggregate 聚合查询方法
+     * @param  string       $field 字段
      * @param  bool         $subQuery 是否使用子查询
      * @return $this
      */
-    public function withCount($relation, $subQuery = true)
+    protected function withAggregate($relation, $aggregate = 'count', $field = '*', $subQuery = true)
     {
+        $relations = is_string($relation) ? explode(',', $relation) : $relation;
+
         if (!$subQuery) {
-            $this->options['with_count'] = $relation;
+            $this->options['with_count'][] = [$relations, $aggregate, $field];
         } else {
-            $relations = is_string($relation) ? explode(',', $relation) : $relation;
             if (!isset($this->options['field'])) {
                 $this->field('*');
             }
@@ -2103,12 +2155,76 @@ class Query
                     $relation = $key;
                 }
                 $relation = Loader::parseName($relation, 1, false);
-                $count    = '(' . $this->model->$relation()->getRelationCountQuery($closure) . ')';
-                $this->field([$count => Loader::parseName($relation) . '_count']);
+                $count    = '(' . $this->model->$relation()->getRelationCountQuery($closure, $aggregate, $field) . ')';
+                $this->field([$count => Loader::parseName($relation) . '_' . $aggregate]);
             }
         }
 
         return $this;
+    }
+
+    /**
+     * 关联统计
+     * @access public
+     * @param  string|array $relation 关联方法名
+     * @param  bool         $subQuery 是否使用子查询
+     * @return $this
+     */
+    public function withCount($relation, $subQuery = true)
+    {
+        return $this->withAggregate($relation, 'count', '*', $subQuery);
+    }
+
+    /**
+     * 关联统计Sum
+     * @access public
+     * @param  string|array $relation 关联方法名
+     * @param  string       $field 字段
+     * @param  bool         $subQuery 是否使用子查询
+     * @return $this
+     */
+    public function withSum($relation, $field, $subQuery = true)
+    {
+        return $this->withAggregate($relation, 'sum', $field, $subQuery);
+    }
+
+    /**
+     * 关联统计Max
+     * @access public
+     * @param  string|array $relation 关联方法名
+     * @param  string       $field 字段
+     * @param  bool         $subQuery 是否使用子查询
+     * @return $this
+     */
+    public function withMax($relation, $field, $subQuery = true)
+    {
+        return $this->withAggregate($relation, 'max', $field, $subQuery);
+    }
+
+    /**
+     * 关联统计Min
+     * @access public
+     * @param  string|array $relation 关联方法名
+     * @param  string       $field 字段
+     * @param  bool         $subQuery 是否使用子查询
+     * @return $this
+     */
+    public function withMin($relation, $field, $subQuery = true)
+    {
+        return $this->withAggregate($relation, 'min', $field, $subQuery);
+    }
+
+    /**
+     * 关联统计Avg
+     * @access public
+     * @param  string|array $relation 关联方法名
+     * @param  string       $field 字段
+     * @param  bool         $subQuery 是否使用子查询
+     * @return $this
+     */
+    public function withAvg($relation, $field, $subQuery = true)
+    {
+        return $this->withAggregate($relation, 'avg', $field, $subQuery);
     }
 
     /**
@@ -2459,9 +2575,10 @@ class Query
 
         // 关联统计
         if (!empty($options['with_count'])) {
-            $result->relationCount($result, $options['with_count']);
+            foreach ($options['with_count'] as $val) {
+                $result->relationCount($result, $val[0], $val[1], $val[2]);
+            }
         }
-
     }
 
     /**
@@ -2513,27 +2630,17 @@ class Query
     /**
      * 分批数据返回处理
      * @access public
-     * @param  integer  $count    每次处理的数据数量
-     * @param  callable $callback 处理回调方法
-     * @param  string   $column   分批处理的字段名
-     * @param  string   $order    字段排序
+     * @param  integer      $count    每次处理的数据数量
+     * @param  callable     $callback 处理回调方法
+     * @param  string|array $column   分批处理的字段名
+     * @param  string       $order    字段排序
      * @return boolean
      * @throws DbException
      */
     public function chunk($count, $callback, $column = null, $order = 'asc')
     {
         $options = $this->getOptions();
-
-        if (isset($options['table'])) {
-            $table = is_array($options['table']) ? key($options['table']) : $options['table'];
-        } else {
-            $table = '';
-        }
-
-        $column = $column ?: $this->getPk($table);
-        if (is_array($column)) {
-            $column = $column[0];
-        }
+        $column  = $column ?: $this->getPk($options);
 
         if (isset($options['order'])) {
             if (Container::get('app')->isDebug()) {
@@ -2542,37 +2649,45 @@ class Query
             unset($options['order']);
         }
 
-        $bind      = $this->bind;
-        $resultSet = $this->options($options)->limit($count)->order($column, $order)->select();
+        $bind = $this->bind;
 
-        if (strpos($column, '.')) {
-            list($alias, $key) = explode('.', $column);
+        if (is_array($column)) {
+            $times = 1;
+            $query = $this->options($options)->page($times, $count);
         } else {
-            $key = $column;
+            $query = $this->options($options)->limit($count);
+
+            if (strpos($column, '.')) {
+                list($alias, $key) = explode('.', $column);
+            } else {
+                $key = $column;
+            }
         }
 
-        if ($resultSet instanceof Collection) {
-            $resultSet = $resultSet->all();
-        }
+        $resultSet = $query->order($column, $order)->select();
 
         while (!empty($resultSet)) {
+            if ($resultSet instanceof Collection) {
+                $resultSet = $resultSet->all();
+            }
+
             if (false === call_user_func($callback, $resultSet)) {
                 return false;
             }
 
-            $end    = end($resultSet);
-            $lastId = is_array($end) ? $end[$key] : $end->getData($key);
+            if (isset($times)) {
+                $times++;
+                $query = $this->options($options)->page($times, $count);
+            } else {
+                $end    = end($resultSet);
+                $lastId = is_array($end) ? $end[$key] : $end->getData($key);
 
-            $resultSet = $this->options($options)
-                ->limit($count)
-                ->bind($bind)
-                ->where($column, 'asc' == strtolower($order) ? '>' : '<', $lastId)
-                ->order($column, $order)
-                ->select();
-
-            if ($resultSet instanceof Collection) {
-                $resultSet = $resultSet->all();
+                $query = $this->options($options)
+                    ->limit($count)
+                    ->where($column, 'asc' == strtolower($order) ? '>' : '<', $lastId);
             }
+
+            $resultSet = $query->bind($bind)->order($column, $order)->select();
         }
 
         return true;

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2018 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -29,7 +29,7 @@ class Jump extends Response
     {
         $config = Container::get('config');
         $data   = Container::get('view')
-            ->init($config->pull('template'), $config->get('view_replace_str'))
+            ->init($config->pull('template'))
             ->fetch($this->options['jump_template'], $data);
         return $data;
     }

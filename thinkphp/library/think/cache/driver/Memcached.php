@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2018 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -16,14 +16,15 @@ use think\cache\Driver;
 class Memcached extends Driver
 {
     protected $options = [
-        'host'     => '127.0.0.1',
-        'port'     => 11211,
-        'expire'   => 0,
-        'timeout'  => 0, // 超时时间（单位：毫秒）
-        'prefix'   => '',
-        'username' => '', //账号
-        'password' => '', //密码
-        'option'   => [],
+        'host'      => '127.0.0.1',
+        'port'      => 11211,
+        'expire'    => 0,
+        'timeout'   => 0, // 超时时间（单位：毫秒）
+        'prefix'    => '',
+        'username'  => '', //账号
+        'password'  => '', //密码
+        'option'    => [],
+        'serialize' => true,
     ];
 
     /**
@@ -169,11 +170,7 @@ class Memcached extends Driver
         $value = $this->handler->get($key) - $step;
         $res   = $this->handler->set($key, $value);
 
-        if (!$res) {
-            return false;
-        } else {
-            return $value;
-        }
+        return !$res ? false : $value;
     }
 
     /**

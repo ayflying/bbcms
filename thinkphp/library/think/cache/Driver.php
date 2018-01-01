@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2018 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -291,7 +291,7 @@ abstract class Driver
      */
     protected function serialize($data)
     {
-        if (is_scalar($data)) {
+        if (is_scalar($data) || !$this->options['serialize']) {
             return $data;
         }
 
@@ -308,7 +308,7 @@ abstract class Driver
      */
     protected function unserialize($data)
     {
-        if (0 === strpos($data, self::$serialize[2])) {
+        if ($this->options['serialize'] && 0 === strpos($data, self::$serialize[2])) {
             $unserialize = self::$serialize[1];
 
             return $unserialize(substr($data, self::$serialize[3]));

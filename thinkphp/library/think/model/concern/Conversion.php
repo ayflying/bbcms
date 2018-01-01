@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2018 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -15,6 +15,7 @@ use think\Collection;
 use think\Exception;
 use think\Loader;
 use think\Model;
+use think\model\Collection as ModelCollection;
 
 /**
  * 模型数据转换处理
@@ -230,7 +231,7 @@ trait Conversion
             $class      = $this->resultSetType;
             $collection = new $class($collection);
         } else {
-            $collection = new \think\model\Collection($collection);
+            $collection = new ModelCollection($collection);
         }
 
         return $collection;
