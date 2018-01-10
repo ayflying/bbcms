@@ -178,7 +178,7 @@ class Session
      * @param  string|null   $prefix 作用域（前缀）
      * @return void
      */
-    public function set($name, $value = '', $prefix = null)
+    public function set($name, $value, $prefix = null)
     {
         $this->lock(); // lock必须先于 $this->boot()
 
@@ -216,25 +216,21 @@ class Session
         $this->lock(); // lock必须先于 $this->boot()
 
         empty($this->init) && $this->boot();
+
         $prefix = !is_null($prefix) ? $prefix : $this->prefix;
 
-        if ('' == $name) {
-            // 获取全部的session
-            $value = $prefix ? (!empty($_SESSION[$prefix]) ? $_SESSION[$prefix] : []) : $_SESSION;
-        } elseif ($prefix) {
-            // 获取session
-            if (strpos($name, '.')) {
-                list($name1, $name2) = explode('.', $name);
-                $value               = isset($_SESSION[$prefix][$name1][$name2]) ? $_SESSION[$prefix][$name1][$name2] : null;
-            } else {
-                $value = isset($_SESSION[$prefix][$name]) ? $_SESSION[$prefix][$name] : null;
-            }
-        } else {
-            if (strpos($name, '.')) {
-                list($name1, $name2) = explode('.', $name);
-                $value               = isset($_SESSION[$name1][$name2]) ? $_SESSION[$name1][$name2] : null;
-            } else {
-                $value = isset($_SESSION[$name]) ? $_SESSION[$name] : null;
+        $value = $prefix ? (!empty($_SESSION[$prefix]) ? $_SESSION[$prefix] : []) : $_SESSION;
+
+        if ('' != $name) {
+            $name = explode('.', $name);
+
+            foreach ($name as $val) {
+                if (isset($value[$val])) {
+                    $value = $value[$val];
+                } else {
+                    $value = null;
+                    break;
+                }
             }
         }
 

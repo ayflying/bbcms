@@ -931,7 +931,7 @@ class Query
         }
 
         if (isset($this->options['field'])) {
-            $field = array_merge($this->options['field'], $field);
+            $field = array_merge((array) $this->options['field'], $field);
         }
 
         $this->options['field'] = array_unique($field);
@@ -1357,7 +1357,11 @@ class Query
                 if (key($field) !== 0) {
                     $where = [];
                     foreach ($field as $key => $val) {
-                        $where[$key] = !is_scalar($val) ? $val : [$key, '=', $val];
+                        if (is_null($val)) {
+                            $where[$key] = [$key, 'null', ''];
+                        } else {
+                            $where[$key] = !is_scalar($val) ? $val : [$key, '=', $val];
+                        }
                     }
                 } else {
                     // 数组批量查询
@@ -2666,7 +2670,7 @@ class Query
 
         $resultSet = $query->order($column, $order)->select();
 
-        while (!empty($resultSet)) {
+        while (count($resultSet) > 0) {
             if ($resultSet instanceof Collection) {
                 $resultSet = $resultSet->all();
             }
@@ -2841,8 +2845,10 @@ class Query
             $options['field'] = '*';
         }
 
-        if (!isset($options['data'])) {
-            $options['data'] = [];
+        foreach (['data', 'order'] as $name) {
+            if (!isset($options[$name])) {
+                $options[$name] = [];
+            }
         }
 
         if (!isset($options['strict'])) {
@@ -2855,7 +2861,7 @@ class Query
             }
         }
 
-        foreach (['join', 'union', 'group', 'having', 'limit', 'order', 'force', 'comment'] as $name) {
+        foreach (['join', 'union', 'group', 'having', 'limit', 'force', 'comment'] as $name) {
             if (!isset($options[$name])) {
                 $options[$name] = '';
             }

@@ -20,7 +20,7 @@ use think\route\Dispatch;
  */
 class App implements \ArrayAccess
 {
-    const VERSION = '5.1.0';
+    const VERSION = '5.1.2';
 
     /**
      * 当前模块路径
@@ -126,16 +126,8 @@ class App implements \ArrayAccess
 
     public function __construct($appPath = '')
     {
-        $this->container   = Container::getInstance();
-        $this->beginTime   = microtime(true);
-        $this->beginMem    = memory_get_usage();
-        $this->thinkPath   = dirname(dirname(__DIR__)) . '/';
-        $this->appPath     = $appPath ?: realpath(dirname($_SERVER['SCRIPT_FILENAME']) . '/../application') . '/';
-        $this->rootPath    = dirname(realpath($this->appPath)) . '/';
-        $this->runtimePath = $this->rootPath . 'runtime/';
-        $this->routePath   = $this->rootPath . 'route/';
-        $this->configPath  = $this->rootPath . 'config/';
-
+        $this->appPath   = $appPath ?: realpath(dirname($_SERVER['SCRIPT_FILENAME']) . '/../application') . '/';
+        $this->container = Container::getInstance();
     }
 
     /**
@@ -151,12 +143,32 @@ class App implements \ArrayAccess
     }
 
     /**
+     * 设置应用类库目录
+     * @access public
+     * @param  string $path 路径
+     * @return $this
+     */
+    public function path($path)
+    {
+        $this->appPath = $path;
+        return $this;
+    }
+
+    /**
      * 初始化应用
      * @access public
      * @return void
      */
     public function initialize()
     {
+        $this->beginTime   = microtime(true);
+        $this->beginMem    = memory_get_usage();
+        $this->thinkPath   = dirname(dirname(__DIR__)) . '/';
+        $this->rootPath    = dirname(realpath($this->appPath)) . '/';
+        $this->runtimePath = $this->rootPath . 'runtime/';
+        $this->routePath   = $this->rootPath . 'route/';
+        $this->configPath  = $this->rootPath . 'config/';
+
         // 设置路径环境变量
         $this->env->set([
             'think_path'   => $this->thinkPath,
@@ -167,7 +179,6 @@ class App implements \ArrayAccess
             'runtime_path' => $this->runtimePath,
             'extend_path'  => $this->rootPath . 'extend/',
             'vendor_path'  => $this->rootPath . 'vendor/',
-
         ]);
 
         // 加载环境变量配置文件
@@ -214,9 +225,6 @@ class App implements \ArrayAccess
         // 注册类库别名
         Loader::addClassAlias($this->config->pull('alias'));
 
-        // 加载系统助手函数
-        include $this->thinkPath . 'helper.php';
-
         // 设置系统时区
         date_default_timezone_set($this->config('app.default_timezone'));
 
@@ -242,23 +250,6 @@ class App implements \ArrayAccess
         } elseif (is_file($this->runtimePath . $module . 'init.php')) {
             include $this->runtimePath . $module . 'init.php';
         } else {
-            // 自动读取配置文件
-            if (is_dir($path . 'config')) {
-                $dir = $path . 'config';
-            } elseif (is_dir($this->configPath . $module)) {
-                $dir = $this->configPath . $module;
-            }
-
-            if (isset($dir)) {
-                $files = scandir($dir);
-                foreach ($files as $file) {
-                    if ('.' . pathinfo($file, PATHINFO_EXTENSION) === $this->configExt) {
-                        $filename = $dir . DIRECTORY_SEPARATOR . $file;
-                        $this->config->load($filename, pathinfo($file, PATHINFO_FILENAME));
-                    }
-                }
-            }
-
             // 加载行为扩展文件
             if (is_file($path . 'tags.php')) {
                 $this->hook->import(include $path . 'tags.php');
@@ -269,9 +260,30 @@ class App implements \ArrayAccess
                 include $path . 'common.php';
             }
 
-            // 注册服务和容器对象实例
+            if ('' == $module) {
+                // 加载系统助手函数
+                include $this->thinkPath . 'helper.php';
+            }
+
+            // 注册服务的容器对象实例
             if (is_file($path . 'provider.php')) {
                 $this->container->bind(include $path . 'provider.php');
+            }
+
+            // 自动读取配置文件
+            if (is_dir($path . 'config')) {
+                $dir = $path . 'config';
+            } elseif (is_dir($this->configPath . $module)) {
+                $dir = $this->configPath . $module;
+            }
+
+            $files = isset($dir) ? scandir($dir) : [];
+
+            foreach ($files as $file) {
+                if ('.' . pathinfo($file, PATHINFO_EXTENSION) === $this->configExt) {
+                    $filename = $dir . DIRECTORY_SEPARATOR . $file;
+                    $this->config->load($filename, pathinfo($file, PATHINFO_FILENAME));
+                }
             }
         }
 
