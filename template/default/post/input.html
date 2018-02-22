@@ -6,19 +6,19 @@
     <label for="mod[{$name}]">{$val.0}</label>
 	{foreach name="$val.2" item='val2'}
       <label class="checkbox-inline">
-      <input type="{$val.1}" class="{$name}" name="mod[{$name}]" value="{$val2}" {$val.value|default='' == $val2 ? 'checked' : ''} > {$val2}
+      <input type="{$val.1}" class="{$name}" name="mod[{$name}]" value="{$val2}" {$val.valu == $val2 ? 'checked' : ''} > {$val2}
 	  </label>
     {/foreach}
 </div>
   {/case}
-  
+
   {case value="checkbox"}
   	<div class="form-group">
     <label for="mod[{$name}][]">{$val.0}</label>
 	{foreach name="$val.2" item='val2'}
       <label class="checkbox-inline">
-      <input type="{$val.1}" name="mod[{$name}][]" class="{$name}" value="{$val2}" 
-      {foreach name="$val.value|default=''" item='val3'}
+      <input type="{$val.1}" name="mod[{$name}][]" class="{$name}" value="{$val2}"
+      {foreach name="$val.value" item='val3'}
       	{$val3 == $val2 ? 'checked' : ''}
       {/foreach}
        />
@@ -27,22 +27,22 @@
     {/foreach}
 	</div>
   {/case}
-  
+
   {case value="select"}
 	<label for="mod[{$name}]">{$val.0}</label>
   	<select name="mod[{$name}]" class="{$name} form-control">
       {foreach name="$val.2" item='val2'}
-      <option {$val.value|default='' == $val2 ? 'selected' : ''}>{$val2}</option>
+      <option {$val.value == $val2 ? 'selected' : ''}>{$val2}</option>
       {/foreach}
-      
+
     </select>
   {/case}
-  
+
   {case value="textarea"}
 	<label for="mod[{$name}]">{$val.0}</label>
   	<textarea name="mod[{$name}]" class="{$name}" rows="3" class="form-control">{$val.value|default=''}</textarea>
   {/case}
-  
+
   {default /}
     <div class="form-group">
 	  <label for="mod[{$name}]">{$val.0}</label>
@@ -53,7 +53,7 @@
 
 <script>
 $(function(){
-	
+
 });
 </script>
 

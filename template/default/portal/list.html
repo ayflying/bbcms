@@ -14,7 +14,7 @@
       {/eq}
     </ul>
   </div>
-  
+
   <div class="right col-md-9">
   <div class="panel panel-default">
     <ol class="breadcrumb panel-heading">
@@ -22,7 +22,7 @@
       <li class="active">{$_G.menu.name}</li>
       <div class="pull-right"><a href="{:url('@portal/post/add?tid='.$_G.menu.tid)}">发布</a></div>
     </ol>
-    
+
     <ul class="panel-body ">
       {foreach name="_G.list" item="val"}
       <dl class="col-md-12">
@@ -32,7 +32,7 @@
         </div>
         {/notempty}
         <div>
-      	  <dt><a href="{:url('@portal/article/index?aid='.$val['aid'])}" title="{$val.title}">{$val.title}</a><time class="hidden-xs pull-right">{$val.create_time|date='Y-m-d H:i:s',###}</time></dt>
+      	  <dt><a href="{:url('@portal/article/index?aid='.$val['aid'])}" title="{$val.title}">{$val.title}</a><time class="hidden-xs pull-right">{$val.create_time|date='Y-m-d H:i:s'}</time></dt>
       	  <dd><a href="{:url('@portal/article/index?aid='.$val['aid'])}">{$val.description}</a></dd>
         </div>
       </dl>
@@ -41,7 +41,7 @@
     </ul>
   </div>
   </div>
-  
+
 
 </div>
 
