@@ -20,7 +20,7 @@ use think\route\Dispatch;
  */
 class App implements \ArrayAccess
 {
-    const VERSION = '5.1.2';
+    const VERSION = '5.1.5';
 
     /**
      * 当前模块路径
@@ -343,7 +343,7 @@ class App implements \ArrayAccess
 
             // 记录路由和请求信息
             if ($this->debug) {
-                $this->log('[ ROUTE ] ' . var_export($this->request->routeinfo(), true));
+                $this->log('[ ROUTE ] ' . var_export($this->request->routeInfo(), true));
                 $this->log('[ HEADER ] ' . var_export($this->request->header(), true));
                 $this->log('[ PARAM ] ' . var_export($this->request->param(), true));
             }
@@ -365,18 +365,23 @@ class App implements \ArrayAccess
             $data = $exception->getResponse();
         }
 
-        // 输出数据到客户端
-        if ($data instanceof Response) {
-            $response = $data;
-        } elseif (!is_null($data)) {
-            // 默认自动识别响应输出类型
-            $isAjax = $this->request->isAjax();
-            $type   = $isAjax ? $this->config('app.default_ajax_return') : $this->config('app.default_return_type');
+        $this->middlewareDispatcher->add(function (Request $request, $next) use ($data) {
+            // 输出数据到客户端
+            if ($data instanceof Response) {
+                $response = $data;
+            } elseif (!is_null($data)) {
+                // 默认自动识别响应输出类型
+                $isAjax = $request->isAjax();
+                $type   = $isAjax ? $this->config('app.default_ajax_return') : $this->config('app.default_return_type');
 
-            $response = Response::create($data, $type);
-        } else {
-            $response = Response::create();
-        }
+                $response = Response::create($data, $type);
+            } else {
+                $response = Response::create();
+            }
+            return $response;
+        });
+
+        $response = $this->middlewareDispatcher->dispatch($this->request);
 
         // 监听app_end
         $this->hook->listen('app_end', $response);
@@ -433,7 +438,7 @@ class App implements \ArrayAccess
         $files = scandir($this->routePath);
         foreach ($files as $file) {
             if (strpos($file, '.php')) {
-                $filename = $this->routePath . DIRECTORY_SEPARATOR . $file;
+                $filename = $this->routePath . $file;
                 // 导入路由配置
                 $rules = include $filename;
                 if (is_array($rules)) {
@@ -569,9 +574,9 @@ class App implements \ArrayAccess
             return $this->__get($class);
         } elseif ($empty && class_exists($emptyClass = $this->parseClass($module, $layer, $empty, $appendSuffix))) {
             return $this->__get($emptyClass);
-        } else {
-            throw new ClassNotFoundException('class not exists:' . $class, $class);
         }
+
+        throw new ClassNotFoundException('class not exists:' . $class, $class);
     }
 
     /**

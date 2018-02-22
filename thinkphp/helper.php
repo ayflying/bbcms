@@ -26,9 +26,11 @@ use think\facade\Hook;
 use think\facade\Lang;
 use think\facade\Log;
 use think\facade\Request;
+use think\facade\Route;
 use think\facade\Session;
 use think\facade\Url;
 use think\Response;
+use think\route\RuleItem;
 
 if (!function_exists('abort')) {
     /**
@@ -522,6 +524,21 @@ if (!function_exists('response')) {
     }
 }
 
+if (!function_exists('route')) {
+    /**
+     * 路由注册
+     * @param  string    $rule       路由规则
+     * @param  mixed     $route      路由地址
+     * @param  array     $option     路由参数
+     * @param  array     $pattern    变量规则
+     * @return RuleItem
+     */
+    function route($rule, $route, $option = [], $pattern = [])
+    {
+        return Route::rule($rule, $route, '*', $option, $pattern);
+    }
+}
+
 if (!function_exists('session')) {
     /**
      * Session管理
@@ -636,11 +653,12 @@ if (!function_exists('view')) {
      * @param string    $template 模板文件
      * @param array     $vars 模板变量
      * @param integer   $code 状态码
+     * @param callable  $filer 内容过滤
      * @return \think\response\View
      */
-    function view($template = '', $vars = [], $code = 200)
+    function view($template = '', $vars = [], $code = 200, $filter = null)
     {
-        return Response::create($template, 'view', $code)->assign($vars);
+        return Response::create($template, 'view', $code)->assign($vars)->filter($filter);
     }
 }
 

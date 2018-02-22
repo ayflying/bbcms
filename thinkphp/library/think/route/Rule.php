@@ -20,6 +20,7 @@ use think\route\dispatch\Controller as ControllerDispatch;
 use think\route\dispatch\Module as ModuleDispatch;
 use think\route\dispatch\Redirect as RedirectDispatch;
 use think\route\dispatch\Response as ResponseDispatch;
+use think\route\dispatch\View as ViewDispatch;
 
 abstract class Rule
 {
@@ -74,14 +75,14 @@ abstract class Rule
     }
 
     /**
-     * 设置Name
+     * 设置标识
      * @access public
-     * @param  string|array  $name 变量名
+     * @param  string  $name 标识名
      * @return $this
      */
     public function name($name)
     {
-        $this->name = '/' != $name ? trim($name, '/') : '/';
+        $this->name = $name;
 
         return $this;
     }
@@ -124,6 +125,23 @@ abstract class Rule
         }
 
         return isset($this->option[$name]) ? $this->option[$name] : null;
+    }
+
+    /**
+     * 附加路由隐式参数
+     * @access public
+     * @param  array     $append
+     * @return $this
+     */
+    public function append(array $append = [])
+    {
+        if (isset($this->option['append'])) {
+            $this->option['append'] = array_merge($this->option['append'], $append);
+        } else {
+            $this->option['append'] = $append;
+        }
+
+        return $this;
     }
 
     /**
@@ -341,6 +359,28 @@ abstract class Rule
     }
 
     /**
+     * 当前路由到一个模板地址 当使用数组的时候可以传入模板变量
+     * @access public
+     * @param  bool|array     $view
+     * @return $this
+     */
+    public function view($view = true)
+    {
+        return $this->option('view', $view);
+    }
+
+    /**
+     * 当前路由为重定向
+     * @access public
+     * @param  bool   $redirect 是否为重定向
+     * @return $this
+     */
+    public function redirect($redirect = true)
+    {
+        return $this->option('redirect', $redirect);
+    }
+
+    /**
      * 设置路由完整匹配
      * @access public
      * @param  bool     $match
@@ -349,6 +389,17 @@ abstract class Rule
     public function completeMatch($match = true)
     {
         return $this->option('complete_match', $match);
+    }
+
+    /**
+     * 是否去除URL最后的斜线
+     * @access public
+     * @param  bool     $remove
+     * @return $this
+     */
+    public function removeSlash($remove = true)
+    {
+        return $this->option('remove_slash', $remove);
     }
 
     /**
@@ -404,7 +455,7 @@ abstract class Rule
      * @access public
      * @return $this
      */
-    public function crossDomain()
+    public function crossDomainRule()
     {
         if ($this instanceof RuleGroup) {
             $method = '*';
@@ -433,6 +484,8 @@ abstract class Rule
         }
 
         $this->option = array_merge($parentOption, $this->option);
+
+        return $this->option;
     }
 
     /**
@@ -660,9 +713,9 @@ abstract class Rule
             return new ResponseDispatch($result);
         } elseif ($result instanceof Dispatch) {
             return $result;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
@@ -680,29 +733,20 @@ abstract class Rule
             $result = new CallbackDispatch($route);
         } elseif ($route instanceof Response) {
             $result = new ResponseDispatch($route);
-        } elseif (0 === strpos($route, '/') || strpos($route, '://')) {
+        } elseif (isset($option['view']) && false !== $option['view']) {
+            $result = new ViewDispatch($route, is_array($option['view']) ? $option['view'] : []);
+        } elseif (!empty($option['redirect']) || 0 === strpos($route, '/') || strpos($route, '://')) {
             // 路由到重定向地址
             $result = new RedirectDispatch($route, [], isset($option['status']) ? $option['status'] : 301);
         } elseif (false !== strpos($route, '\\')) {
             // 路由到方法
-            list($path, $var) = $this->parseUrlPath($route);
-            $route            = str_replace('/', '@', implode('/', $path));
-            $method           = strpos($route, '@') ? explode('@', $route) : $route;
-            $result           = new CallbackDispatch($method, $var);
+            $result = $this->dispatchMethod($route);
         } elseif (0 === strpos($route, '@')) {
             // 路由到控制器
-            $route             = substr($route, 1);
-            list($route, $var) = $this->parseUrlPath($route);
-            $result            = new ControllerDispatch(implode('/', $route), $var);
-
-            $request->action(array_pop($route));
-            $app = Container::get('app');
-            $request->controller($route ? array_pop($route) : $app->config('default_controller'));
-            $request->module($route ? array_pop($route) : $app->config('default_module'));
-            $app->setModulePath($app->getAppPath() . ($app->config('app_multi_module') ? $request->module() . DIRECTORY_SEPARATOR : ''));
+            $result = $this->dispatchController($request, substr($route, 1));
         } else {
             // 路由到模块/控制器/操作
-            $result = $this->parseModule($route);
+            $result = $this->dispatchModule($request, $route);
         }
 
         return $result;
@@ -711,18 +755,57 @@ abstract class Rule
     /**
      * 解析URL地址为 模块/控制器/操作
      * @access protected
-     * @param  string    $url URL地址
-     * @return array
+     * @param  string    $route 路由地址
+     * @return CallbackDispatch
      */
-    protected function parseModule($url)
+    protected function dispatchMethod($route)
     {
-        list($path, $var) = $this->parseUrlPath($url);
-        $config           = Container::get('config');
-        $request          = Container::get('request');
-        $action           = array_pop($path);
-        $controller       = !empty($path) ? array_pop($path) : null;
-        $module           = $config->get('app_multi_module') && !empty($path) ? array_pop($path) : null;
-        $method           = $request->method();
+        list($path, $var) = $this->parseUrlPath($route);
+
+        $route  = str_replace('/', '@', implode('/', $path));
+        $method = strpos($route, '@') ? explode('@', $route) : $route;
+
+        return new CallbackDispatch($method, $var);
+    }
+
+    /**
+     * 解析URL地址为 模块/控制器/操作
+     * @access protected
+     * @param  Request   $request Request对象
+     * @param  string    $route 路由地址
+     * @return ControllerDispatch
+     */
+    protected function dispatchController($request, $route)
+    {
+        list($route, $var) = $this->parseUrlPath($route);
+
+        $result = new ControllerDispatch(implode('/', $route), $var);
+
+        $request->action(array_pop($route));
+        $app = Container::get('app');
+        $request->controller($route ? array_pop($route) : $app->config('default_controller'));
+        $request->module($route ? array_pop($route) : $app->config('default_module'));
+        $app->setModulePath($app->getAppPath() . ($app->config('app_multi_module') ? $request->module() . DIRECTORY_SEPARATOR : ''));
+
+        return $result;
+    }
+
+    /**
+     * 解析URL地址为 模块/控制器/操作
+     * @access protected
+     * @param  Request   $request Request对象
+     * @param  string    $route 路由地址
+     * @return ModuleDispatch
+     */
+    protected function dispatchModule($request, $route)
+    {
+        list($path, $var) = $this->parseUrlPath($route);
+
+        $config     = Container::get('config');
+        $action     = array_pop($path);
+        $controller = !empty($path) ? array_pop($path) : null;
+        $module     = $config->get('app_multi_module') && !empty($path) ? array_pop($path) : null;
+        $method     = $request->method();
 
         if ($config->get('use_action_prefix') && $this->router->getMethodPrefix($method)) {
             $prefix = $this->router->getMethodPrefix($method);
@@ -764,13 +847,13 @@ abstract class Rule
         }
 
         // 伪静态后缀检测
-        if ((isset($option['ext']) && false === stripos('|' . $option['ext'] . '|', '|' . $request->ext() . '|'))
-            || (isset($option['deny_ext']) && false !== stripos('|' . $option['deny_ext'] . '|', '|' . $request->ext() . '|'))) {
+        if ($request->url() != '/' && ((isset($option['ext']) && false === stripos('|' . $option['ext'] . '|', '|' . $request->ext() . '|'))
+            || (isset($option['deny_ext']) && false !== stripos('|' . $option['deny_ext'] . '|', '|' . $request->ext() . '|')))) {
             return false;
         }
 
         // 域名检查
-        if ((isset($option['domain']) && !in_array($option['domain'], [$_SERVER['HTTP_HOST'], $this->subDomain]))) {
+        if ((isset($option['domain']) && !in_array($option['domain'], [$_SERVER['HTTP_HOST'], $request->subDomain()]))) {
             return false;
         }
 
@@ -835,6 +918,52 @@ abstract class Rule
         }
 
         return [$path, $var];
+    }
+
+    /**
+     * 生成路由的正则规则
+     * @access protected
+     * @param  string    $rule 路由规则
+     * @param  array     $match 匹配的变量
+     * @param  array     $pattern   路由变量规则
+     * @param  array     $option    路由参数
+     * @param  bool      $completeMatch   路由是否完全匹配
+     * @param  string    $suffix   路由正则变量后缀
+     * @return string
+     */
+    protected function buildRuleRegex($rule, $match, $pattern = [], $option = [], $completeMatch = false, $suffix = '')
+    {
+        foreach ($match as $name) {
+            $optional = '';
+            $slash    = substr($name, 0, 1);
+
+            if (strpos($name, ']')) {
+                $name     = substr($name, 3, -1);
+                $optional = '?';
+            } elseif (strpos($name, '?')) {
+                $name     = substr($name, 2, -2);
+                $optional = '?';
+            } elseif (strpos($name, '>')) {
+                $name = substr($name, 2, -1);
+            } elseif (strpos($name, ':')) {
+                $name = substr($name, 2);
+            } else {
+                $replace[] = '\\' . $name;
+                continue;
+            }
+
+            $replace[] = '(\\' . $slash . '(?<' . $name . $suffix . '>' . (isset($pattern[$name]) ? $pattern[$name] : '\w+') . '))' . $optional;
+        }
+
+        // 是否区分 / 地址访问
+        if (!empty($option['remove_slash']) && '/' != $rule) {
+            $rule = rtrim($rule, '/');
+        }
+
+        $regex = str_replace($match, $replace, '/' . ltrim($rule, '/'));
+        $regex = str_replace([')?/', ')/', ')?-', ')-', '\\\\/'], [')\/', ')\/', ')\-', ')\-', '\/'], $regex);
+
+        return $regex . ($completeMatch ? '$' : '');
     }
 
     /**
