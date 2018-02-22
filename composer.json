@@ -1,6 +1,6 @@
 {
     "name": "ayflying/bbcms",
-    "description": "基于thinkphp5.0的内容管理系统",
+    "description": "基于thinkphp5.1的内容管理系统",
     "type": "project",
     "keywords": ["php","cms","thinkphp","ORM"],
     "homepage": "http://blog.7cuu.com/",
@@ -11,13 +11,21 @@
             "email": "ay@7cuu.com"
         }
     ],
-    
     "require": {
-        "php": ">=5.4.0",
-        "topthink/think-worker": "^1.0",
-        "workerman/workerman-for-win": "^3.4",
-        "topthink/think-captcha": "^1.0",
+        "php": ">=5.6.0",
+        "topthink/framework": "~5.1.0@dev",
         "topthink/think-image": "^1.0",
-        "topthink/think-helper": "^1.0"
+        "topthink/think-captcha": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "app\\": "application"
+        }
+    },
+    "extra": {
+        "think-path": "thinkphp"
+    },
+    "config": {
+        "preferred-install": "dist"
     }
 }
