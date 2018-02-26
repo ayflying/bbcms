@@ -11,6 +11,7 @@
 
 namespace think\route;
 
+use think\Container;
 use think\Route;
 
 class RuleItem extends Rule
@@ -57,7 +58,9 @@ class RuleItem extends Rule
 
         $this->setRule($rule);
 
-        $this->parent->addRule($this, $method);
+        if (!empty($option['cross_domain'])) {
+            $this->router->setCrossDomainRule($this, $method);
+        }
     }
 
     /**
@@ -75,13 +78,17 @@ class RuleItem extends Rule
             $this->option['complete_match'] = true;
         }
 
-        $rule = '/' != $rule ? ltrim($rule, '/') : '/';
+        $rule = '/' != $rule ? ltrim($rule, '/') : '';
 
         if ($this->parent && $prefix = $this->parent->getFullName()) {
             $rule = $prefix . ($rule ? '/' . ltrim($rule, '/') : '');
         }
 
-        $this->rule = $rule;
+        if (false !== strpos($rule, ':')) {
+            $this->rule = preg_replace(['/\[\:(\w+)\]/', '/\:(\w+)/'], ['<\1?>', '<\1>'], $rule);
+        } else {
+            $this->rule = $rule;
+        }
 
         // 生成路由标识的快捷访问
         $this->setRuleName();
@@ -152,7 +159,20 @@ class RuleItem extends Rule
     protected function setRuleName($first = false)
     {
         if ($this->name) {
-            $this->router->setRuleName($this->rule, $this->name, $this->option, $first);
+            $vars = $this->parseVar($this->rule);
+            $name = strtolower($this->name);
+
+            if (isset($this->option['ext'])) {
+                $suffix = $this->option['ext'];
+            } elseif ($this->parent->getOption('ext')) {
+                $suffix = $this->parent->getOption('ext');
+            } else {
+                $suffix = null;
+            }
+
+            $value = [$this->rule, $vars, $this->parent->getDomain(), $suffix];
+
+            Container::get('rule_name')->set($name, $value, $first);
         }
     }
 
@@ -296,20 +316,22 @@ class RuleItem extends Rule
         $url  = $depr . str_replace('|', $depr, $url);
         $rule = $depr . str_replace('/', $depr, $this->rule);
 
-        if (false === strpos($rule, ':') && false === strpos($rule, '<')) {
+        if (false === strpos($rule, '<')) {
             if (($completeMatch && 0 === strcasecmp($rule, $url)) || (!$completeMatch && 0 === strncasecmp($rule, $url, strlen($rule)))) {
                 return $var;
             }
             return false;
         }
 
-        if ($matchRule = preg_split('/(?:[\/\-]<\w+\??>|[\/\-]\[?\:\w+\]?)/', $rule, 2)) {
+        $slash = preg_quote('/-' . $depr, '/');
+
+        if ($matchRule = preg_split('/[' . $slash . ']?<\w+\??>/', $rule, 2)) {
             if ($matchRule[0] && 0 !== strncasecmp($rule, $url, strlen($matchRule[0]))) {
                 return false;
             }
         }
 
-        if (preg_match_all('/(?:[\/\-]<\w+\??>|[\/\-]\[?\:?\w+\]?)/', $rule, $matches)) {
+        if (preg_match_all('/[' . $slash . ']?<?\w+\??>?/', $rule, $matches)) {
             $regex = $this->buildRuleRegex($rule, $matches[0], $pattern, $option, $completeMatch);
 
             if (!preg_match('/^' . $regex . ($completeMatch ? '$' : '') . '/', $url, $match)) {

@@ -416,7 +416,7 @@ abstract class Rule
         }
 
         if ($allow && $this->parent) {
-            $this->parent->addRule($this, 'options');
+            $this->parent->addRuleItem($this, 'options');
         }
 
         return $this->option('cross_domain', $allow);
@@ -934,25 +934,7 @@ abstract class Rule
     protected function buildRuleRegex($rule, $match, $pattern = [], $option = [], $completeMatch = false, $suffix = '')
     {
         foreach ($match as $name) {
-            $optional = '';
-            $slash    = substr($name, 0, 1);
-
-            if (strpos($name, ']')) {
-                $name     = substr($name, 3, -1);
-                $optional = '?';
-            } elseif (strpos($name, '?')) {
-                $name     = substr($name, 2, -2);
-                $optional = '?';
-            } elseif (strpos($name, '>')) {
-                $name = substr($name, 2, -1);
-            } elseif (strpos($name, ':')) {
-                $name = substr($name, 2);
-            } else {
-                $replace[] = '\\' . $name;
-                continue;
-            }
-
-            $replace[] = '(\\' . $slash . '(?<' . $name . $suffix . '>' . (isset($pattern[$name]) ? $pattern[$name] : '\w+') . '))' . $optional;
+            $replace[] = $this->buildNameRegex($name, $pattern, $suffix);
         }
 
         // 是否区分 / 地址访问
@@ -960,10 +942,76 @@ abstract class Rule
             $rule = rtrim($rule, '/');
         }
 
-        $regex = str_replace($match, $replace, '/' . ltrim($rule, '/'));
+        $regex = str_replace($match, $replace, $rule);
         $regex = str_replace([')?/', ')/', ')?-', ')-', '\\\\/'], [')\/', ')\/', ')\-', ')\-', '\/'], $regex);
 
         return $regex . ($completeMatch ? '$' : '');
+    }
+
+    /**
+     * 生成路由变量的正则规则
+     * @access protected
+     * @param  string    $name      路由变量
+     * @param  string    $pattern   变量规则
+     * @param  string    $suffix    路由正则变量后缀
+     * @return string
+     */
+    protected function buildNameRegex($name, $pattern, $suffix)
+    {
+        $optional = '';
+        $slash    = substr($name, 0, 1);
+
+        if (in_array($slash, ['/', '-'])) {
+            $prefix = '\\' . $slash;
+            $name   = substr($name, 1);
+            $slash  = substr($name, 0, 1);
+        } else {
+            $prefix = '';
+        }
+
+        if ('<' != $slash) {
+            return $prefix . preg_quote($name, '/');
+        }
+
+        if (strpos($name, '?')) {
+            $name     = substr($name, 1, -2);
+            $optional = '?';
+        } elseif (strpos($name, '>')) {
+            $name = substr($name, 1, -1);
+        }
+
+        $nameRule = isset($pattern[$name]) ? $pattern[$name] : '\w+';
+
+        return '(' . $prefix . '(?<' . $name . $suffix . '>' . $nameRule . '))' . $optional;
+    }
+
+    /**
+     * 分析路由规则中的变量
+     * @access protected
+     * @param  string    $rule 路由规则
+     * @return array
+     */
+    protected function parseVar($rule)
+    {
+        // 提取路由规则中的变量
+        $var = [];
+
+        if (preg_match_all('/<\w+\??>/', $rule, $matches)) {
+            foreach ($matches[0] as $name) {
+                $optional = false;
+
+                if (strpos($name, '?')) {
+                    $name     = substr($name, 1, -2);
+                    $optional = true;
+                } else {
+                    $name = substr($name, 1, -1);
+                }
+
+                $var[$name] = $optional ? 2 : 1;
+            }
+        }
+
+        return $var;
     }
 
     /**
