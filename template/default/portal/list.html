@@ -20,7 +20,7 @@
     <ol class="breadcrumb panel-heading">
       <li><a href="{:url('/')}">首页</a></li>
       <li class="active">{$_G.menu.name}</li>
-      <div class="pull-right"><a href="{:url('@portal/post/add?tid='.$_G.menu.tid)}">发布</a></div>
+      <div class="pull-right"><a href="{:url('portal/post/add?tid='.$_G.menu.tid)}">发布</a></div>
     </ol>
 
     <ul class="panel-body ">
@@ -28,12 +28,12 @@
       <dl class="col-md-12">
         {notempty name="val.litpic"}
       	<div class="col-md-2">
-          <a href="{:url('@portal/article/index?aid='.$val['aid'])}" title="{$val.title}" style="height:120px;"><img data-original="{$val.litpic}" class="img-thumbnail" alt="{$val.title}"/></a>
+          <a href="{:url('portal/article/index?aid='.$val['aid'])}" title="{$val.title}" style="height:120px;"><img data-original="{$val.litpic}" class="img-thumbnail" alt="{$val.title}"/></a>
         </div>
         {/notempty}
         <div>
-      	  <dt><a href="{:url('@portal/article/index?aid='.$val['aid'])}" title="{$val.title}">{$val.title}</a><time class="hidden-xs pull-right">{$val.create_time|date='Y-m-d H:i:s'}</time></dt>
-      	  <dd><a href="{:url('@portal/article/index?aid='.$val['aid'])}">{$val.description}</a></dd>
+      	  <dt><a href="{:url('portal/article/index?aid='.$val['aid'])}" title="{$val.title}">{$val.title}</a><time class="hidden-xs pull-right">{$val.create_time|date='Y-m-d H:i:s'}</time></dt>
+      	  <dd><a href="{:url('portal/article/index?aid='.$val['aid'])}">{$val.description}</a></dd>
         </div>
       </dl>
       {/foreach}

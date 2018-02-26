@@ -62,7 +62,7 @@ class Bb extends TagLib{
             $tid = $this -> autoBuildVar($tid); //格式化数组变量
             $Str .= '
                 $'.$item.' = Db::name("portal_menu") -> where("tid","'.$tid.'") -> cache(true) -> find();
-                $'.$item.'["url"] = Url::build("@portal/lists/index?tid='.$tid.'"); ?>';
+                $'.$item.'["url"] = Url::build("portal/lists/index?tid='.$tid.'"); ?>';
 
             $Str  .=   $content;
             return $Str;
@@ -76,7 +76,7 @@ class Bb extends TagLib{
         $Str .= '
             $tag_sql = Db::name("portal_menu") -> where($where) -> order("weight desc") -> limit("'.$row.'") -> cache(true) -> select();
             foreach($tag_sql as $key => $'.$item.'):
-            $'.$item.'["url"] = Url::build("@portal/lists/index?tid=".$'.$item.'["tid"]);
+            $'.$item.'["url"] = Url::build("portal/lists/index?tid=".$'.$item.'["tid"]);
         ?>';
         $Str  .=   $content;
         $Str  .=   '<?php endforeach; ?>';
@@ -155,8 +155,8 @@ class Bb extends TagLib{
                 $mod_table = "portal_mod_".$'.$item.'["mod"];
                 $'.$item.'["mod"] = Db::name($mod_table)-> cache(true) -> where("aid",$'.$item.'["aid"]) -> find();
             }
-            $'.$item.'["url"] = Url::build("@portal/Article/index?aid=".$'.$item.'["aid"]);
-            $'.$item.'["turl"] = Url::build("@portal/Lists/index?tid=".$'.$item.'["tid"]);
+            $'.$item.'["url"] = Url::build("portal/Article/index?aid=".$'.$item.'["aid"]);
+            $'.$item.'["turl"] = Url::build("portal/Lists/index?tid=".$'.$item.'["tid"]);
         ?>';
 
         $Str .= $content;

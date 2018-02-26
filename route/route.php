@@ -9,27 +9,40 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-/*
-Route::get('think', function () {
-    return 'hello,ThinkPHP5!';
-});
 
-Route::get('hello/:name', 'index/hello');
-*/
+Route::rule('update/download','update/update/download');
+Route::rule('update/list','update/index/index');
+Route::rule('update/sql','update/sql/index');
+
+Route::rule('tid/[:tid]','portal/lists/index','GET');
+Route::rule('aid/[:aid]','portal/article/index','GET');
+Route::rule('add/:tid','portal/post/add','GET|POST');
+Route::rule('edit/:aid','portal/post/edit','GET|POST');
+
+Route::rule('s','portal/search/index');
+Route::rule('uid/:uid','member/index/index');
+Route::rule('addons/:name','addon/index/index');
+
+Route::pattern([
+    'tid' => '\d+',
+    'aid'   => '\d+',
+]);
+
+/*
 return [
     'update/download' => 'update/update/download',
     'update/list' => 'update/index/index',
     'update/sql' => 'update/sql/index',
     
-	'tid/[:tid]' => ['@portal/lists/index',['method' => 'get'],['tid'=>'\d+']],
-	'aid/[:aid]' => ['@portal/article/index',['method' => 'get'],['aid'=>'\d+']],
-    'add/:tid' => ['@portal/post/add',['method' => 'post|get'],['tid'=>'\d+']],
-	'edit/:aid' => ['@portal/post/edit',['method' => 'post|get'],['aid'=>'\d+']],
+	'tid/[:tid]' => ['portal/lists/index',['method' => 'get'],['tid'=>'\d+']],
+	'aid/[:aid]' => ['portal/article/index',['method' => 'get'],['aid'=>'\d+']],
+    'add/:tid' => ['portal/post/add',['method' => 'post|get'],['tid'=>'\d+']],
+	'edit/:aid' => ['portal/post/edit',['method' => 'post|get'],['aid'=>'\d+']],
     
-    's' => '@portal/search/index',
+    's' => 'portal/search/index',
     
-    'uid/:uid' => '@member/index/index',
+    'uid/:uid' => 'member/index/index',
     
-    'addons/:name' => '@addon/index/index',
+    'addons/:name' => 'addon/index/index',
 ];
-
+*/

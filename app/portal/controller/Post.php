@@ -201,7 +201,7 @@ class Post extends Common{
 
             //修改附件为当前aid
             Db::name('portal_attachment') -> where('aid','null') ->  where('uid',$uid) -> setField('aid',$aid);
-            return $this -> success(lang('提交完成'),"@portal/lists/index?tid=".$tid,null,1);
+            return $this -> success(lang('提交完成'),url('portal/article/index',['aid'=>$aid]),null,1);
             
         }else{
             Cache::rm("webuploader_".$this->uid);
@@ -268,7 +268,7 @@ class Post extends Common{
             }
 
 
-            $this -> success(lang('编辑完成'),null,null,1);
+            $this -> success(lang('编辑完成'),url('portal/article/index',['aid'=>$aid]),null,1);
 
         }else{
             $article = PortalArticle::get($aid);

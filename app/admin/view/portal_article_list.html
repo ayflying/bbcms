@@ -34,11 +34,11 @@ $(document).ready(function(e){
             </label>
           </td>
             <td>{$val.aid}</td>
-            <td><a href="{:url('@portal/article/index?aid='.$val['aid'])}" target="_blank">{$val.title}</a></td>
+            <td><a href="{:url('portal/article/index?aid='.$val['aid'])}" target="_blank">{$val.title}</a></td>
             <td class="hidden-xs">{$val.create_time|date="Y-m-d H:i:s"}</td>
             <td>
             <div class="">
-            <a href="{:url('@portal/post/edit?aid='.$val['aid'])}" target="_blank" class="btn btn-primary" role="button">{:lang('编辑')}</a>
+            <a href="{:url('portal/post/edit?aid='.$val['aid'])}" target="_blank" class="btn btn-primary" role="button">{:lang('编辑')}</a>
             <a href="{:url('remove?aid='.$val['aid'])}" class="btn btn-danger" role="button">{:lang('删除')}</a>
             </div>
           </td>
