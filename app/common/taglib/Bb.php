@@ -114,7 +114,7 @@ class Bb extends TagLib{
         ';
 
         if(!empty($type)){
-            $Str .= ' $where[] = ["'.$type.'","exp", "is not null"]; ';
+            $Str .= ' $where[] = ["'.$type.'","=","not null"]; ';
         }
 
         if(!empty($tid)){
