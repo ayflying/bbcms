@@ -51,24 +51,9 @@ class Resource extends RuleGroup
         $this->rest    = $rest;
 
         if ($this->parent) {
+            $this->domain = $this->parent->getDomain();
             $this->parent->addRuleItem($this);
         }
-    }
-
-    /**
-     * 解析资源路由规则
-     * @access protected
-     * @return void
-     */
-    protected function parseGroupRule()
-    {
-        $origin = $this->router->getGroup();
-        $this->router->setGroup($this);
-
-        // 生成资源路由的路由规则
-        $this->buildResourceRule($this->resource, $this->option);
-
-        $this->router->setGroup($origin);
     }
 
     /**
@@ -80,6 +65,9 @@ class Resource extends RuleGroup
      */
     protected function buildResourceRule($rule, $option = [])
     {
+        $origin = $this->router->getGroup();
+        $this->router->setGroup($this);
+
         if (strpos($rule, '.')) {
             // 注册嵌套资源路由
             $array = explode('.', $rule);
@@ -110,6 +98,8 @@ class Resource extends RuleGroup
 
             $this->addRule(trim($val[1], '/'), $this->route . '/' . $val[2], $val[0], $option);
         }
+
+        $this->router->setGroup($origin);
     }
 
     /**

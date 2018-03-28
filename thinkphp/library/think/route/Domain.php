@@ -13,12 +13,10 @@ namespace think\route;
 
 use think\Container;
 use think\Loader;
-use think\Response;
 use think\Route;
 use think\route\dispatch\Callback as CallbackDispatch;
 use think\route\dispatch\Controller as ControllerDispatch;
 use think\route\dispatch\Module as ModuleDispatch;
-use think\route\dispatch\Response as ResponseDispatch;
 
 class Domain extends RuleGroup
 {
@@ -51,17 +49,6 @@ class Domain extends RuleGroup
      */
     public function check($request, $url, $depr = '/', $completeMatch = false)
     {
-        if ($this->rule) {
-            // 解析域名路由
-            if ($this->rule instanceof Response) {
-                return new ResponseDispatch($this->rule);
-            }
-
-            $this->parseGroupRule();
-
-            $this->rule = null;
-        }
-
         // 检测别名路由
         $result = $this->checkRouteAlias($request, $url, $depr);
 
@@ -71,6 +58,11 @@ class Domain extends RuleGroup
 
         // 检测URL绑定
         $result = $this->checkUrlBind($url, $depr);
+
+        if (!empty($this->option['append'])) {
+            $request->route($this->option['append']);
+            unset($this->option['append']);
+        }
 
         if (false !== $result) {
             return $result;
@@ -121,6 +113,9 @@ class Domain extends RuleGroup
         $bind = $this->router->getBind($this->domain);
 
         if (!empty($bind)) {
+
+            $this->parseBindAppendParam($bind);
+
             // 记录绑定信息
             Container::get('app')->log('[ BIND ] ' . var_export($bind, true));
 
@@ -140,6 +135,15 @@ class Domain extends RuleGroup
         }
 
         return false;
+    }
+
+    protected function parseBindAppendParam(&$bind)
+    {
+        if (false !== strpos($bind, '?')) {
+            list($bind, $query) = explode('?', $bind);
+            parse_str($query, $vars);
+            $this->append($vars);
+        }
     }
 
     /**

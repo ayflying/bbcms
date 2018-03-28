@@ -31,18 +31,21 @@ class Lists extends Common{
                 $where[] = [current($mod_arr),'=',next($mod_arr)];
             }
         }
-            
+        
 		if($sql['mod']>0){
 			$table_mod = 'portal_mod_'.$sql['mod'];
             //$list = Db::view(['portal_article'=>'a'],'*')
 			$list = Db::view($table_article)
             ->view($table_mod,'*',$table_article.'.aid = '.$table_mod.'.aid')
 			->view('member_user','username,gid,headimgurl',$table_article.'.uid = member_user.uid')
-            ->where($where) -> order($order) -> cache(true,null,'list') -> paginate(Config::get('bbcms.page_num'));
+            ->where($where) -> order($order) //-> cache(true,null,'list')
+            -> paginate(Config::get('bbcms.page_num'));
 		}else{
-			$list = Db::view($table_article)
+            $list = Db::view($table_article)
             ->view('member_user','username,gid,headimgurl',$table_article.'.uid = member_user.uid')
-			->where($where) -> order($order) -> cache(true,null,'list') -> paginate(Config::get('bbcms.page_num'));
+			->where($where) -> order($order) //-> cache(true,null,'list')
+            -> paginate(Config::get('bbcms.page_num'));
+            
         }
 
         $page = $list->render();
