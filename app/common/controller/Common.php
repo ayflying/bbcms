@@ -116,11 +116,22 @@ class Common extends Controller{
     
     protected function fetch($template = '', $vars = [], $config = [], $renderContent = false)
     {
+        
         $config = array_merge($config,Config::pull('template'));
         $config['tpl_replace_string'] = [
             '__Tpl__' => Config::get('bbcms.view_path'),
             '__PUBLIC__' => '/public',
         ];
+        //dump($config);
+        $file = $config['view_path'].$template.'.'.$config['view_suffix'];
+        if(!is_file($file)){
+            
+            $config['tpl_replace_string']['__Tpl__'] = "/template/default";
+            $config['view_path'] = "./template/default/";
+            $template = './template/default'.$template.".".$config['view_suffix'];
+        }
+        //dump($config);
+        
         
 		$this -> assign('_G',$this -> _G);
         return $this -> view -> fetch($template,$vars,$config,$renderContent);

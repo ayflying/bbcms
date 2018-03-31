@@ -8,7 +8,7 @@ class Search extends Common
 {
     public function index($tid=null,$search,$order='update_time desc'){
         $this -> _G['title'] = "搜索[{$search}]";
-        $list = Db::name('portal_article') ->where('title','like',"%{$search}%") -> paginate(PAGE_NUM);
+        $list = Db::name('portal_article') ->where('title','like',"%{$search}%") -> paginate(20);
         $page = $list->render();
         $this -> _G['page'] = $page;
         

@@ -2,6 +2,7 @@
 namespace app\common\taglib;
 use think\template\TagLib;
 use think\Db;
+use think\Cache;
 use think\facade\Url;
 
 use app\portal\model\PortalArticle;
@@ -105,8 +106,10 @@ class Bb extends TagLib{
 
         $aid = $this -> autoBuildVar($aid); //格式化数组变量
         $tid = $this -> autoBuildVar($tid); //格式化数组变量
-
-
+        $link = null;
+        
+        $cache = "bb_Article_".md5($aid."|".$tid."|".$row."|".$type."|".$order."|".$item);
+        
         $Str = '<?php
             $where = [
                 ["status",">",0],
@@ -114,7 +117,8 @@ class Bb extends TagLib{
         ';
 
         if(!empty($type)){
-            $Str .= ' $where[] = ["'.$type.'","=","not null"]; ';
+            //$Str .= ' $where[] = ["'.$type.'","=","null"]; ';
+            $link .= " -> whereNotNull('$type')";
         }
 
         if(!empty($tid)){
@@ -132,10 +136,22 @@ class Bb extends TagLib{
             ';
         }else{
             
+            //自建缓存
             $Str .='
+                $tag_sql = Cache::remember("'.$cache.'",function() use ($db,$where,$relation){
+                    
+                    return $tag_sql = $db -> all(function($query) use ($where){
+                        $query -> where($where) '.$link.' -> limit('.$row.') -> order("'.$order.'") -> cache(true);
+                    },$relation);
+                    
+                });
+                
+                /*
                 $tag_sql = $db -> all(function($query) use ($where){
-                    $query -> where($where)  -> limit('.$row.') -> order("'.$order.'") -> cache(true);
+                    $query -> where($where) '.$link.' -> limit('.$row.') -> order("'.$order.'") -> cache(true);
                 },$relation);
+                */
+                
             ';
             
             /*
@@ -153,7 +169,7 @@ class Bb extends TagLib{
         $Str .= ' foreach($tag_sql as $key => $'.$item.'):
             if($'.$item.'["mod"] > 0){
                 $mod_table = "portal_mod_".$'.$item.'["mod"];
-                $'.$item.'["mod"] = Db::name($mod_table)-> cache(true) -> where("aid",$'.$item.'["aid"]) -> find();
+                $'.$item.'["mod"] = Db::name($mod_table)-> where("aid",$'.$item.'["aid"]) -> cache(true)  -> find();
             }
             $'.$item.'["url"] = Url::build("portal/Article/index?aid=".$'.$item.'["aid"]);
             $'.$item.'["turl"] = Url::build("portal/Lists/index?tid=".$'.$item.'["tid"]);

@@ -1,14 +1,17 @@
 <?php
 namespace app\portal\controller;
 use think\Db;
+use think\Cache;
 use think\facade\Config;
 use app\portal\model\PortalArticle;
 use app\common\controller\Common;
 
 class Lists extends Common{
-	public function index($tid=0,$search=null,$order='portal_article.update_time desc',$mod=null){
+	public function index($tid=0,$search=null,$order='portal_article.update_time desc',$mod=null)
+    {
         
 		$sql = Db::name('portal_menu')-> cache("menu_".$tid) -> find($tid);
+
         if(!empty($sql['jump'])){
             header('Location: '.$sql['jump']);
         }
@@ -32,13 +35,16 @@ class Lists extends Common{
             }
         }
         
+        
+        
+        
 		if($sql['mod']>0){
 			$table_mod = 'portal_mod_'.$sql['mod'];
             //$list = Db::view(['portal_article'=>'a'],'*')
 			$list = Db::view($table_article)
             ->view($table_mod,'*',$table_article.'.aid = '.$table_mod.'.aid')
 			->view('member_user','username,gid,headimgurl',$table_article.'.uid = member_user.uid')
-            ->where($where) -> order($order) //-> cache(true,null,'list')
+            ->where($where) -> order($order)  //-> cache(true,null,'list')
             -> paginate(Config::get('bbcms.page_num'));
 		}else{
             $list = Db::view($table_article)
@@ -47,7 +53,8 @@ class Lists extends Common{
             -> paginate(Config::get('bbcms.page_num'));
             
         }
-
+        
+        
         $page = $list->render();
         $this -> _G['menu'] = $sql;
         $this -> _G['page'] = $page;
