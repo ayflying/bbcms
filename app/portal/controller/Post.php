@@ -166,19 +166,7 @@ class Post extends Common{
             $add -> tid = $tid;
             $add -> mod = $sql['mod'];
             //$add -> title = $post['title'];
-
             
-            //焦点图
-            
-            $thumb = $this -> thumb_upload('thumb');
-            $add -> thumb = $thumb;
-            //$add -> litpic =  isset($thumb) ? reset($thumb) : null;
-            //选择合适的图片为预备缩略图
-            if(isset($thumb)){
-                $read_litpic = reset($thumb);
-            }else{
-                $read_litpic = Db::name('portal_attachment') -> where('aid','null') ->  where('uid',$uid) -> value("url");
-            }
             
             //存在缩略图，开始压缩
             if(isset($read_litpic))
@@ -186,7 +174,7 @@ class Post extends Common{
                 $dir = "./uploads/litpic/".date("Ymd").'/';
                 is_dir($dir) or mkdir($dir.date("Ymd"));
                 $litpic = $dir.pathinfo($read_litpic,PATHINFO_BASENAME);
-                $this -> thumb($read_litpic,300,9999,$litpic);
+                $this -> thumb($read_litpic,360,null,$litpic);
                 $data = Db::name('portal_attachment') -> field('id,url,size',true) -> where('url',$read_litpic) -> find();
                 $data['url'] = $litpic;
                 $data['size'] = filesize($litpic);
@@ -235,23 +223,27 @@ class Post extends Common{
 
 	public function edit($aid){
 		$uid = $this -> uid;
-
+        
         if(request() -> isAjax()){
             $post = input('post.');
-            $article = PortalArticle::get($aid)->thumb;
+            $article = PortalArticle::get($aid);
             //修改thumb
             $thumb_id = $post['thumb_id'];
             //dump($article['thumb']);
-            $data['thumb'] = $article;
+            $data['thumb'] = $article -> thumb;
             $files = request()->file('thumb');
             foreach($files as $file){
                 //dump($file);
                 $info = $file -> move('./uploads/thumb');
-                $this -> thumb($info->getPathname(),300);
+                $this -> thumb($info->getPathname(),360);
                 $file_data = $this -> attachment($info,$aid,$file-> getInfo()['name']);
-                $data['thumb'][$thumb_id] = $file_data['url'];
+                echo $data['thumb'][$thumb_id] = $file_data['url'];
                 $data['aid'] = $aid;
+                if(empty($article->litpic)){
+                    $data['litpic'] = $file_data['url'];
+                }
                 PortalArticle::update($data);
+                
             }
             $this -> success("success");
         }
@@ -260,13 +252,16 @@ class Post extends Common{
 		if (request()->isPost()){
             Cache::rm('article_'.$aid);
             $cache = Cache::pull('article_'.$aid);
-
+            
             $post = input('post.');
             if(isset($post['mod'])){
                 $mod_data = $post['mod'];
                 unset($post['mod']);
             }
             unset($post['thumb']);
+            if(empty($post['litpic'])){
+                unset($post['litpic']);
+            }
             $article = PortalArticle::get($aid);
             $article -> allowField(true) -> save($post);
             $article -> addonarticle -> save(['content' => $post['content']]);
@@ -280,7 +275,6 @@ class Post extends Common{
                 }
                 $mod = Db::name('portal_mod_'.$article -> mod) -> where('aid',$aid) -> update($mod_data);
             }
-
 
             $this -> success(lang('编辑完成'),url('portal/article/index',['aid'=>$aid]),null,1);
 
@@ -315,8 +309,10 @@ class Post extends Common{
 
 	}
 
+    
+    
     /*
-        缩略图上传类
+        thumb缩略图上传类
     */
     public function thumb_upload($name = 'file'){
         $files = request()->file($name);

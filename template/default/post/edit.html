@@ -38,8 +38,8 @@
 	   </div>
        <div class="litpic col-md-2 hidden-xs">
           <!--<label for="litpic">封面</label>-->
-    	  <input name="litpic" class="form-control" type="hidden" id="litpic" value="{$_G.article.litpic}" />
-          <div><img class="img-thumbnail" src="{$_G.article.litpic}" /></div>
+    	  <input name="litpic" class="form-control" type="thumb" id="litpic" value="" />
+          <div><img class="img-thumbnail" src="{$_G.article.litpic ?: "/public/cloud/images/nothumb.png"}" /></div>
         </div>
      </div>
     </div>
@@ -102,7 +102,7 @@
 $(function(){
 	/*
 	//上传焦点图
-	var obj = $(".thumb input");   //设置上传按钮的对象
+	var obj = $(".litpic input");   //设置上传按钮的对象
 	obj.change(function(e) {
 		var imgobj = $(this).siblings("img");
 		var objUrl = getObjectURL(this.files[0]);
@@ -113,6 +113,8 @@ $(function(){
     });
 	*/
 	//上传焦点图-end
+	
+	
 	var obj = $(".thumb input");   //设置上传按钮的对象
 	obj.change(function(e) {
 		var thumb_id = $(this).attr('thumb_id');
@@ -159,7 +161,7 @@ $(function(){
 	});
 	
 	
-	//焦点同滑动显示
+	//焦点图滑动显示
 	var h = $(".litpic").parent().height();
 	$(".litpic div").stop().animate({height:h});
 	$(".litpic img").mouseover(function(e) {
