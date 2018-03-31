@@ -169,17 +169,31 @@ class Post extends Common{
 
             
             //焦点图
-            /*
+            
             $thumb = $this -> thumb_upload('thumb');
-            $add -> litpic =  isset($thumb) ? reset($thumb) : null;
             $add -> thumb = $thumb;
-            */
-            $thumb = Cache::pull("webuploader_".$this->uid);
-            if($thumb){
-                
-                $add -> litpic =  isset($thumb) ? reset($thumb) : null;
-                $add -> thumb = $thumb;
+            //$add -> litpic =  isset($thumb) ? reset($thumb) : null;
+            //选择合适的图片为预备缩略图
+            if(isset($thumb)){
+                $read_litpic = reset($thumb);
+            }else{
+                $read_litpic = Db::name('portal_attachment') -> where('aid','null') ->  where('uid',$uid) -> value("url");
             }
+            
+            //存在缩略图，开始压缩
+            if(isset($read_litpic))
+            {
+                $dir = "./uploads/litpic/".date("Ymd").'/';
+                is_dir($dir) or mkdir($dir.date("Ymd"));
+                $litpic = $dir.pathinfo($read_litpic,PATHINFO_BASENAME);
+                $this -> thumb($read_litpic,300,9999,$litpic);
+                $data = Db::name('portal_attachment') -> field('id,url,size',true) -> where('url',$read_litpic) -> find();
+                $data['url'] = $litpic;
+                $data['size'] = filesize($litpic);
+                Db::name("portal_attachment") -> insert($data);
+                $add -> litpic = $litpic;
+            }
+            $thumb = Cache::pull("webuploader_".$this->uid);
             
             //创建主键写入数据库
             $add -> allowField(true) -> save($post);
