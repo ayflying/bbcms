@@ -22,7 +22,7 @@ class Bb extends TagLib{
         'ceshi' => ['attr' => 'name'],
         'menu' => ['attr'=>'pid,row,item','level'=>3],
         'list'  => ['attr' => 'tid,row,order'],
-        'article' => ['attr' => 'aid,tid,row,typeid,order,type'],
+        'article' => ['attr' => 'aid,tid,row,typeid,order,type,time'],
         //'url' => ['attr' => 'aid,tid', 'close' => 0],
         'sql' => ['attr' => 'table,where,row,order,item', 'level' => 5],
         'ad' => ['attr'=>'id', 'close' => 0],
@@ -103,26 +103,33 @@ class Bb extends TagLib{
         $type = !empty($tag['type']) ? $tag['type'] : null;
         $order = !empty($tag['order']) ? $tag['order'] : 'create_time desc';    //当前
         $item = !empty($tag['item'])?$tag['item']:'bb';
+        $time = !empty($tag['time'])?$tag['time']:null;
 
         $aid = $this -> autoBuildVar($aid); //格式化数组变量
         $tid = $this -> autoBuildVar($tid); //格式化数组变量
         $link = null;
         
-        $cache = "bb_Article_".md5($aid."|".$tid."|".$row."|".$type."|".$order."|".$item);
+        
+        $cache = "bb_a_".md5($aid."-".$tid."-".$row."-".$type."-".$order."-".$item);
         
         $Str = '<?php
             $where = [
                 ["status",">",0],
             ];
+            //echo "ceshi:"."$ceshi";
         ';
 
         if(!empty($type)){
-            //$Str .= ' $where[] = ["'.$type.'","=","null"]; ';
+            //$Str .= ' $where[] = ["'.$type.'",'=',"not null"]; ';
             $link .= " -> whereNotNull('$type')";
         }
 
         if(!empty($tid)){
             $Str .= ' $where[] = ["tid","in",['.$tid.']]; ';
+        }
+        
+        if(!empty($time)){
+            $link .= ' ->whereTime("create_time", "'.$time.'") ';
         }
 
         $Str .= ' 
@@ -138,6 +145,7 @@ class Bb extends TagLib{
             
             //自建缓存
             $Str .='
+                /*
                 $tag_sql = Cache::remember("'.$cache.'",function() use ($db,$where,$relation){
                     
                     return $tag_sql = $db -> all(function($query) use ($where){
@@ -145,12 +153,13 @@ class Bb extends TagLib{
                     },$relation);
                     
                 });
+                */
                 
-                /*
+                
                 $tag_sql = $db -> all(function($query) use ($where){
                     $query -> where($where) '.$link.' -> limit('.$row.') -> order("'.$order.'") -> cache(true);
                 },$relation);
-                */
+                
                 
             ';
             
