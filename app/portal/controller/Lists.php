@@ -11,16 +11,16 @@ class Lists extends Common{
     {
         
 		$sql = Db::name('portal_menu')-> cache("menu_".$tid) -> find($tid);
-
+        
         if(!empty($sql['jump'])){
             header('Location: '.$sql['jump']);
         }
         $table_article = 'portal_article';
 		$where[] = [$table_article.'.status','=',1];
-
+        
 		if($tid > 0){
 			//获取下级目录文章
-			$type = Db::name('portal_menu') -> where('pid',$tid) -> cache(true) -> column('tid');
+			$type = Db::name('portal_menu') -> where('pid',$tid) -> cache("list_pid_".$tid) -> column('tid');
 			$type[] = (int)$tid;
 			$where[] = ['tid','in',$type];
 		}
