@@ -166,22 +166,26 @@ class Post extends Common{
             $add -> tid = $tid;
             $add -> mod = $sql['mod'];
             //$add -> title = $post['title'];
+            $add -> thumb = Cache::pull("webuploader_".$this->uid);
             
             
             //存在缩略图，开始压缩
-            if(isset($read_litpic))
-            {
-                $dir = "./uploads/litpic/".date("Ymd").'/';
-                is_dir($dir) or mkdir($dir.date("Ymd"));
-                $litpic = $dir.pathinfo($read_litpic,PATHINFO_BASENAME);
-                $this -> thumb($read_litpic,360,null,$litpic);
-                $data = Db::name('portal_attachment') -> field('id,url,size',true) -> where('url',$read_litpic) -> find();
-                $data['url'] = $litpic;
-                $data['size'] = filesize($litpic);
-                Db::name("portal_attachment") -> insert($data);
-                $add -> litpic = $litpic;
-            }
-            $thumb = Cache::pull("webuploader_".$this->uid);
+            //$read_litpic = Db::name('portal_attachment') -> where('uid',$uid) -> whereNull('aid') -> value('url');
+            $read_litpic =  Db::name('portal_attachment') -> field("id,size",true) -> where('uid',$uid) -> whereNull('aid') -> find();
+            //if(isset($read_litpic)){
+            
+            $dir = "./uploads/litpic/".date("Ymd").'/';
+            is_dir($dir) or mkdir($dir);
+            $litpic = $dir.pathinfo($read_litpic['url'],PATHINFO_BASENAME);
+            $this -> thumb($read_litpic['url'],360,null,$litpic);
+            //$data = Db::name('portal_attachment') -> field('id,url,size',true) -> where('url',$read_litpic) -> find();
+            //$data = Db::name('portal_attachment') -> -> where('id',$read_litpic['id']) -> find();
+            $read_litpic['url'] = $litpic;
+            $read_litpic['size'] = filesize($litpic);
+            Db::name("portal_attachment") -> insert($read_litpic);
+            $add -> litpic = $litpic;
+            //}
+            
             
             //创建主键写入数据库
             $add -> allowField(true) -> save($post);
@@ -199,7 +203,7 @@ class Post extends Common{
                 $mod = Db::name('portal_mod_'.$sql['mod'])-> insert($mod_data);
             }
 
-            Cache::clear('list');   //更新缓存
+            //Cache::clear('list');   //更新缓存
 
             //修改附件为当前aid
             Db::name('portal_attachment') -> where('aid','null') ->  where('uid',$uid) -> setField('aid',$aid);
