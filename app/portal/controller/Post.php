@@ -172,19 +172,18 @@ class Post extends Common{
             //存在缩略图，开始压缩
             //$read_litpic = Db::name('portal_attachment') -> where('uid',$uid) -> whereNull('aid') -> value('url');
             $read_litpic =  Db::name('portal_attachment') -> field("id,size",true) -> where('uid',$uid) -> whereNull('aid') -> find();
-            //if(isset($read_litpic)){
-            
-            $dir = "./uploads/litpic/".date("Ymd").'/';
-            is_dir($dir) or mkdir($dir);
-            $litpic = $dir.pathinfo($read_litpic['url'],PATHINFO_BASENAME);
-            $this -> thumb($read_litpic['url'],360,null,$litpic);
-            //$data = Db::name('portal_attachment') -> field('id,url,size',true) -> where('url',$read_litpic) -> find();
-            //$data = Db::name('portal_attachment') -> -> where('id',$read_litpic['id']) -> find();
-            $read_litpic['url'] = $litpic;
-            $read_litpic['size'] = filesize($litpic);
-            Db::name("portal_attachment") -> insert($read_litpic);
-            $add -> litpic = $litpic;
-            //}
+            if(isset($read_litpic['url'])){
+                $dir = "./uploads/litpic/".date("Ymd").'/';
+                is_dir($dir) or mkdir($dir);
+                $litpic = $dir.pathinfo($read_litpic['url'],PATHINFO_BASENAME);
+                $this -> thumb($read_litpic['url'],360,null,$litpic);
+                //$data = Db::name('portal_attachment') -> field('id,url,size',true) -> where('url',$read_litpic) -> find();
+                //$data = Db::name('portal_attachment') -> -> where('id',$read_litpic['id']) -> find();
+                $read_litpic['url'] = $litpic;
+                $read_litpic['size'] = filesize($litpic);
+                Db::name("portal_attachment") -> insert($read_litpic);
+                $add -> litpic = $litpic;
+            }
             
             
             //创建主键写入数据库
