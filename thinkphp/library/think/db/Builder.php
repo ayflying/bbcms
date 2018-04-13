@@ -113,7 +113,7 @@ abstract class Builder
         $result = [];
 
         foreach ($data as $key => $val) {
-            $item = $this->parseKey($query, $key);
+            $item = $this->parseKey($query, $key, true);
 
             if ($val instanceof Expression) {
                 $result[$item] = $val->getValue();
@@ -143,11 +143,6 @@ abstract class Builder
                     case 'DEC':
                         $result[$item] = $item . ' - ' . floatval($val[1]);
                         break;
-                    default:
-                        $value = $this->parseArrayData($query, $val);
-                        if ($value) {
-                            $result[$item] = $value;
-                        }
                 }
             } elseif (is_scalar($val)) {
                 // 过滤非标量数据
@@ -156,18 +151,6 @@ abstract class Builder
         }
 
         return $result;
-    }
-
-    /**
-     * 数组数据解析
-     * @access protected
-     * @param  Query     $query     查询对象
-     * @param  array     $data
-     * @return mixed
-     */
-    protected function parseArrayData(Query $query, $data)
-    {
-        return false;
     }
 
     /**
@@ -200,9 +183,10 @@ abstract class Builder
      * @access public
      * @param  Query  $query    查询对象
      * @param  string $key      字段名
+     * @param  bool   $strict   严格检测
      * @return string
      */
-    public function parseKey(Query $query, $key)
+    public function parseKey(Query $query, $key, $strict = false)
     {
         return $key;
     }
@@ -226,7 +210,7 @@ abstract class Builder
                 if ($field instanceof Expression) {
                     $array[] = $field->getValue();
                 } elseif (!is_numeric($key)) {
-                    $array[] = $this->parseKey($query, $key) . ' AS ' . $this->parseKey($query, $field);
+                    $array[] = $this->parseKey($query, $key) . ' AS ' . $this->parseKey($query, $field, true);
                 } else {
                     $array[] = $this->parseKey($query, $field);
                 }
@@ -380,7 +364,7 @@ abstract class Builder
     protected function parseWhereItem(Query $query, $field, $val, $rule = '', $binds = [], $bindName = null)
     {
         // 字段分析
-        $key = $field ? $this->parseKey($query, $field) : '';
+        $key = $field ? $this->parseKey($query, $field, true) : '';
 
         // 查询规则和条件
         if (!is_array($val)) {
@@ -492,13 +476,13 @@ abstract class Builder
     /**
      * 表达式查询
      * @access protected
-     * @param  Query     $query        查询对象
-     * @param  string    $key
-     * @param  string    $exp
-     * @param  mixed     $value
-     * @param  string    $field
-     * @param  string    $bindName
-     * @param  integer   $bindType
+     * @param  Query        $query        查询对象
+     * @param  string       $key
+     * @param  string       $exp
+     * @param  Expression   $value
+     * @param  string       $field
+     * @param  string       $bindName
+     * @param  integer      $bindType
      * @return string
      */
     protected function parseExp(Query $query, $key, $exp, Expression $value, $field, $bindName, $bindType)
@@ -825,44 +809,42 @@ abstract class Builder
             return '';
         }
 
-        if (is_array($order)) {
-            $array = [];
+        $array = [];
 
-            foreach ($order as $key => $val) {
-                if ($val instanceof Expression) {
-                    $array[] = $val->getValue();
-                } elseif (is_array($val)) {
-                    if (isset($val['sort'])) {
-                        $sort = ' ' . $val['sort'];
-                        unset($val['sort']);
-                    } else {
-                        $sort = '';
-                    }
-
-                    $options = $query->getOptions();
-                    $bind    = $this->connection->getFieldsBind($options['table']);
-
-                    foreach ($val as $k => $item) {
-                        $val[$k] = $this->parseDataBind($query, $key, $item, $bind, $k);
-                    }
-
-                    $array[] = 'field(' . $this->parseKey($query, $key) . ',' . implode(',', $val) . ')' . $sort;
-                } elseif (is_numeric($key)) {
-                    if ('[rand]' == $val) {
-                        $array[] = $this->parseRand($query);
-                    } elseif (false === strpos($val, '(')) {
-                        $array[] = $this->parseKey($query, $val);
-                    } else {
-                        $array[] = $val;
-                    }
+        foreach ($order as $key => $val) {
+            if ($val instanceof Expression) {
+                $array[] = $val->getValue();
+            } elseif (is_array($val)) {
+                if (isset($val['sort'])) {
+                    $sort = ' ' . $val['sort'];
+                    unset($val['sort']);
                 } else {
-                    $sort    = in_array(strtolower(trim($val)), ['asc', 'desc']) ? ' ' . $val : '';
-                    $array[] = $this->parseKey($query, $key) . ' ' . $sort;
+                    $sort = '';
                 }
-            }
 
-            $order = implode(',', $array);
+                $options = $query->getOptions();
+                $bind    = $this->connection->getFieldsBind($options['table']);
+
+                foreach ($val as $k => $item) {
+                    $val[$k] = $this->parseDataBind($query, $key, $item, $bind, $k);
+                }
+
+                $array[] = 'field(' . $this->parseKey($query, $key, true) . ',' . implode(',', $val) . ')' . $sort;
+            } elseif ('[rand]' == $val) {
+                $array[] = $this->parseRand($query);
+            } else {
+                if (is_numeric($key)) {
+                    list($key, $sort) = explode(' ', strpos($val, ' ') ? $val : $val . ' ');
+                } else {
+                    $sort = $val;
+                }
+
+                $sort    = in_array(strtolower($sort), ['asc', 'desc'], true) ? ' ' . $sort : '';
+                $array[] = $this->parseKey($query, $key, true) . $sort;
+            }
         }
+
+        $order = implode(',', $array);
 
         return ' ORDER BY ' . $order;
     }
@@ -967,11 +949,7 @@ abstract class Builder
             return '';
         }
 
-        if (is_array($index)) {
-            $index = join(",", $index);
-        }
-
-        return sprintf(" FORCE INDEX ( %s ) ", $index);
+        return sprintf(" FORCE INDEX ( %s ) ", is_array($index) ? implode(',', $index) : $index);
     }
 
     /**
@@ -1087,7 +1065,7 @@ abstract class Builder
         $fields = [];
 
         foreach ($insertFields as $field) {
-            $fields[] = $this->parseKey($query, $field);
+            $fields[] = $this->parseKey($query, $field, true);
         }
 
         return str_replace(
@@ -1119,7 +1097,7 @@ abstract class Builder
         }
 
         foreach ($fields as &$field) {
-            $field = $this->parseKey($query, $field);
+            $field = $this->parseKey($query, $field, true);
         }
 
         return 'INSERT INTO ' . $this->parseTable($query, $table, $options) . ' (' . implode(',', $fields) . ') ' . $this->select($options);
