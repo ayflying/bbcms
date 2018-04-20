@@ -1233,6 +1233,10 @@ class Query
      */
     public function whereExists($condition, $logic = 'AND')
     {
+        if (is_string($condition)) {
+            $condition = $this->raw($condition);
+        }
+
         $this->options['where'][strtoupper($logic)][] = ['', 'EXISTS', $condition];
         return $this;
     }
@@ -1246,6 +1250,10 @@ class Query
      */
     public function whereNotExists($condition, $logic = 'AND')
     {
+        if (is_string($condition)) {
+            $condition = $this->raw($condition);
+        }
+
         $this->options['where'][strtoupper($logic)][] = ['', 'NOT EXISTS', $condition];
         return $this;
     }
@@ -1331,20 +1339,27 @@ class Query
     /**
      * 比较两个字段
      * @access public
-     * @param  string    $field1     查询字段
-     * @param  string    $operator   比较操作符
-     * @param  string    $field2     比较字段
-     * @param  string    $logic      查询逻辑 and or xor
+     * @param  string|array $field1     查询字段
+     * @param  string       $operator   比较操作符
+     * @param  string       $field2     比较字段
+     * @param  string       $logic      查询逻辑 and or xor
      * @return $this
      */
-    public function whereColumn($field1, $operator, $field2 = null, $logic = 'AND')
+    public function whereColumn($field1, $operator = null, $field2 = null, $logic = 'AND')
     {
+        if (is_array($field1)) {
+            foreach ($field1 as $item) {
+                $this->whereColumn($item[0], $item[1], isset($item[2]) ? $item[2] : null);
+            }
+            return $this;
+        }
+
         if (is_null($field2)) {
             $field2   = $operator;
             $operator = '=';
         }
 
-        return $this->whereExp($field1, $operator . ' ' . $field2, [], $logic);
+        return $this->parseWhereExp($logic, $field1, 'COLUMN', [$operator, $field2], [], true);
     }
 
     /**
@@ -1485,14 +1500,16 @@ class Query
             if (in_array(strtoupper($op), ['NULL', 'NOTNULL', 'NOT NULL'], true)) {
                 // null查询
                 $where = [$field, $op, ''];
-            } elseif (in_array(strtolower($op), ['=', 'eq', null], true)) {
+            } elseif (in_array($op, ['=', 'eq', 'EQ', null], true)) {
                 $where = [$field, 'NULL', ''];
-            } elseif (in_array(strtolower($op), ['<>', 'neq'], true)) {
+            } elseif (in_array($op, ['<>', 'neq', 'NEQ'], true)) {
                 $where = [$field, 'NOTNULL', ''];
             } else {
                 // 字段相等查询
                 $where = [$field, '=', $op];
             }
+        } elseif (in_array(strtoupper($op), ['REGEXP', 'NOT REGEXP', 'EXISTS', 'NOT EXISTS', 'NOTEXISTS'], true)) {
+            $where = [$field, $op, is_string($condition) ? $this->raw($condition) : $condition];
         } else {
             $where = $field ? [$field, $op, $condition] : null;
         }
@@ -1537,8 +1554,12 @@ class Query
     {
         $logic = strtoupper($logic);
 
-        if (isset($this->options['where'][$logic][$field])) {
-            unset($this->options['where'][$logic][$field]);
+        if (isset($this->options['where'][$logic])) {
+            foreach ($this->options['where'][$logic] as $key => $val) {
+                if (is_array($val) && $val[0] == $field) {
+                    unset($this->options['where'][$logic][$key]);
+                }
+            }
         }
 
         return $this;
@@ -1827,11 +1848,14 @@ class Query
      * @param  string       $order
      * @return $this
      */
-    public function orderField($field, array $values = [], $order = '')
+    public function orderField($field, array $values, $order = '')
     {
-        $values['sort'] = $order;
+        if (!empty($values)) {
+            $values['sort'] = $order;
 
-        $this->options['order'][$field] = $values;
+            $this->options['order'][$field] = $values;
+        }
+
         return $this;
     }
 
@@ -2057,6 +2081,29 @@ class Query
     {
         $this->options['json'] = $json;
         return $this;
+    }
+
+    /**
+     * 设置字段类型信息
+     * @access public
+     * @param  array $type 字段类型信息
+     * @return $this
+     */
+    public function setJsonFieldType(array $type)
+    {
+        $this->options['field_type'] = $type;
+        return $this;
+    }
+
+    /**
+     * 获取字段类型信息
+     * @access public
+     * @param  string $field 字段名
+     * @return string|null
+     */
+    public function getJsonFieldType($field)
+    {
+        return isset($this->options['field_type'][$field]) ? $this->options['field_type'][$field] : null;
     }
 
     /**
