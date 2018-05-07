@@ -26,20 +26,22 @@ class Lists extends Common{
 		}
 		isset($search) and $where[] = ['title','like' , '%'.$search.'%'];
         
-        //mod筛选 ，格式为?mod=a,1|b,2|c,3
-        if(isset($mod)){
-            $mod_arr = explode('|',$mod);
-            foreach($mod_arr as $val){
-                $mod_arr = explode(',',$val);
-                $where[] = [current($mod_arr),'=',next($mod_arr)];
-            }
-        }
+        
         
         
         
         
 		if($sql['mod']>0){
-			$table_mod = 'portal_mod_'.$sql['mod'];
+            $table_mod = 'portal_mod_'.$sql['mod'];
+            //mod筛选 ，格式为?mod=a,1|b,2|c,3
+            if(isset($mod)){
+                $mod_arr = explode('|',$mod);
+                foreach($mod_arr as $val){
+                    $mod_arr = explode(',',$val);
+                    $where[] = [$table_mod.'.'.current($mod_arr),'=',next($mod_arr)];
+                }
+            }
+			
             //$list = Db::view(['portal_article'=>'a'],'*')
 			$list = Db::view($table_article)
             ->view($table_mod,'*',$table_article.'.aid = '.$table_mod.'.aid')
