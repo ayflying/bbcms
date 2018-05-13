@@ -89,6 +89,12 @@ class Query
     private static $extend = [];
 
     /**
+     * 读取主库的表
+     * @var array
+     */
+    private static $readMaster = [];
+
+    /**
      * 日期查询表达式
      * @var array
      */
@@ -243,6 +249,21 @@ class Query
     }
 
     /**
+     * 设置从主库读取数据
+     * @access public
+     * @param  bool $all 是否所有表有效
+     * @return $this
+     */
+    public function readMaster($all = false)
+    {
+        $table = $all ? '*' : $this->getTable();
+
+        static::$readMaster[$table] = true;
+
+        return $this;
+    }
+
+    /**
      * 指定当前数据表名（不含前缀）
      * @access public
      * @param  string $name
@@ -374,6 +395,62 @@ class Query
     public function getLastSql()
     {
         return $this->connection->getLastSql();
+    }
+
+    /**
+     * 执行数据库Xa事务
+     * @access public
+     * @param  callable $callback 数据操作方法回调
+     * @param  array    $dbs      多个查询对象或者连接对象
+     * @return mixed
+     * @throws PDOException
+     * @throws \Exception
+     * @throws \Throwable
+     */
+    public function transactionXa($callback, array $dbs = [])
+    {
+        $xid = uniqid('xa');
+
+        if (empty($dbs)) {
+            $dbs[] = $this->getConnection();
+        }
+
+        foreach ($dbs as $key => $db) {
+            if ($db instanceof Query) {
+                $db = $db->getConnection();
+
+                $dbs[$key] = $db;
+            }
+
+            $db->startTransXa($xid);
+        }
+
+        try {
+            $result = null;
+            if (is_callable($callback)) {
+                $result = call_user_func_array($callback, [$this]);
+            }
+
+            foreach ($dbs as $db) {
+                $db->prepareXa($xid);
+            }
+
+            foreach ($dbs as $db) {
+                $db->commitXa($xid);
+            }
+
+            return $result;
+        } catch (\Exception $e) {
+            foreach ($dbs as $db) {
+                $db->rollbackXa($xid);
+            }
+            throw $e;
+        } catch (\Throwable $e) {
+            foreach ($dbs as $db) {
+                $db->rollbackXa($xid);
+            }
+            throw $e;
+        }
     }
 
     /**
@@ -542,13 +619,7 @@ class Query
     {
         $this->parseOptions();
 
-        $result = $this->connection->value($this, $field, $default);
-
-        if (!empty($this->options['fetch_sql'])) {
-            return $result;
-        }
-
-        return $result;
+        return $this->connection->value($this, $field, $default);
     }
 
     /**
@@ -1086,7 +1157,7 @@ class Query
      * @access public
      * @param  string|array $table 数据表
      * @param  string|array $field 查询字段
-     * @param  string|array $on    JOIN条件
+     * @param  mixed        $on    JOIN条件
      * @param  string       $type  JOIN类型
      * @return $this
      */
@@ -1511,7 +1582,7 @@ class Query
         } elseif (in_array(strtoupper($op), ['REGEXP', 'NOT REGEXP', 'EXISTS', 'NOT EXISTS', 'NOTEXISTS'], true)) {
             $where = [$field, $op, is_string($condition) ? $this->raw($condition) : $condition];
         } else {
-            $where = $field ? [$field, $op, $condition] : null;
+            $where = $field ? [$field, $op, $condition, isset($param[2]) ? $param[2] : null] : null;
         }
 
         return $where;
@@ -1529,7 +1600,13 @@ class Query
         if (key($field) !== 0) {
             $where = [];
             foreach ($field as $key => $val) {
-                $where[] = is_null($val) ? [$key, 'NULL', ''] : [$key, '=', $val];
+                if ($val instanceof Expression) {
+                    $where[] = [$key, 'exp', $val];
+                } elseif (is_null($val)) {
+                    $where[] = [$key, 'NULL', ''];
+                } else {
+                    $where[] = [$key, is_array($val) ? 'IN' : '=', $val];
+                }
             }
         } else {
             // 数组批量查询
@@ -3058,7 +3135,6 @@ class Query
     public function parsePkWhere($data)
     {
         $pk = $this->getPk($this->options);
-
         // 获取当前数据表
         $table = is_array($this->options['table']) ? key($this->options['table']) : $this->options['table'];
 
@@ -3136,6 +3212,10 @@ class Query
             if (!isset($options[$name])) {
                 $options[$name] = false;
             }
+        }
+
+        if (isset(static::$readMaster['*']) || (is_string($options['table']) && isset(static::$readMaster[$options['table']]))) {
+            $options['master'] = true;
         }
 
         foreach (['join', 'union', 'group', 'having', 'limit', 'force', 'comment'] as $name) {
