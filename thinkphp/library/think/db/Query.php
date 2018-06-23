@@ -14,6 +14,7 @@ namespace think\db;
 use PDO;
 use think\Collection;
 use think\Container;
+use think\Db;
 use think\db\exception\BindParamException;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\ModelNotFoundException;
@@ -28,12 +29,6 @@ use think\Paginator;
 
 class Query
 {
-    /**
-     * 数据库连接对象列表
-     * @var array
-     */
-    protected static $connections = [];
-
     /**
      * 当前数据库连接对象
      * @var Connection
@@ -92,7 +87,7 @@ class Query
      * 读取主库的表
      * @var array
      */
-    private static $readMaster = [];
+    protected static $readMaster = [];
 
     /**
      * 日期查询表达式
@@ -122,7 +117,7 @@ class Query
     public function __construct(Connection $connection = null)
     {
         if (is_null($connection)) {
-            $this->connection = Connection::instance();
+            $this->connection = Db::connect();
         } else {
             $this->connection = $connection;
         }
@@ -300,29 +295,6 @@ class Query
         $name = $name ?: $this->name;
 
         return $this->prefix . Loader::parseName($name);
-    }
-
-    /**
-     * 切换数据库连接
-     * @access public
-     * @param  mixed         $config 连接配置
-     * @param  bool|string   $name 连接标识 true 强制重新连接
-     * @return $this|object
-     * @throws Exception
-     */
-    public function connect($config = [], $name = false)
-    {
-        $this->connection = Connection::instance($config, $name);
-
-        $query = $this->connection->getConfig('query');
-
-        if (__CLASS__ != trim($query, '\\')) {
-            return new $query($this->connection);
-        }
-
-        $this->prefix = $this->connection->getConfig('prefix');
-
-        return $this;
     }
 
     /**
@@ -653,7 +625,7 @@ class Query
         if (!empty($this->options['fetch_sql'])) {
             return $result;
         } elseif ($force) {
-            $result += 0;
+            $result = (float) $result;
         }
 
         return $result;
@@ -663,11 +635,11 @@ class Query
      * COUNT查询
      * @access public
      * @param  string $field 字段名
-     * @return integer|string
+     * @return float|string
      */
     public function count($field = '*')
     {
-        if (isset($this->options['group'])) {
+        if (!empty($this->options['group'])) {
             // 支持GROUP
             $options = $this->getOptions();
             $subSql  = $this->options($options)->field('count(' . $field . ') AS think_count')->bind($this->bind)->buildSql();
@@ -688,7 +660,7 @@ class Query
      * SUM查询
      * @access public
      * @param  string $field 字段名
-     * @return float|int
+     * @return float
      */
     public function sum($field)
     {
@@ -723,7 +695,7 @@ class Query
      * AVG查询
      * @access public
      * @param  string $field 字段名
-     * @return float|int
+     * @return float
      */
     public function avg($field)
     {
@@ -2152,11 +2124,13 @@ class Query
      * 设置JSON字段信息
      * @access public
      * @param  array $json JSON字段
+     * @param  bool  $assoc 是否取出数组
      * @return $this
      */
-    public function json(array $json = [])
+    public function json(array $json = [], $assoc = false)
     {
-        $this->options['json'] = $json;
+        $this->options['json']       = $json;
+        $this->options['json_assoc'] = $assoc;
         return $this;
     }
 
@@ -2273,6 +2247,32 @@ class Query
         }
 
         return $this->parseWhereExp($logic, $field, strtolower($op) . ' time', $range, [], true);
+    }
+
+    /**
+     * 查询当前时间在两个时间字段范围
+     * @access public
+     * @param  string    $startField    开始时间字段
+     * @param  string    $endField 结束时间字段
+     * @return $this
+     */
+    public function whereBetweenTimeField($startField, $endField)
+    {
+        return $this->whereTime($startField, '<=', time())
+            ->whereTime($endField, '>=', time());
+    }
+
+    /**
+     * 查询当前时间不在两个时间字段范围
+     * @access public
+     * @param  string    $startField    开始时间字段
+     * @param  string    $endField 结束时间字段
+     * @return $this
+     */
+    public function whereNotBetweenTimeField($startField, $endField)
+    {
+        return $this->whereTime($startField, '>', time())
+            ->whereTime($endField, '<', time(), 'OR');
     }
 
     /**
@@ -2478,10 +2478,19 @@ class Query
                 if ($relation instanceof \Closure) {
                     $closure  = $relation;
                     $relation = $key;
+                } elseif (!is_int($key)) {
+                    $aggregateField = $relation;
+                    $relation       = $key;
                 }
+
+                if (!isset($aggregateField)) {
+                    $aggregateField = Loader::parseName($relation) . '_' . $aggregate;
+                }
+
                 $relation = Loader::parseName($relation, 1, false);
                 $count    = '(' . $this->model->$relation()->getRelationCountQuery($closure, $aggregate, $field) . ')';
-                $this->field([$count => Loader::parseName($relation) . '_' . $aggregate]);
+
+                $this->field([$count => $aggregateField]);
             }
         }
 
@@ -2916,7 +2925,7 @@ class Query
     protected function resultToModel(&$result, $options = [], $resultSet = false)
     {
         if (!empty($options['json'])) {
-            $this->jsonResult($result, $options['json']);
+            $this->jsonResult($result, $options['json'], $options['json_assoc']);
         }
 
         $condition = (!$resultSet && isset($options['where']['AND'])) ? $options['where']['AND'] : null;
