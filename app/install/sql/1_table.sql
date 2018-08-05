@@ -64,6 +64,7 @@ CREATE TABLE `bb_member_message` (
 -- ----------------------------
 -- Table structure for bb_member_user
 -- ----------------------------
+
 DROP TABLE IF EXISTS `bb_member_user`;
 CREATE TABLE `bb_member_user` (
   `uid` int(11) NOT NULL AUTO_INCREMENT,
@@ -72,6 +73,7 @@ CREATE TABLE `bb_member_user` (
   `email` char(50) NOT NULL,
   `username` char(50) NOT NULL,
   `password` char(50) NOT NULL,
+  `guid` char(50) NOT NULL,
   `money` double(255,2) NOT NULL,
   `idcard` char(255) DEFAULT NULL,
   `mobile` double(13,0) DEFAULT NULL,

@@ -1,6 +1,11 @@
 {include file="./header"}
 <form method="post" role="form">
   <div class="form-group">
+    <label for="type">数据库类型</label>
+    <input name="type" type="text" class="form-control" id="type" value="{$config.type}">
+  </div>
+  
+  <div class="form-group">
     <label for="hostname">数据库地址</label>
     <input name="hostname" type="text" class="form-control" id="hostname" value="{$config.hostname}">
   </div>
