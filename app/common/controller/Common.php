@@ -128,7 +128,7 @@ class Common extends Controller{
             
             $config['tpl_replace_string']['__Tpl__'] = "/template/default";
             $config['view_path'] = "./template/default/";
-            $template = './template/default'.$template.".".$config['view_suffix'];
+            $template = './template/default/'.$template.".".$config['view_suffix'];
         }
         //dump($config);
         
