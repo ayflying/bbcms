@@ -9,16 +9,11 @@ use app\common\controller\Common as Common2;
 
 class Common extends Common2{
     
-    protected $beforeActionList = [
-        'verification',
-        /*
-        'second' =>  ['except'=>'hello'],
-        'three'  =>  ['only'=>'hello,data'],
-        */
-    ];
     
     //初始化用户登录
-    public function verification(){
+    public function initialize(){
+        parent::initialize();
+        
         if(empty($this -> uid)){
             $this -> error("授权失败",null,null,1);
         }
