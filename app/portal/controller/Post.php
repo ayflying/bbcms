@@ -3,8 +3,8 @@ namespace app\portal\controller;
 use think\Db;
 use think\facade\Cache;
 use think\facade\Request;
-use think\Image;
 use think\facade\Config;
+use \think\Image;
 
 use app\common\controller\Common;
 use app\portal\model\PortalArticle;
@@ -35,9 +35,8 @@ class Post extends Common{
         
         switch ($action){
         case 'config':  //基本配置
-            //$config = Config::pull('ueditor');
-            $config = include APP_PATH."/portal/config/ueditor.php";
-            return $result =  json_encode($config);
+            $config = Config::pull('ueditor');
+            return json($config);
             break;
 
         case Config::get('ueditor.imageActionName'):    //图片上传
@@ -68,7 +67,7 @@ class Post extends Common{
                 "start" => 0,
                 "total" => count($list),
             ];
-            return json_encode($arr);
+            return json($arr);
             break;
         default:
             break;
@@ -112,7 +111,7 @@ class Post extends Common{
             $arr = ['state' => lang('错误').lang('文件上传失败')];
         }
         if(isset($arr)){
-            return json_encode($arr);
+            return json($arr);
         }
     }
     
@@ -138,9 +137,9 @@ class Post extends Common{
             $arr = Cache::get("webuploader_".$this->uid);
             $arr[] = $data['url'];
             Cache::set("webuploader_".$this->uid,$arr,7200);
-            print_r($arr);
+            
         }
-        
+        return;
     }
 
 
