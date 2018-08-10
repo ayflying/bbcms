@@ -3,6 +3,7 @@ namespace app\install\controller;
 use \think\Controller;
 use \think\Db;
 use think\facade\Env;
+use think\facade\Cache;
 use \app\member\model\MemberUser;
 
 class Index extends Controller
@@ -17,6 +18,7 @@ class Index extends Controller
         if(file_exists('./public/install.lock')){
             $this -> error("请手动删除./public/install.lock文件再进行安装操作",'/',null,60);
         }
+        Cache::clear(); 
         $this -> config_path = Env::get('config_path').'database.php';
         
         $config = include($this -> config_path);
@@ -41,7 +43,7 @@ class Index extends Controller
             
             $post = input('post.');
             
-            cookie('user',$post['user'],0);
+            cache('user',$post['user'],7200);
             unset($post['user']);
             try{
                 Db::connect($post) -> query('show tables');
@@ -87,9 +89,6 @@ class Index extends Controller
     
     public function step4(){
         set_time_limit(3600);
-        $path = Env::get('module_path').'sql/2_sysyem.sql';
-        $sql = file_get_contents($path);
-        $sql_arr = $this -> format_sql($sql);
         
         $truncate  = [
             'system_settings',
@@ -102,19 +101,24 @@ class Index extends Controller
             $this -> db -> execute($sql);
         }
         
+        $path = Env::get('module_path').'sql/2_sysyem.sql';
+        $sql = file_get_contents($path);
+        $sql_arr = $this -> format_sql($sql);
         
         foreach($sql_arr as $val){
             $this -> db -> execute($val);
         }
         //创建管理员帐号
-        $data = cookie('user');
+        $data = cache('user');
+        $data['username'] = "管理员";
         $data['gid'] = 1;
         $user = new MemberUser;
-        $user  -> save($data);
+        $user -> allowField(true) -> save($data);
         $uid = $user->id;
         $this -> db -> name('member_user_profile') ->  insert(['uid' => $uid]);
+        
         //清理缓存，写入安装锁
-        cookie('user',null);
+        cache('user',null);
         file_put_contents('./public/install.lock','');
         $this -> success("程序安装完成，正在跳转到首页",'/');
     }
