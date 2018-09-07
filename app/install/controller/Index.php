@@ -109,7 +109,9 @@ class Index extends Controller
             $this -> db -> execute($val);
         }
         //创建管理员帐号
-        $data = cache('user');
+        $data['email'] = cache('user.email');
+        $data['password'] = cache('user.password');
+        
         $data['username'] = "管理员";
         $data['gid'] = 1;
         $user = new MemberUser;
