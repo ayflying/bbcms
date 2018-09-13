@@ -102,7 +102,7 @@ class Portal extends Common{
 		$attachment = Db::name('PortalAttachment') ->field('url') -> where('aid',$aid) -> select();
 		foreach($attachment as $val){
 			//echo "删除：".$f."<br/>";
-			file_exists($val['url']) && unlink($val['url']);
+			is_file(".".$val['url']) && unlink(".".$val['url']);
 		}
 
 		//删除模型表

@@ -41,7 +41,7 @@ class Post extends Common{
 
         case Config::get('ueditor.imageActionName'):    //图片上传
             $file = request()->file(Config::get('ueditor.imageFieldName'));
-            $url = './uploads/portal';
+            $url = 'uploads/portal';
             if(isset($file)){
                 $info = $file->validate(['ext' => 'bmp,jpg,jpeg,png,gif','size' => Config::get('ueditor.imageMaxSize')]) -> move($url);
                 $thumb = $this -> thumb($info->getPathname());
@@ -90,7 +90,7 @@ class Post extends Common{
                 'uid' => $this -> uid,
                 'original' => $arr['originalName'],
                 'name' => $arr['name'],
-                'url' => $arr['url'],
+                'url' => '/'.$arr['url'],
                 'size' => filesize($arr['url']),    //获取实际大小
                 'type' => $arr['type'],
                 'create_time' => time(),
@@ -116,28 +116,31 @@ class Post extends Common{
     }
     
     //webupload模块
-    public function webuploader(){
+    public function webuploader($aid=null){
         $file = request()->file('file');
-        $info = $file->move( './uploads/thumb/');
+        $info = $file->move( 'uploads/thumb/');
         if($info){
             $this -> thumb($info->getPathName(),800,600);
             $url = str_replace('\\','/',$info->getPathName());
             $data =[
                 "uid" => $this -> uid,
+                "aid" => $aid,
                 "original" => $file-> getInfo()['name'],
                 "name" => $info->getFilename(),
-                "url" => $url,
+                "url" => '/'.$url,
                 "size" => $info->getSize(),
                 "type" => $info-> getExtension(),
                 
             ];
             
             PortalAttachment::create($data);
-            //thumb缓存
-            $arr = Cache::get("webuploader_".$this->uid);
-            $arr[] = $data['url'];
-            Cache::set("webuploader_".$this->uid,$arr,7200);
             
+            //thumb缓存
+            if(empty($aid)){
+                $arr = Cache::get("webuploader_".$this->uid);
+                $arr[] = $data['url'];
+                Cache::set("webuploader_".$this->uid,$arr,7200);
+            }
         }
         return;
     }
@@ -172,12 +175,11 @@ class Post extends Common{
             //$read_litpic = Db::name('portal_attachment') -> where('uid',$uid) -> whereNull('aid') -> value('url');
             $read_litpic =  Db::name('portal_attachment') -> field("id,size",true) -> where('uid',$uid) -> whereNull('aid') -> find();
             if(isset($read_litpic['url'])){
-                $dir = "./uploads/litpic/".date("Ymd").'/';
+                is_dir("uploads/litpic/") or mkdir("uploads/litpic/");
+                $dir = "uploads/litpic/".date("Ymd").'/';
                 is_dir($dir) or mkdir($dir);
-                $litpic = $dir.pathinfo($read_litpic['url'],PATHINFO_BASENAME);
-                $this -> thumb($read_litpic['url'],360,null,$litpic);
-                //$data = Db::name('portal_attachment') -> field('id,url,size',true) -> where('url',$read_litpic) -> find();
-                //$data = Db::name('portal_attachment') -> -> where('id',$read_litpic['id']) -> find();
+                echo $litpic = $dir.pathinfo($read_litpic['url'],PATHINFO_BASENAME);
+                $this -> thumb('.'.$read_litpic['url'],360,null,$litpic);
                 $read_litpic['url'] = $litpic;
                 $read_litpic['size'] = filesize($litpic);
                 Db::name("portal_attachment") -> insert($read_litpic);
@@ -236,10 +238,10 @@ class Post extends Common{
             $files = request()->file('thumb');
             foreach($files as $file){
                 //dump($file);
-                $info = $file -> move('./uploads/thumb');
+                $info = $file -> move('uploads/thumb');
                 $this -> thumb($info->getPathname(),360);
                 $file_data = $this -> attachment($info,$aid,$file-> getInfo()['name']);
-                echo $data['thumb'][$thumb_id] = $file_data['url'];
+                $data['thumb'][$thumb_id] = $file_data['url'];
                 $data['aid'] = $aid;
                 if(empty($article->litpic)){
                     $data['litpic'] = $file_data['url'];
@@ -348,7 +350,7 @@ class Post extends Common{
                 'aid' => $aid,
                 'original' => $original,
                 'name' => $info->getFilename(),
-                'url' => $info->getPathname(),
+                'url' => '/'.$info->getPathname(),
                 'size' => filesize($info->getPathname()),   //获取实际大小
                 'type' => $info-> getExtension(),
                 //'create_time' => time(),

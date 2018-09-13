@@ -24,10 +24,13 @@
     
     <div class="thumb form-group">
    	  <label for="title">焦点图</label>
+      <div id="picker">选择文件</div>
       <ul class="row list-unstyled">
+      	
+      	<!--
       	<li class="col-md-2">
           <img class="img-thumbnail" src="/public/cloud/images/image.png" width="100%" />
-          <input name="thumb[]" type="file" accept="image/*" />
+          <input name="thumb[]" type="file" accept="image/*" /> 
         </li>
         <li class="col-md-2">
           <img class="img-thumbnail" src="/public/cloud/images/image.png" width="100%" />
@@ -49,6 +52,7 @@
           <img class="img-thumbnail" src="/public/cloud/images/image.png" width="100%" />
           <input name="thumb[]" type="file" accept="image/*" />
         </li>
+       -->
       </ul>
 	</div>
     
@@ -75,10 +79,14 @@
     </form>
 </div>
 
+<link rel="stylesheet" type="text/css" href="/public/cloud/css/webuploader.css">
+<script src="/public/cloud/script/webuploader.min.js"></script>
+
 <script>
 
 $(function(){
 	//上传焦点图
+	/*
 	var obj = $(".thumb input");   //设置上传按钮的对象
 	obj.change(function(e) {
 		var imgobj = $(this).siblings("img");
@@ -89,6 +97,7 @@ $(function(){
 		imgobj.attr("src",objUrl);
     });
 	//上传焦点图-end
+	*/
 	
 	//检测提交按钮
 	$("#submit").click(function(e) {
@@ -117,8 +126,35 @@ $(function(){
 	//检测提交按钮
 	
 	
+	var uploader = WebUploader.create({
+		auto: true,
+	    // swf文件路径
+	    //swf: BASE_URL + '/js/Uploader.swf',
+	    // 文件接收服务端。
+	    server: "{:url('webuploader',['aid' => input('aid')])}",
+	    // 选择文件的按钮。可选。
+	    // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+	    pick: '#picker',
+	    width: 480,
+  		height: 480,
+		
+		prepareNextFile : true,
+		fileNumLimit : 6,
+		
+		// 只允许选择图片文件。
+	    accept: {
+	        title: 'Images',
+	        extensions: 'gif,jpg,jpeg,bmp,png',
+	        mimeTypes: 'image/*'
+	    }
+	    
+	});
+	
+	
 	
 });
+
+
 
 	
 //建立一個可存取到該file的url
