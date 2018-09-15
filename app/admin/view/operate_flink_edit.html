@@ -38,7 +38,7 @@
   <tr class="form-group">
     <td><label for="status">状态{$sql.status|default='0'}</label></td>
     <td>
-        <input type="radio" name="status" value="1" {$sql.status == 1 ? 'checked="checked"' : ''}>开启
+        <input type="radio" name="status" value="1" {isset($sql.status) == 1 ? 'checked="checked"' : ''}>开启
         <input type="radio" name="status" value="0" {:isset($sql.status) && $sql.status == 0 ? 'checked="checked"' : ''}>关闭
     </td>
     <td>&nbsp;</td>
