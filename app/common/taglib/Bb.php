@@ -28,10 +28,12 @@ class Bb extends TagLib{
         'ad' => ['attr'=>'id', 'close' => 0],
         'flink' => ['attr'=>'id, row', 'level' => 1],
         'header' => ['attr' => 'file', 'close' => 0],
-
+        'prenext' => ['attr'=> 'get','close' => 0],
 
     ];
 
+    
+    
 
     public function tagCeshi($tag,$content){
         $name = empty($tag['time']) ? time() : $tag['time'];
@@ -39,6 +41,7 @@ class Bb extends TagLib{
         $parse .= ''.$name.'';
 
         $parse .= $content;
+        
         return $parse;
     }
 
@@ -221,13 +224,54 @@ class Bb extends TagLib{
         }
         return ;
     }
+    
+    
+    /**
+	上一篇，下一篇
+	* @param array $tag 标签属性
+	* @param string $content  标签内容
+	* @return string|void
+	*/
+    public function tagPrenext($tag,$content){
+        
+        $get = !empty($tag['get']) ? $tag['get'] : null;
+        //dump($_G);
+        
+        if($get == 'pre'){
+            $Str = '<?php
+                $where = [
+                    ["aid","<",$_G["article"]["aid"] ],
+                    ["tid","=",$_G["article"]["tid"]],
+                ];
+                $bb = Db::name("portal_article") -> where($where) -> order("aid desc") -> find();
+            ';
+        }
+        
+        if($get == 'next'){
+            
+            $Str = '<?php
+                $where = [
+                    ["aid",">",$_G["article"]["aid"] ],
+                    ["tid","=",$_G["article"]["tid"]],
+                ];
+                $bb = Db::name("portal_article") -> where($where) -> order("aid") -> find();
+            ';
+        }
+        $Str .= "?> ";
+        $Str .= '<a href="{:url("portal/article/index",["aid" => $bb.aid])}" >{:$bb.title}</a>';
+        
+        $Str .= $content;
+        
+        return $Str;
+    }
+    
+    
     /**
 	广告
 	* @param array $tag 标签属性
 	* @param string $content  标签内容
 	* @return string|void
 	*/
-
 	public function tagAd($tag,$content){
 		$id = $tag['id'];
 		//$where = $tag['where'];
