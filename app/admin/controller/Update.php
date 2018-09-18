@@ -1,7 +1,7 @@
 <?php
 namespace app\admin\controller;
-use think\Cache;
-use think\Config;
+use think\facade\Cache;
+use think\facade\Config;
 use think\Db;
 
 class Update extends Common
@@ -14,8 +14,12 @@ class Update extends Common
         }
         
         Cache::set('old_version',Config::get('version'),0);
-        $url =  UPDATE_URL . "/update/list";
+        $url =  Config::get('bbcms.update_url') . "/update";
+        $url = "http://www.luoe.cn/";
         $put = curl($url);
+        echo $url;
+        echo $put;
+        exit;
         if(empty($put)){
             return $this -> error("更新节点异常，请检查配置文件",'admin/index/index');
         }

@@ -9,8 +9,9 @@ class Index extends Controller
 {
     
     public function index(){
-        if(!Cache::get('updaelist')){
-            $file_list = array_merge(Config::pull('file'), files(Config::pull('dir')));
+        
+        $list = Cache::remember('updaelist',function(){
+            $file_list = array_merge(Config::get('file'), files(Config::get('dir')));
             //dump(Cache::get('updaelist'));
             
             foreach($file_list as $val){
@@ -23,11 +24,11 @@ class Index extends Controller
                 }
             }
             
-            Cache::set('updaelist',$list);
-		}
-        $list = cache::get('updaelist');
-        echo json_encode($list);
-        return;
+            return $list;
+		});
+        
+        
+        return json($list);
 	}
     
     /*
