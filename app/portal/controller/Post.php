@@ -178,7 +178,7 @@ class Post extends Common{
                 is_dir("uploads/litpic/") or mkdir("uploads/litpic/");
                 $dir = "uploads/litpic/".date("Ymd").'/';
                 is_dir($dir) or mkdir($dir);
-                echo $litpic = $dir.pathinfo($read_litpic['url'],PATHINFO_BASENAME);
+                $litpic = $dir.pathinfo($read_litpic['url'],PATHINFO_BASENAME);
                 $this -> thumb('.'.$read_litpic['url'],360,null,$litpic);
                 $read_litpic['url'] = $litpic;
                 $read_litpic['size'] = filesize($litpic);
