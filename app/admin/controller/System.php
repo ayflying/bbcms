@@ -22,11 +22,9 @@ class System extends Common{
             file_put_contents($file,$str);
 			unset($post['config']);
 			foreach($post as $k => $val){
-				echo Db::name('system_settings') -> where("name", $k) -> setField('value',$val);
-                echo $k." => ".$val."<br/>";
+				Db::name('system_settings') -> where("name", $k) -> setField('value',$val);
                 
 			}
-            exit;
             
             
 			return  $this->success(lang('修改完成'),null,null,1);
