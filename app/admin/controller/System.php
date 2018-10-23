@@ -7,7 +7,7 @@ use think\facade\Cache;
 class System extends Common{
     public function index(){
 		$mod = input('get.mod');
-		$db = Db::name('SystemSettings');
+		$db = Db::name('system_settings');
 		$file = "./config/bbcms.php";
         //$config = file_get_contents($file);
         $config = Config::pull('bbcms');
@@ -15,22 +15,24 @@ class System extends Common{
 		if(request()->isPost()){
 			$post = input('post.');
             
+            
             $str = "<?php\nreturn ";
             $str .= var_export($config,true).";";
             //$str   = iconv("GB2312","UTF-8",$str);
             file_put_contents($file,$str);
 			unset($post['config']);
 			foreach($post as $k => $val){
-				//$db -> value = $val;
-				$db -> where("name", $k) -> setField('value',$val);
+				echo Db::name('system_settings') -> where("name", $k) -> setField('value',$val);
+                echo $k." => ".$val."<br/>";
+                
 			}
-            
+            exit;
             
             
 			return  $this->success(lang('修改完成'),null,null,1);
 			//$this -> cache();
 		}else{
-			$sql = $db -> where("class > '0'") -> select();
+			$sql = Db::name('system_settings') -> where("class > '0'") -> select();
 			foreach($sql as $k => $val){
 				//dump($val);
 				$sql[$k]['value'] = htmlspecialchars_decode($val['value']);
