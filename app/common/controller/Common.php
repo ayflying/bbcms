@@ -5,6 +5,7 @@ use think\facade\Cache;
 use think\facade\Config;
 use think\Db;
 use think\facade\Hook;
+use think\facade\Debug;
 
 class Common extends Controller{
 	
@@ -15,6 +16,8 @@ class Common extends Controller{
 	
     
 	public function initialize(){
+        Debug::remark('begin');
+        
         //检测当前用户UID
         $user = Db::name('member_user') -> where('guid',cookie('guid')) ->cache(true) -> find();
         $this -> uid = $user['uid'] > 0 ? $user['uid'] : 0;
@@ -42,6 +45,8 @@ class Common extends Controller{
         ];
         $user['uid'] > 0 && $this -> _G['user'] = $user;
 		//dump($this -> settings);
+        
+       
         
 	}
 	
@@ -131,7 +136,6 @@ class Common extends Controller{
             $template = './template/default/'.$template.".".$config['view_suffix'];
         }
         //dump($config);
-        
         
 		$this -> assign('_G',$this -> _G);
         return $this -> view -> fetch($template,$vars,$config,$renderContent);
