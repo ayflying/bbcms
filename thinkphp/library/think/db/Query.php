@@ -326,7 +326,7 @@ class Query
      */
     public function execute($sql, $bind = [])
     {
-        return $this->connection->execute($sql, $bind);
+        return $this->connection->execute($sql, $bind, $this);
     }
 
     /**
@@ -656,9 +656,9 @@ class Query
                 $query->fetchSql(true);
             }
 
-            $count = $query->aggregate('COUNT', '*');
+            $count = $query->aggregate('COUNT', '*', true);
         } else {
-            $count = $this->aggregate('COUNT', $field);
+            $count = $this->aggregate('COUNT', $field, true);
         }
 
         return is_string($count) ? $count : (int) $count;
@@ -1008,11 +1008,13 @@ class Query
         if ($tableName) {
             // 添加统一的前缀
             $prefix = $prefix ?: $tableName;
-            foreach ($field as $key => $val) {
-                if (is_numeric($key)) {
-                    $val = $prefix . '.' . $val . ($alias ? ' AS ' . $alias . $val : '');
+            foreach ($field as $key => &$val) {
+                if (is_numeric($key) && $alias) {
+                    $field[$prefix . '.' . $val] = $alias . $val;
+                    unset($field[$key]);
+                } elseif (is_numeric($key)) {
+                    $val = $prefix . '.' . $val;
                 }
-                $field[$key] = $val;
             }
         }
 
@@ -1417,23 +1419,18 @@ class Query
      * 指定Exp查询条件
      * @access public
      * @param  mixed  $field     查询字段
-     * @param  string $condition 查询条件
+     * @param  string $where     查询条件
      * @param  array  $bind      参数绑定
      * @param  string $logic     查询逻辑 and or xor
      * @return $this
      */
-    public function whereExp($field, $condition, $bind = [], $logic = 'AND')
+    public function whereExp($field, $where, $bind = [], $logic = 'AND')
     {
         if ($bind) {
-            foreach ($bind as $key => $value) {
-                if (!is_numeric($key)) {
-                    $where = str_replace(':' . $key, '?', $where);
-                }
-            }
-            $this->bind(array_values($bind));
+            $this->bindParams($where, $bind);
         }
 
-        $this->options['where'][$logic][] = [$field, 'EXP', $this->raw($condition)];
+        $this->options['where'][$logic][] = [$field, 'EXP', $this->raw($where)];
 
         return $this;
     }
@@ -1449,18 +1446,36 @@ class Query
     public function whereRaw($where, $bind = [], $logic = 'AND')
     {
         if ($bind) {
-            foreach ($bind as $key => $value) {
-                if (!is_numeric($key)) {
-                    $where = str_replace(':' . $key, '?', $where);
-                }
-            }
-
-            $this->bind(array_values($bind));
+            $this->bindParams($where, $bind);
         }
 
         $this->options['where'][$logic][] = $this->raw($where);
 
         return $this;
+    }
+
+    /**
+     * 参数绑定
+     * @access public
+     * @param  string $sql    绑定的sql表达式
+     * @param  array  $bind   参数绑定
+     * @return void
+     */
+    protected function bindParams(&$sql, array $bind = [])
+    {
+        foreach ($bind as $key => $value) {
+            if (is_array($value)) {
+                $name = $this->bind($value[0], $value[1], isset($value[2]) ? $value[2] : null);
+            } else {
+                $name = $this->bind($value);
+            }
+
+            if (is_numeric($key)) {
+                $sql = substr_replace($sql, ':' . $name, strpos($sql, '?'), 1);
+            } else {
+                $sql = str_replace(':' . $key, ':' . $name, $sql);
+            }
+        }
     }
 
     /**
@@ -1500,7 +1515,7 @@ class Query
             return $this;
         }
 
-        if (is_string($field) && !empty($this->options['via']) && !strpos($field, '.')) {
+        if (is_string($field) && !empty($this->options['via']) && false === strpos($field, '.')) {
             $field = $this->options['via'] . '.' . $field;
         }
 
@@ -1893,13 +1908,7 @@ class Query
     public function orderRaw($field, $bind = [])
     {
         if ($bind) {
-            foreach ($bind as $key => $value) {
-                if (!is_numeric($key)) {
-                    $field = str_replace(':' . $key, '?', $field);
-                }
-            }
-
-            $this->bind(array_values($bind));
+            $this->bindParams($field, $bind);
         }
 
         $this->options['order'][] = $this->raw($field);
@@ -2444,14 +2453,18 @@ class Query
      * @access public
      * @param  mixed   $value 绑定变量值
      * @param  integer $type  绑定类型
-     * @return $this
+     * @param  string  $name  绑定名称
+     * @return $this|string
      */
-    public function bind($value = false, $type = PDO::PARAM_STR)
+    public function bind($value, $type = PDO::PARAM_STR, $name = null)
     {
         if (is_array($value)) {
             $this->bind = array_merge($this->bind, $value);
         } else {
-            $this->bind[] = [$value, $type];
+            $name = $name ?: 'ThinkBind_' . (count($this->bind) + 1) . '_';
+
+            $this->bind[$name] = [$value, $type];
+            return $name;
         }
 
         return $this;
@@ -2650,7 +2663,8 @@ class Query
             }
 
             foreach ($relations as $key => $relation) {
-                $closure = null;
+                $closure = $aggregateField = null;
+
                 if ($relation instanceof \Closure) {
                     $closure  = $relation;
                     $relation = $key;
@@ -2659,14 +2673,15 @@ class Query
                     $relation       = $key;
                 }
 
-                if (!isset($aggregateField)) {
+                $relation = Loader::parseName($relation, 1, false);
+
+                $count = $this->model->$relation()->getRelationCountQuery($closure, $aggregate, $field, $aggregateField);
+
+                if (empty($aggregateField)) {
                     $aggregateField = Loader::parseName($relation) . '_' . $aggregate;
                 }
 
-                $relation = Loader::parseName($relation, 1, false);
-                $count    = '(' . $this->model->$relation()->getRelationCountQuery($closure, $aggregate, $field) . ')';
-
-                $this->field([$count => $aggregateField]);
+                $this->field(['(' . $count . ')' => $aggregateField]);
             }
         }
 
@@ -3535,6 +3550,10 @@ class Query
      */
     protected function parseView(&$options)
     {
+        if (!isset($options['map'])) {
+            return;
+        }
+
         foreach (['AND', 'OR'] as $logic) {
             if (isset($options['where'][$logic])) {
                 foreach ($options['where'][$logic] as $key => $val) {
@@ -3554,7 +3573,7 @@ class Query
                 $options['order'] = explode(',', $options['order']);
             }
             foreach ($options['order'] as $key => $val) {
-                if (is_numeric($key)) {
+                if (is_numeric($key) && is_string($val)) {
                     if (strpos($val, ' ')) {
                         list($field, $sort) = explode(' ', $val);
                         if (array_key_exists($field, $options['map'])) {
@@ -3646,7 +3665,7 @@ class Query
             $options['field'] = '*';
         }
 
-        foreach (['data', 'order'] as $name) {
+        foreach (['data', 'order', 'join', 'union'] as $name) {
             if (!isset($options[$name])) {
                 $options[$name] = [];
             }
@@ -3666,7 +3685,7 @@ class Query
             $options['master'] = true;
         }
 
-        foreach (['join', 'union', 'group', 'having', 'limit', 'force', 'comment'] as $name) {
+        foreach (['group', 'having', 'limit', 'force', 'comment'] as $name) {
             if (!isset($options[$name])) {
                 $options[$name] = '';
             }
