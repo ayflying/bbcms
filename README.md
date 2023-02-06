@@ -1,7 +1,6 @@
 ﻿# bbcms
 
-========================
-当前版本已停止更新，新版本程序见 https://github.com/ayflying/bbcms2
+##### 当前版本已停止更新，新版本程序见 https://github.com/ayflying/bbcms2
 
 ===============
 
